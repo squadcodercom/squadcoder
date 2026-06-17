@@ -10,7 +10,9 @@ skills, and pre-configured MCP servers (Playwright, context7).
 |------|------------|------------|
 | `MuminAI-cli-windows-x64.zip` | Standalone **CLI** (`mumin.exe`) | Extract, then run `bin\mumin.exe` from a terminal. Try `mumin --help`, `mumin --version`. |
 | `MuminAI-desktop-windows-x64-portable.zip` | **Portable desktop app** | Extract anywhere, run `MuminAI.exe`. No install needed. |
-| `MuminAI-desktop-windows-x64.exe` *(if present)* | **NSIS installer** | Double-click to install MuminAI (choose install dir, creates Start-menu shortcut). |
+| `MuminAI-Setup.exe` | **Installer** (recommended) | Double-click to install MuminAI (choose install dir, Start-menu shortcut). |
+
+> Note: if Windows shows an old/black icon on a downloaded `.exe`, that's the Explorer **icon cache**, not the file — the embedded icon is correct. Copying/renaming the file or running `ie4uinit.exe -show` refreshes it.
 
 > First run: the Playwright MCP needs browser binaries once — run `npx playwright install chromium`.
 > Authentication: bring your own API key, import from Claude Code, or use any OpenRouter model
