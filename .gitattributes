@@ -21,5 +21,14 @@ SKILLS_ATTRIBUTION.md                      merge=ours
 REMOTE.md                                  merge=ours
 FIXED_ISSUES.md                            merge=ours
 
+# MuminAI brand assets (icons / favicons / logos / banner)
+assets/**                                  merge=ours
+script/gen-brand-icons.ts                  merge=ours
+packages/desktop/resources/icons/**        merge=ours
+packages/app/public/favicon**              merge=ours
+packages/app/public/apple-touch-icon**     merge=ours
+packages/web/public/favicon**              merge=ours
+packages/web/public/apple-touch-icon**     merge=ours
+
 # Dependency overlay patches (bun patch)
 patches/**                                 merge=ours
