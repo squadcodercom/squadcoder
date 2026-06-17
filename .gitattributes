@@ -11,12 +11,14 @@ packages/muminai-plugin-anthropic-oauth/** merge=ours
 
 # MuminAI config, bundled skills, branding constants
 .muminai/**                                merge=ours
+muminai.json                               merge=ours
 
 # MuminAI project docs / instructions
 CLAUDE.md                                  merge=ours
 AGENTS.md                                  merge=ours
 FORK_STRATEGY.md                           merge=ours
 SKILLS_ATTRIBUTION.md                      merge=ours
+REMOTE.md                                  merge=ours
 
 # Dependency overlay patches (bun patch)
 patches/**                                 merge=ours

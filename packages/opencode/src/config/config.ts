@@ -736,8 +736,11 @@ export const layer = Layer.effect(
         }
 
         if (!Flag.MIMOCODE_DISABLE_PROJECT_CONFIG) {
-          for (const file of yield* ConfigPaths.files("mimocode", ctx.directory, ctx.worktree).pipe(Effect.orDie)) {
-            yield* merge(file, yield* loadFile(file), "local")
+          // MUMINAI: load mimocode.json (back-compat) then muminai.json (new brand wins on merge)
+          for (const cfgName of ["mimocode", "muminai"]) {
+            for (const file of yield* ConfigPaths.files(cfgName, ctx.directory, ctx.worktree).pipe(Effect.orDie)) {
+              yield* merge(file, yield* loadFile(file), "local")
+            }
           }
         }
 
