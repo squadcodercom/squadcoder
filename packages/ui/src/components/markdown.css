@@ -8,6 +8,11 @@
   font-size: var(--font-size-base); /* 14px */
   line-height: 160%;
 
+  /* MUMINAI: per-paragraph bidi so Hebrew renders RTL and English LTR within the same
+     message, independent of the UI language direction (equivalent to dir="auto"). */
+  unicode-bidi: plaintext;
+  text-align: start;
+
   /* Spacing for flow */
   > *:first-child {
     margin-top: 0;

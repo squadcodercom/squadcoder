@@ -15,6 +15,7 @@ import { dict as desktopAr } from "./ar"
 import { dict as desktopNo } from "./no"
 import { dict as desktopBr } from "./br"
 import { dict as desktopBs } from "./bs"
+import { dict as desktopHe } from "./he"
 
 import { dict as appEn } from "../../../../app/src/i18n/en"
 import { dict as appZh } from "../../../../app/src/i18n/zh"
@@ -31,6 +32,7 @@ import { dict as appAr } from "../../../../app/src/i18n/ar"
 import { dict as appNo } from "../../../../app/src/i18n/no"
 import { dict as appBr } from "../../../../app/src/i18n/br"
 import { dict as appBs } from "../../../../app/src/i18n/bs"
+import { dict as appHe } from "../../../../app/src/i18n/he"
 
 export type Locale =
   | "en"
@@ -45,6 +47,7 @@ export type Locale =
   | "pl"
   | "ru"
   | "ar"
+  | "he"
   | "no"
   | "br"
   | "bs"
@@ -66,6 +69,7 @@ const LOCALES: readonly Locale[] = [
   "ru",
   "bs",
   "ar",
+  "he",
   "no",
   "br",
 ]
@@ -90,6 +94,7 @@ function detectLocale(): Locale {
     if (language.toLowerCase().startsWith("pl")) return "pl"
     if (language.toLowerCase().startsWith("ru")) return "ru"
     if (language.toLowerCase().startsWith("ar")) return "ar"
+    if (language.toLowerCase().startsWith("he")) return "he"
     if (
       language.toLowerCase().startsWith("no") ||
       language.toLowerCase().startsWith("nb") ||
@@ -149,6 +154,7 @@ function build(locale: Locale): Dictionary {
   if (locale === "pl") return { ...base, ...i18n.flatten(appPl), ...i18n.flatten(desktopPl) }
   if (locale === "ru") return { ...base, ...i18n.flatten(appRu), ...i18n.flatten(desktopRu) }
   if (locale === "ar") return { ...base, ...i18n.flatten(appAr), ...i18n.flatten(desktopAr) }
+  if (locale === "he") return { ...base, ...i18n.flatten(appHe), ...i18n.flatten(desktopHe) }
   if (locale === "no") return { ...base, ...i18n.flatten(appNo), ...i18n.flatten(desktopNo) }
   if (locale === "br") return { ...base, ...i18n.flatten(appBr), ...i18n.flatten(desktopBr) }
   if (locale === "bs") return { ...base, ...i18n.flatten(appBs), ...i18n.flatten(desktopBs) }
@@ -180,6 +186,11 @@ export function initI18n(): Promise<Locale> {
 
     state.locale = next
     state.dict = build(next)
+    // MUMINAI: apply text direction for the desktop shell (RTL for Hebrew/Arabic)
+    if (typeof document === "object") {
+      document.documentElement.lang = next
+      document.documentElement.dir = next === "he" || next === "ar" ? "rtl" : "ltr"
+    }
     return next
   })().catch(() => state.locale)
 

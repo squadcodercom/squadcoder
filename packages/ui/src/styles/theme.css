@@ -1,5 +1,8 @@
 :root {
-  --font-family-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* MUMINAI: Hebrew-capable fonts added to the fallback stack (Heebo/Rubik/Assistant/Noto Sans Hebrew) */
+  --font-family-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Heebo", "Rubik", "Assistant",
+    "Noto Sans Hebrew", sans-serif;
   --font-family-sans--font-feature-settings: normal;
   --font-family-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
