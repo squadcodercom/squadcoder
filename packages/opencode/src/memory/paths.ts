@@ -43,7 +43,10 @@ function detectType(key: string): MemoryType {
 }
 
 export function parsePath(absPath: string): MemoryLocator | null {
-  const m = absPath.match(/\/memory\/(global|projects|sessions)(?:\/([^/]+))?\/(.+)\.md$/)
+  // MUMINAI(#908/#861): reconcile builds paths with path.join -> backslashes on Windows, and the
+  // regex below only matches "/". Without normalizing, parsePath returns null for EVERY memory
+  // file on Windows -> nothing indexes -> full cross-session amnesia. Normalize first (no-op on POSIX).
+  const m = absPath.replace(/\\/g, "/").match(/\/memory\/(global|projects|sessions)(?:\/([^/]+))?\/(.+)\.md$/)
   if (!m) return null
   const [, scope, idMaybe, keyRaw] = m
   const scope_id = scope === "global" ? "" : (idMaybe ?? "")
@@ -57,7 +60,8 @@ export function parsePath(absPath: string): MemoryLocator | null {
 const CC_PATH_RE = /\/\.claude\/projects\/([^/]+)\/memory\/(.+)\.md$/
 
 export function parseCcPath(absPath: string): MemoryLocator | null {
-  const m = absPath.match(CC_PATH_RE)
+  // MUMINAI(#908/#861): normalize Windows backslashes before matching (see parsePath).
+  const m = absPath.replace(/\\/g, "/").match(CC_PATH_RE)
   if (!m) return null
   const [, slug, keyRaw] = m
   return {

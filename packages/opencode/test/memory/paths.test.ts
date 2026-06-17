@@ -148,6 +148,26 @@ describe("parsePath", () => {
   test("legacy <root>/tasks/<id>/ path no longer matches (tasks dropped from Scope)", () => {
     expect(parsePath("/data/memory/tasks/T1/progress.md")).toBeNull()
   })
+
+  // MUMINAI(#908/#861): on Windows, reconcile builds paths with backslashes; parsePath must
+  // normalize them or memory never indexes (full cross-session amnesia on Windows).
+  test("windows backslash path parses (global MEMORY.md)", () => {
+    expect(parsePath("C:\\Users\\me\\.local\\share\\mimocode\\memory\\global\\MEMORY.md")).toEqual({
+      scope: "global",
+      scope_id: "",
+      type: "memory",
+      key: "MEMORY",
+    })
+  })
+
+  test("windows backslash path parses (session checkpoint)", () => {
+    expect(parsePath("C:\\data\\memory\\sessions\\ses_abc\\checkpoint.md")).toEqual({
+      scope: "sessions",
+      scope_id: "ses_abc",
+      type: "checkpoint",
+      key: "checkpoint",
+    })
+  })
 })
 
 describe("buildPath", () => {

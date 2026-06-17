@@ -397,6 +397,12 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       } else {
         route.navigate({ type: "session", sessionID: match })
       }
+    } else if (sync.status === "complete") {
+      // MUMINAI(#758): no prior session to continue -> don't hang forever on the invalid "dummy"
+      // route (blank screen, no error). Fall back to home with feedback once sync is settled.
+      continued = true
+      route.navigate({ type: "home" })
+      toast.show({ message: "No previous session to continue", variant: "warning" })
     }
   })
 

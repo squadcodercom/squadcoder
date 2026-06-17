@@ -254,7 +254,9 @@ export const TuiThreadCommand = cmd({
         process.off("uncaughtException", error)
         process.off("unhandledRejection", error)
         process.off("SIGUSR2", reload)
-        await withTimeout(client.call("shutdown", undefined), 5000).catch((error) => {
+        // MUMINAI(#216): 5s force-killed cleanup on large workspaces (stale locks, "crash on quit").
+        // Give graceful disposal more room; overridable for very large workspaces.
+        await withTimeout(client.call("shutdown", undefined), Number(process.env.MIMOCODE_SHUTDOWN_TIMEOUT_MS) || 15000).catch((error) => {
           Log.Default.warn("worker shutdown failed", {
             error: errorMessage(error),
           })
