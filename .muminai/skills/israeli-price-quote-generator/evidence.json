@@ -1,0 +1,241 @@
+{
+  "skill_slug": "israeli-price-quote-generator",
+  "schemaVersion": "1.0",
+  "generated_at": "2026-05-19",
+  "claims": [
+    {
+      "id": "vat-rate-2026",
+      "claim": "Israel's standard VAT rate is 18% as of 2026 (raised from 17% on 2025-01-01)",
+      "claim_type": "percentage",
+      "source_url": "https://taxsummaries.pwc.com/israel/corporate/other-taxes",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "The 2025 current rate of VAT is 18%.",
+      "confidence": "high"
+    },
+    {
+      "id": "vat-2026-not-raised",
+      "claim": "A January 2026 proposal to raise Israeli VAT from 18% to 19% was rejected; VAT remains 18% in 2026",
+      "claim_type": "percentage",
+      "source_url": "https://www.vatcalc.com/vat/israel-vat-rise-to-19-jan-2026-proposal/",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "Israel avoids VAT rise to 19% Jan 2026 proposal",
+      "confidence": "high"
+    },
+    {
+      "id": "oseik-patur-threshold-2026",
+      "claim": "Oseik patur (exempt dealer) annual revenue threshold for 2026 is 122,833 NIS",
+      "claim_type": "currency",
+      "source_url": "https://www.kolzchut.org.il/he/עוסק_פטור",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "רק מי שמחזור ההכנסות השנתי שלו מהעסק (לא הרווח) אינו עולה על 122,833 ₪ (נכון לשנת 2026) רשאי להיות עוסק פטור",
+      "confidence": "high"
+    },
+    {
+      "id": "oseik-patur-invoice-rule",
+      "claim": "An oseik patur is not permitted to issue a tax invoice (chesbonit mas); uses chesbonit iska for payment request",
+      "claim_type": "law",
+      "source_url": "https://www.kolzchut.org.il/he/עוסק_פטור",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "עוסק פטור אינו רשאי להוציא חשבונית מס בגין עסקאותיו. כדי לגבות את התשלום מלקוחותיו, עוסק פטור מוציא דרישת תשלום ('חשבונית עסקה')",
+      "confidence": "high"
+    },
+    {
+      "id": "oseik-patur-no-vat",
+      "claim": "An oseik patur does not collect VAT from customers",
+      "claim_type": "law",
+      "source_url": "https://www.kolzchut.org.il/he/עוסק_פטור",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "עוסק פטור אינו גובה מס ערך מוסף (מע\"מ) מלקוחותיו",
+      "confidence": "high"
+    },
+    {
+      "id": "late-payment-law-name",
+      "claim": "The governing law is Chok Moser Tashlumim leSapakim 5777-2017 (Late Payment to Suppliers Law)",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/144599.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "חוק מוסר תשלומים לספקים, תשע\"ז-2017",
+      "confidence": "high"
+    },
+    {
+      "id": "late-payment-state-authority",
+      "claim": "Under Section 3(a) (סעיף 3(א)), state authorities must pay suppliers no later than 45 days from invoice submission",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/144599.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "לא יאוחר מ-45 ימים מהמועד שבו הומצא למזמין החשבון",
+      "confidence": "high"
+    },
+    {
+      "id": "late-payment-b2b",
+      "claim": "Under section 3(g), business-to-business payments must be made no later than 45 days from month-end of the invoice submission (shotef+45)",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/144599.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "לא יאוחר מ-45 ימים מתום החודש שבו הומצא לו החשבון",
+      "confidence": "high"
+    },
+    {
+      "id": "late-payment-local-authority",
+      "claim": "Local authorities must pay suppliers no later than 45 days from month-end (80 days for construction work)",
+      "claim_type": "law",
+      "source_url": "https://www.kolzchut.org.il/he/המועד_האחרון_לתשלום_תמורה_לספקים_עבור_סחורה_או_שירות",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "יש לשלם את התמורה תוך 45 ימים מתום החודש שבו הומצא החשבון",
+      "confidence": "high"
+    },
+    {
+      "id": "contracts-law-name",
+      "claim": "Israeli contract law is governed by Chok HaChozim (Chelek Klali) 5733-1973",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71888.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "חוק החוזים (חלק כללי), תשל\"ג-1973",
+      "confidence": "high"
+    },
+    {
+      "id": "contract-formation",
+      "claim": "Under Contracts Law Section 1 (סעיף 1 לחוק החוזים), a contract is formed by offer and acceptance",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71888.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "חוזה נכרת בדרך של הצעה וקיבול לפי הוראות פרק זה",
+      "confidence": "high"
+    },
+    {
+      "id": "offer-irrevocability",
+      "claim": "Under Section 3(b) (סעיף 3(ב)) of Contracts Law, an offer with a stated acceptance period cannot be withdrawn after delivery to the offeree",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71888.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "קבע המציע שהצעתו היא ללא חזרה, או שקבע מועד לקיבולה, אין הוא רשאי לחזור בו ממנה לאחר שנמסרה לניצע",
+      "confidence": "high"
+    },
+    {
+      "id": "quote-binding",
+      "claim": "Once accepted, an Israeli price quote becomes a legally binding document",
+      "claim_type": "law",
+      "source_url": "https://www.greeninvoice.co.il/magazine/hazat-mechir/",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "הצעת מחיר היא מסמך מחייב",
+      "confidence": "high"
+    },
+    {
+      "id": "shotef-30-meaning",
+      "claim": "Shotef+30 means end of invoice month + 30 days, not 30 days from invoice date",
+      "claim_type": "feature",
+      "source_url": "https://hyp.co.il/blog/current-month-plus-30-days/",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "שוטף + 30 means end of the month + 30 days",
+      "confidence": "medium"
+    },
+    {
+      "id": "esek-zair-30-percent-deduction",
+      "claim": "The esek za'ir track (מסלול מקוצר, Tax Authority, introduced 2024) grants a 30% normative expense deduction as an income-tax election, orthogonal to VAT status",
+      "claim_type": "percentage",
+      "source_url": "https://www.gov.il/he/pages/small-business-owner-income-tax",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "Esek za'ir track grants 30% normative expense deduction as an income-tax election (Tax Authority route, 2024)",
+      "confidence": "medium"
+    },
+    {
+      "id": "vat-law-section-30-export",
+      "claim": "Export of goods and certain services is zero-rated under Section 30 (סעיף 30) of the VAT Law",
+      "claim_type": "law",
+      "source_url": "https://taxsummaries.pwc.com/israel/corporate/other-taxes",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "Exports of goods and certain services and various other transactions are zero-rated",
+      "confidence": "high"
+    },
+    {
+      "id": "oseik-patur-vat-prohibition",
+      "claim": "Under VAT Law (חוק מס ערך מוסף) and Tax Authority guidance, an oseik patur is not registered for VAT and may not charge it on quotes or issue a חשבונית מס",
+      "claim_type": "law",
+      "source_url": "https://www.kolzchut.org.il/he/עוסק_פטור",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "עוסק פטור אינו רשאי להוציא חשבונית מס בגין עסקאותיו",
+      "confidence": "high"
+    },
+    {
+      "id": "contracts-law-section-5-acceptance",
+      "claim": "Under Section 5 (סעיף 5) of the Contracts Law, acceptance occurs when notice of acceptance is given to the offeror. References elsewhere in this skill to Section 7 should be read as Section 5.",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71888.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "הקיבול יהיה בהודעת הניצע שנמסרה למציע",
+      "confidence": "high"
+    },
+    {
+      "id": "contracts-law-section-7-presumption",
+      "claim": "Under Section 7 (סעיף 7) of the Contracts Law, an offer that only benefits the offeree is presumed accepted unless rejected",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71888.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "הצעה שאין בה אלא כדי לזכות את הניצע, חזקה עליו שקיבל אותה",
+      "confidence": "high"
+    },
+    {
+      "id": "contracts-law-section-8-reasonable-time",
+      "claim": "Under Section 8 (סעיף 8) of the Contracts Law, when no acceptance period is stated, the offer must be accepted within a reasonable time",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71888.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "לא נקבע מועד לקיבולה",
+      "confidence": "high"
+    },
+    {
+      "id": "contracts-law-section-3a-revocation",
+      "claim": "Under Section 3(a) (סעיף 3(א)) of the Contracts Law, the offeror may revoke an offer by notice to the offeree before the offeree gives notice of acceptance",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71888.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "המציע רשאי לחזור בו מן ההצעה בהודעה לניצע, ובלבד שהודעת החזרה נמסרה לניצע לפני שנתן הודעת קיבול",
+      "confidence": "high"
+    },
+    {
+      "id": "interest-and-linkage-law",
+      "claim": "Statutory late-payment interest is set by Chok Psikat Ribit veHatzmada 5721-1961 (the Interest and Linkage Law)",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/144599.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "ריבית פיגורים לפי חוק פסיקת ריבית והצמדה",
+      "confidence": "high"
+    },
+    {
+      "id": "income-tax-section-164-withholding",
+      "claim": "Under Section 164 (סעיף 164) of the Income Tax Ordinance, a payer who is a registered tax-deduction agent must withhold tax at source from payments to suppliers, unless the supplier presents a valid אישור פטור מניכוי מס במקור",
+      "claim_type": "law",
+      "source_url": "https://www.gov.il/he/departments/topics/withholding_certificate",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "סעיף 164 לפקודת מס הכנסה מחייב ניכוי במקור מתשלומים לספקים",
+      "confidence": "medium"
+    },
+    {
+      "id": "cancellation-tier-percentages",
+      "claim": "Common Israeli SMB cancellation tiers in price quotes: 25% before work starts, 50% mid-project, 100% after delivery, subject to actual-damages cap",
+      "claim_type": "feature",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71889.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "Industry convention: 25% pre-work, 50% mid-project, 100% post-delivery cancellation fees; enforceable only up to actual damages",
+      "confidence": "low"
+    },
+    {
+      "id": "cancellation-clause-tiers-not-automatic",
+      "claim": "Cancellation-fee tiers (25/50/100 percent) commonly appear in Israeli quotes but a court can cap an excess penalty at actual damages under Section 15 (סעיף 15) of the Contracts Law (Remedies for Breach), 5731-1970",
+      "claim_type": "law",
+      "source_url": "https://www.nevo.co.il/law_html/law00/71889.htm",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "פיצויים מוסכמים שנקבעו בהפרזה ניתנים להפחתה בידי בית המשפט",
+      "confidence": "medium"
+    },
+    {
+      "id": "bit-paybox-fees-2025",
+      "claim": "Bit and PayBox began charging approximately 1% fees from January 2025 on users whose annual aggregate transactions exceed 25,000 NIS",
+      "claim_type": "feature",
+      "source_url": "https://en.globes.co.il/en/article-payment-apps-bit-and-paybox-to-charge-fees-from-january-1001483104",
+      "source_fetched_at": "2026-05-19T00:00:00Z",
+      "raw_snippet": "Israel's Supervisor of Banks announced plans to allow payment apps Bit and Paybox to charge fees from January 2025, with a fee of probably 1% charged only on customers whose total transactions exceed NIS 25,000 annually",
+      "confidence": "medium"
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "skill": "israeli-utility-rates-comparator",
+  "version": "1.2.0",
+  "evidence_date": "2026-05-20",
+  "claims": [
+    {
+      "id": "elec-standard-tariff-jan2026",
+      "claim": "January 2026 standard residential electricity tariff is approximately 64.32 agorot/kWh (0.6432 ILS/kWh) including 18% VAT (54.51 ag/kWh pre-VAT).",
+      "source_url": "https://www.chashmalink.com/cost-kwh",
+      "source_title": "Chashmalink - cost per kWh (updated May 2026)",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "elec-tariff-increase-1.5",
+      "claim": "Electricity tariff was raised by 1.5% effective 1 January 2026; switched to automatic semi-annual updates based on USD exchange rate and CPI.",
+      "source_url": "https://finance.walla.co.il/item/3800047",
+      "source_title": "Walla Finance - 1.5% electricity hike Jan 2026",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "elec-tou-peak-off-peak",
+      "claim": "January 2026 TOU rates incl. 18% VAT: off-peak (shefel) ~52.83 agorot/kWh; summer weekday peak (shia) ~168.95 agorot/kWh.",
+      "source_url": "https://www.iec.co.il/content/tariffs/contentpages/taozb-namuch",
+      "source_title": "IEC low-voltage TOU tariffs page",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "elec-tou-tiers-since-apr-2023",
+      "claim": "TOU has had only two tiers (peak / off-peak) since April 2023; the middle 'geva' shoulder tier was eliminated.",
+      "source_url": "https://he.wikipedia.org/wiki/%D7%AA%D7%A2%D7%A8%D7%99%D7%A3_%D7%A2%D7%95%D7%9E%D7%A1_%D7%95%D7%96%D7%9E%D7%9F_%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C",
+      "source_title": "Wikipedia Hebrew - TOU electricity tariff",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "elec-private-suppliers-count",
+      "claim": "By end of 2025, approximately 280,000 (some sources 300,000+) Israeli households had switched to private electricity suppliers, with typical discounts of 5-20% off IEC generation portion.",
+      "source_url": "https://www.calcalist.co.il/local_news/article/bjw8rlvh11l",
+      "source_title": "Calcalist - 280,000 customers moved to private suppliers in 2025",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "elec-vat-18-percent",
+      "claim": "Israeli VAT was raised from 17% to 18% on 1 January 2025; a proposal to raise to 19% in January 2026 was rejected by the cabinet in December 2025.",
+      "source_url": "https://www.themarker.com/dynamo/2025-12-08/ty-article/0000019a-ff9d-de33-a59e-fffdc5f70000",
+      "source_title": "TheMarker - electricity tariff Jan 2026",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "elec-senior-discount-50pct-400kwh",
+      "claim": "Seniors receiving old-age pension plus income supplement from Bituach Leumi get a 50% discount on electricity consumption up to 400 kWh/month (800 kWh bi-monthly); max benefit ~129 NIS/month as of Jan 2026.",
+      "source_url": "https://www.kolzchut.org.il/he/%D7%94%D7%A0%D7%97%D7%94_%D7%91%D7%97%D7%A9%D7%91%D7%95%D7%9F_%D7%97%D7%A9%D7%9E%D7%9C_%D7%9C%D7%9E%D7%A7%D7%91%D7%9C%D7%99_%D7%A7%D7%A6%D7%91%D7%AA_%D7%96%D7%99%D7%A7%D7%A0%D7%94_%D7%A2%D7%9D_%D7%94%D7%A9%D7%9C%D7%9E%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94",
+      "source_title": "Kol Zchut - electricity discount for senior with income supplement",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "elec-senior-discount-deepening-proposal",
+      "claim": "Energy Minister is advancing plan to deepen the electricity discount for seniors + Holocaust survivors from 50% to 65% on up to 400 kWh/month; not yet enacted.",
+      "source_url": "https://www.ynet.co.il/economy/article/sjaauhn66",
+      "source_title": "Ynet - deepening electricity discount to 65%",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "smart-meter-count-1m",
+      "claim": "IEC has completed installation of approximately 1 million smart meters (~30% of households) as of 2026; announced target of 3.7 million by end-2028. Self-paid installation ~260 ILS, 2-12 week wait.",
+      "source_url": "https://www.calcalist.co.il/local_news/article/rjkwehbsgsa",
+      "source_title": "Calcalist - IEC completed 1M smart meter installations",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "solar-export-tariff-net-metering",
+      "claim": "Residential rooftop solar net-metering surplus export tariff (decision 1573) is ~0.48 ILS/kWh fixed for 25 years; 2025 two-track proposal pays ~0.60 ILS/kWh for first 5 years then ~0.38 ILS/kWh (installations up to 30 kW, higher rate for first 15 kW).",
+      "source_url": "https://www.pv-magazine.com/2025/03/24/israel-plans-two-different-tariffs-for-rooftop-solar-under-net-metering/",
+      "source_title": "PV Magazine - Israel plans two tariffs for rooftop solar under net metering",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "water-tier1-tariff-jan2026",
+      "claim": "January 2026 residential water Tier 1 tariff is ~8.51 ILS/m³ including VAT and sewage; allocation 7 m³/person per bi-monthly billing period (3.5 m³/person/month), minimum 14 m³ per dwelling per bi-monthly period.",
+      "source_url": "https://www.gov.il/he/pages/rates_general1",
+      "source_title": "Water Authority - water and sewage tariffs page",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "water-tier2-tariff-jan2026",
+      "claim": "January 2026 residential water Tier 2 tariff (above allocation) is ~15.62 ILS/m³ including VAT and sewage, approximately 84% more expensive than Tier 1.",
+      "source_url": "http://www.mei-avivim.co.il/%D7%A6%D7%A8%D7%99%D7%9B%D7%AA-%D7%9E%D7%99%D7%9D-%D7%95%D7%AA%D7%A2%D7%A8%D7%99%D7%A4%D7%99%D7%9D/%D7%AA%D7%A2%D7%A8%D7%99%D7%A4%D7%99-%D7%94%D7%9E%D7%99%D7%9D/",
+      "source_title": "Mei Avivim - water tariffs",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "lpg-cooking-gas-calculator",
+      "claim": "Energy Ministry publishes locality-specific LPG cooking-gas comparison calculator; price variance between suppliers for a 12kg balloon can be up to 92 NIS per balloon in the same city.",
+      "source_url": "https://migdal-webpages.energy-apps.org/gpmCalculator",
+      "source_title": "Energy Ministry - GPM (LPG) price comparison calculator",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "cellular-rami-levy-pricing",
+      "claim": "Rami Levy Mobile (MVNO on Pelephone network) offers unlimited calls + 50GB+ data plans starting around 20 NIS/month with no commitment.",
+      "source_url": "https://israeliphoneplans.com/",
+      "source_title": "Israeli Phone Plans 2026 comparator",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "cellular-golan-019-tiers",
+      "claim": "Golan Telecom unlimited plans start around 30 NIS/month; 019 Mobile Bundle Ten plan is 10 NIS/month for 100MB data + 100 minutes (entry-level, not unlimited).",
+      "source_url": "https://israeliphoneplans.com/plans/cheapest?lang=en",
+      "source_title": "Israeli Phone Plans - cheapest plans 2026",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "internet-fiber-pricing",
+      "claim": "January 2026 fiber-optic internet pricing: HOT-Net 1Gbps ~99 NIS/month, Bezeq BFiber 300Mbps ~109 NIS/month, BFiber 1Gbps ~149 NIS/month, Partner fiber 1Gbps ~195 NIS/month.",
+      "source_url": "https://www.poenta.co.il/article/fiber-optic-plans-comparison/",
+      "source_title": "Poenta - fiber optic plan comparison 2026 Bezeq HOT Partner Cellcom",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "internet-ibc-unlimited-coverage",
+      "claim": "IBC/Unlimited fiber network covers ~260 localities in Israel as of 2026 with symmetric speeds 100Mbps-5Gbps.",
+      "source_url": "https://www.unlimited.net.il/",
+      "source_title": "Unlimited (IBC) homepage",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "arnona-annual-update-1.626",
+      "claim": "January 2026 national arnona annual update is 1.626% (linkage formula based on Treasury index); Rishon LeZion received approved exceptional increase of +5.18% (3.5pp above national).",
+      "source_url": "https://www.gornitzky.co.il/%D7%A9%D7%99%D7%A2%D7%95%D7%A8-%D7%94%D7%A2%D7%93%D7%9B%D7%95%D7%9F-%D7%94%D7%A9%D7%A0%D7%AA%D7%99-%D7%A9%D7%9C-%D7%AA%D7%A2%D7%A8%D7%99%D7%A4%D7%99-%D7%94%D7%90%D7%A8%D7%A0%D7%95%D7%A0%D7%94-%D7%9C/",
+      "source_title": "Gornitzky GNY - 2026 arnona annual update rate 1.626%",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "arnona-rishon-exceptional",
+      "claim": "Ministry of Interior approved exceptional arnona increase of 5.18% for residential properties in Rishon LeZion for 2026 (justified by metro construction works); total expected revenue +23.6M NIS/year.",
+      "source_url": "https://www.globes.co.il/news/article.aspx?did=1001530173",
+      "source_title": "Globes - 2026 arnona increases approved and rejected",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "arnona-olim-discount",
+      "claim": "Olim chadashim arnona discount is up to 90% on first 100 sqm for 12 months out of the 24 months following aliyah registration (single benefit, not yearly). Disabled olim recognized by Bituach Leumi get up to 80% with no time limit.",
+      "source_url": "https://www.kolzchut.org.il/he/%D7%94%D7%A0%D7%97%D7%94_%D7%91%D7%90%D7%A8%D7%A0%D7%95%D7%A0%D7%94_%D7%9C%D7%A2%D7%95%D7%9C%D7%99%D7%9D_%D7%97%D7%93%D7%A9%D7%99%D7%9D",
+      "source_title": "Kol Zchut - olim arnona discount",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "arnona-senior-age-threshold",
+      "claim": "Senior arnona discount eligibility: women age 62 / men age 67 (statutory retirement age). 30% discount if income below average wage; up to 100% if also receiving income supplement from Bituach Leumi. Discounts do not stack (regulation תקנות הסדרים במשק המדינה הנחה מארנונה תשנ\"ג-1993).",
+      "source_url": "https://www.kolzchut.org.il/he/%D7%94%D7%A0%D7%97%D7%94_%D7%91%D7%90%D7%A8%D7%A0%D7%95%D7%A0%D7%94_%D7%9C%D7%90%D7%96%D7%A8%D7%97%D7%99%D7%9D_%D7%95%D7%AA%D7%99%D7%A7%D7%99%D7%9D",
+      "source_title": "Kol Zchut - senior arnona discount",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "cellular-portability-fast",
+      "claim": "Mobile number portability in Israel is free, handled by the new supplier, and typically completes in ~1 business day. No customer-side paperwork required.",
+      "source_url": "https://www.gov.il/he/departments/ministry_of_communications",
+      "source_title": "Ministry of Communications - consumer rights",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "supplier-switching-window-shortening",
+      "claim": "Energy Ministry plans to shorten the electricity supplier switching window from 14 days to 7 days during 2026; January 2026 tender expanded to 500 MW.",
+      "source_url": "https://en.globes.co.il/en/article-discounted-electricity-to-expand-but-base-tariff-will-rise-1001522809",
+      "source_title": "Globes English - discounted electricity to expand",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "iec-customer-service-103",
+      "claim": "IEC customer service phone number is 103 (also reachable as 055-7000103 for SMS/WhatsApp). Legacy *2730 short code is no longer in use.",
+      "source_url": "https://www.iec.co.il",
+      "source_title": "IEC homepage / contact page",
+      "verified_date": "2026-05-20"
+    },
+    {
+      "id": "small-claims-court-cap",
+      "claim": "Israeli small claims court (בית משפט לתביעות קטנות) has a 38,500 NIS cap in 2026; often used for IEC and water-corporation billing disputes (not arnona, which uses a separate hassagah/ועדת ערר track).",
+      "source_url": "https://www.gov.il/he/service/small_claims_court",
+      "source_title": "Gov.il - small claims court service page",
+      "verified_date": "2026-05-20"
+    }
+  ]
+}

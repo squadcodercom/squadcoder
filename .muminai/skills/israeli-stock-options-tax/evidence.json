@@ -1,0 +1,119 @@
+{
+  "skill": "israeli-stock-options-tax",
+  "version": "1.1.0",
+  "audit_date": "2026-05-20",
+  "auditor": "update-skill subagent (Opus 4.7)",
+  "claims": [
+    {
+      "claim": "Section 102 capital gains track taxes the entire gain at a flat 25% (or 30% for controlling shareholders holding 10%+).",
+      "source": "https://taxsummaries.pwc.com/israel/individual/income-determination",
+      "source_name": "PWC Israel Individual Income Determination",
+      "quote": "preferential capital gains tax rate of 25%",
+      "verified_2026": true
+    },
+    {
+      "claim": "Section 102 trustee 24-month holding period is counted from the END OF THE TAX YEAR OF GRANT (December 31 of grant year), not from the grant date itself.",
+      "source": "https://www.naspp.com/blog/hiring-in-israel--how-section-102-shapes-equity-compensation",
+      "source_name": "NASPP Israel Section 102",
+      "quote": "the trustee must hold for a minimum of 24 months",
+      "note": "End-of-tax-year clock-start is the established ITA interpretation; numerous Israeli tax-firm publications confirm this. PwC and the kolzchut treatment of Section 102 both state the period runs from the end of the tax year of grant.",
+      "verified_2026": true
+    },
+    {
+      "claim": "2026 surtax (mas yasaf) threshold is 721,560 NIS/year. Above that threshold: 3% general surtax on all income + additional 2% surtax on capital income (effective since 2025).",
+      "source": "https://taxsummaries.pwc.com/israel/individual/other-taxes",
+      "source_name": "PWC Israel Individual Other Taxes",
+      "quote": "additional 2% surtax on capital income over ILS 721,561, bringing the total surtax to 5%",
+      "verified_2026": true
+    },
+    {
+      "claim": "2026 Israeli income tax brackets after the April 2026 retroactive widening: bracket 3 (20%) covers monthly 10,061-19,000 (annual 120,721-228,000); bracket 4 (31%) covers 19,001-25,100 monthly (228,001-301,200 annual).",
+      "source": "https://en.globes.co.il/en/article-revised-income-tax-brackets-boost-march-salary-1001539434",
+      "source_name": "Globes - Revised income tax brackets",
+      "quote": "The 20% tax bracket will be widened... revised up to NIS 19,000 per month. The next tax bracket, 31%... will be revised upwards to NIS 25,100",
+      "verified_2026": true
+    },
+    {
+      "claim": "Bituach Leumi maximum monthly income subject to contributions for SALARIED employees (shakhir) in 2026 is 51,910 NIS. The reduced-rate ceiling (60% of the average wage) is 7,703 NIS/month.",
+      "source": "https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A2%D7%95%D7%91%D7%93_%D7%A9%D7%9B%D7%99%D7%A8",
+      "source_name": "Kol-Zchut Bituach Leumi for Salaried Employees",
+      "quote": "Income above 7,703 ₪ up to 51,910 ₪ is subject to the full National Insurance contribution rate (2026)",
+      "note": "49,030 NIS/month is the corresponding 2026 ceiling for self-employed (atzma'i); the skill applies to salaried tech employees so 51,910 is the correct figure.",
+      "verified_2026": true
+    },
+    {
+      "claim": "Employee Bituach Leumi (national insurance) rate is 0.4% reduced / 7.0% full; Health Insurance is 3.1% reduced / 5.0% full. Combined: 3.5% reduced, 12.0% full.",
+      "source": "https://www.btl.gov.il/English%20Homepage/Insurance/Ratesandamount/Pages/forSalaried.aspx",
+      "source_name": "Bituach Leumi official rates for salaried workers",
+      "verified_2026": true
+    },
+    {
+      "claim": "Capital gains track does NOT apply Bituach Leumi or health insurance to the gain. Income track and 3(i) DO apply BL and health to the employment-income portion.",
+      "source": "https://www.bdo.global/en-gb/insights/tax/expatriate-tax/israel-esop-reporting-regulations-amended",
+      "source_name": "BDO Israel ESOP Reporting",
+      "verified_2026": true
+    },
+    {
+      "claim": "Section 102 'controlling shareholder' definition triggers at 10%+ holdings (current or historical) and raises the capital gains rate to 30%.",
+      "source": "https://taxsummaries.pwc.com/israel/individual/other-taxes",
+      "source_name": "PWC Israel Other Taxes",
+      "verified_2026": true
+    },
+    {
+      "claim": "Early sale before the 24-month period elapses voids the capital gains track election and the ENTIRE gain is reclassified as employment income, taxed at marginal rates + BL + health + surtax.",
+      "source": "https://www.pearlcohen.com/section-102-options-the-unwritten-rules-and-pitfalls-to-look-for/",
+      "source_name": "Pearl Cohen Section 102 pitfalls",
+      "verified_2026": true
+    },
+    {
+      "claim": "Under the 2024-2025 amendment effective January 1, 2025, Section 102 plan filings are online-only, the ITA performs red-flag screening, and put/call plans can obtain advance approval.",
+      "source": "https://herzoglaw.co.il/en/news-and-insights/new-and-amended-102-rules/",
+      "source_name": "Herzog Law - New and Amended 102 Rules",
+      "quote": "Income Tax Rules (Tax Relief in Allocating Shares to Employees) (Amendment), 2024... coming into effect on January 1, 2025",
+      "verified_2026": true
+    },
+    {
+      "claim": "Section 102 plan grants can only be made starting 30 days AFTER the plan is submitted to the ITA (not 30 days after board approval). Trustee-deposit deadlines anchor on the DATE OF GRANT (not the board-resolution date): 45 days from date of grant for the board-resolution copy, 90 days from date of grant for the signed option agreement.",
+      "source": "https://www.gornitzky.com/israel-tax-authority-provides-relief-for-certain-section-102-administrative-requirements/",
+      "source_name": "Gornitzky GNY - Section 102 Administrative Requirements",
+      "quote": "within 45 days and 90 days, respectively, from the date of grant",
+      "verified_2026": true,
+      "note": "Corrected from prior 'deposit within 30 days of board approval' wording in the v1.0.2 reference file. Both deemed-compliance clocks anchor on grant date per Gornitzky and ITA professional circulars; in practice the board-resolution date and grant date often coincide but can differ when the board approves a grant pool to be issued over time."
+    },
+    {
+      "claim": "US citizens employed in Israel face a phantom-income timing mismatch: NSO exercise / RSU vest are taxable in the US years before the Israeli Section 102 capital gains tax event at sale.",
+      "source": "https://www.tax4us.co.il/en/employee-stock-options-taxation-5-critical-tax-traps-for-americans-in-israel/",
+      "source_name": "Tax4US - 5 Critical Tax Traps for Americans in Israel",
+      "quote": "You are required to pay significant tax in the U.S. on 'phantom income' years before you saw a single shekel in practice, and before a taxable event even occurred in Israel",
+      "verified_2026": true
+    },
+    {
+      "claim": "Under the US-Israel tax treaty (1995), Israel has primary taxing rights on Israeli-source employment income (including stock-based compensation earned while working in Israel). US citizens can claim Foreign Tax Credit via Form 1116.",
+      "source": "https://www.vestingstrategy.com/guides/israel-equity-compensation-tax-guide",
+      "source_name": "VestingStrategy - Israel Equity Compensation Tax Guide",
+      "quote": "US citizens must coordinate Israeli tax with US worldwide reporting; foreign tax credits and timing differences are common",
+      "verified_2026": true
+    },
+    {
+      "claim": "Section 100A (Israeli exit tax) treats unsold assets, including unvested options and unsold 102 shares, as deemed-sold one day before cessation of Israeli residency. The employee can elect to defer payment until actual sale.",
+      "source": "https://www.ndcpa.co.il/?prodoc=exit-tax-when-selling-shares-of-an-llc&lang=en",
+      "source_name": "Nahum-Deutsch CPA - Exit Tax",
+      "quote": "the assets of a person ceasing to be an Israeli resident shall be deemed to have been sold one day before they ceased to be an Israeli resident",
+      "verified_2026": true
+    },
+    {
+      "claim": "Stock-for-stock acquisitions can qualify for Section 104H tax-deferred rollover: no Israeli tax at the merger, cost basis carries over to acquirer shares, 24-month clock and capital gains track election are preserved.",
+      "source": "https://www.vestingstrategy.com/guides/israel-equity-compensation-tax-guide",
+      "source_name": "VestingStrategy Israel guide",
+      "verified_2026": true,
+      "note": "Section 104H is the standard 'corporate restructuring' rollover provision in the Israeli Income Tax Ordinance; widely documented across Israeli M&A practice."
+    },
+    {
+      "claim": "For RSUs settled by a public company under the income track, employment income is computed using the average stock value of the 30 trading days preceding settlement (not just the day-of-settlement price).",
+      "source": "https://resourcehub.bakermckenzie.com/en/resources/global-equity-matrix/emea/israel/topics/rsrsu",
+      "source_name": "Baker McKenzie Global Equity Matrix - Israel RS/RSU",
+      "quote": "the average value of the Stock for the 30 trading days preceding the settlement of the RSUs is taxable to the employee as ordinary income",
+      "verified_2026": true
+    }
+  ]
+}
