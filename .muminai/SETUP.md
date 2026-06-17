@@ -2,8 +2,11 @@
 
 ## Bundled MCP servers (config-driven, zero core changes)
 `.muminai/muminai.json` ships a default `mcp` block. Servers run on demand via `npx`/`uvx`:
-- **playwright** (`@playwright/mcp`) — browser automation. **Enabled by default.**
-- **context7** (`@upstash/context7-mcp`) — up-to-date library docs. Enabled by default.
+All **enabled** servers are npx-based and need **NO API key**:
+- **playwright** (`@playwright/mcp`) — browser automation/testing. Enabled.
+- **context7** (`@upstash/context7-mcp`) — up-to-date library/framework docs. Enabled.
+- **sequential-thinking** (`@modelcontextprotocol/server-sequential-thinking`) — structured multi-step reasoning. Enabled.
+- **memory-graph** (`@modelcontextprotocol/server-memory`) — knowledge-graph memory. Disabled by default (MuminAI already has its own session memory; enable if you want a separate graph).
 - **github** (`@modelcontextprotocol/server-github`) — disabled until you set `GITHUB_TOKEN`.
 
 ### One-time: install Playwright browsers
@@ -13,13 +16,23 @@ npx playwright install chromium
 ```
 (A future `muminai-plugin-bootstrap` / installer step will do this automatically on first run.)
 
-## Bundled skills
-Skills auto-load from `.muminai/skills/**/SKILL.md`:
-- `hebrew-rtl-best-practices` — correct RTL Hebrew UI.
-- `hebrew-document-generator` — RTL Hebrew PDF/DOCX/PPTX.
+## Bundled skills (81, all MIT, no API key)
+Skills auto-load from `.muminai/skills/**/SKILL.md` — full list in `SKILLS_ATTRIBUTION.md`:
+- **Hebrew/Israeli (Skills-IL):** `hebrew-rtl-best-practices`, `hebrew-document-generator`
+  (RTL PDF/DOCX/PPTX), `hebrew-content-writer`, `hebrew-i18n`, `israeli-tax-returns`,
+  `israeli-id-validator`, `wcag-accessibility-widget`, + ~70 more dev/Israeli skills.
+- **UI/UX (ui-ux-pro-max):** `ui-ux-pro-max`, `ui-styling` (67 styles/161 palettes), `design`,
+  `design-system`, `brand`, `banner-design`, `slides`.
 
-Add more (incl. MIT Skills-IL skills) by dropping a folder with a `SKILL.md`. See
-`SKILLS_ATTRIBUTION.md`.
+Add more by dropping a folder with a `SKILL.md`.
+
+## Maximum-coding configuration (pre-tuned in muminai.json)
+Tuned out-of-the-box for parallel, high-throughput coding:
+- `experimental.batch_tool: true` — the agent issues multiple tool calls in **parallel** (faster multi-file reads/edits).
+- **Parallel subagents** — build/plan/compose agents spawn subagents that run concurrently; the ceiling auto-scales to your CPU (`min(16, 2×cores)`). Override with `workflow.maxConcurrentAgents`.
+- **Compose mode** (`Tab` to switch agent) — specs-driven workflow with built-in skills: plan, execute, code-review, TDD, debug, verify, merge.
+- **Max Mode** (opt-in — best quality, higher cost): switch to the `max` agent / set `experimental.maxMode.candidates` to run N parallel reasoning candidates per step with a judge. Not default (multiplies token cost).
+- Persistent **memory + checkpoints**, `/dream`, and `/distill` (auto-skill creation) are core MuminAI features, on by default.
 
 ## Environment flags (upstream-issue fixes)
 - `MIMOCODE_TUI_MAIN_SCREEN=1` — render the TUI in the terminal's **main screen** so native
