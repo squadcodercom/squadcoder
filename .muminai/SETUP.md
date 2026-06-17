@@ -21,6 +21,19 @@ Skills auto-load from `.muminai/skills/**/SKILL.md`:
 Add more (incl. MIT Skills-IL skills) by dropping a folder with a `SKILL.md`. See
 `SKILLS_ATTRIBUTION.md`.
 
+## Environment flags (upstream-issue fixes)
+- `MIMOCODE_TUI_MAIN_SCREEN=1` — render the TUI in the terminal's **main screen** so native
+  scrollback works for long output (fixes the "can't scroll up" complaint, upstream #11). The
+  full-screen UI is the default; this is opt-in. (Zero-code alternative: `OTUI_USE_ALTERNATE_SCREEN=false`.)
+- `MUMINAI_ENABLE_OPENCODE_PROVIDERS=1` — re-enable the `opencode`/`opencode-go` providers if you
+  authenticated your own key (they're disabled by default so the upstream free tier doesn't
+  auto-load; upstream #79).
+
+> Known Windows-terminal limitations we don't paper over: in the **legacy console** (a
+> double-clicked `.exe`, conhost) paste may not work and output can garble — run inside **Windows
+> Terminal** / PowerShell instead. Tracked upstream as #182 / #522 (we added a console-restore
+> guard for abnormal exits; full coverage needs a live-terminal fix).
+
 ## Authentication
 - **Default (recommended):** BYOK API key, or **Import from Claude Code** (copies
   `ANTHROPIC_API_KEY` from `~/.claude/settings*.json`), or any OpenRouter model

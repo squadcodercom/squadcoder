@@ -46,7 +46,14 @@ export const UpgradeCommand = {
     prompts.log.info("Using method: " + method)
     const target = args.target
       ? args.target.replace(/^v/, "")
-      : await AppRuntime.runPromise(Installation.Service.use((svc) => svc.latest()))
+      : // MUMINAI(#212): pass the resolved method so `--method` (and the curl-detected channel)
+        // is honored. Previously latest() re-detected "curl" and ignored --method, and the
+        // failure surfaced as an opaque "Unexpected error, check log file".
+        await AppRuntime.runPromise(Installation.Service.use((svc) => svc.latest(method))).catch((err) => {
+          prompts.log.error(err instanceof Error ? err.message : String(err))
+          prompts.outro("Done")
+          process.exit(1)
+        })
 
     if (InstallationVersion === target) {
       prompts.log.warn(`opencode upgrade skipped: ${target} is already installed`)

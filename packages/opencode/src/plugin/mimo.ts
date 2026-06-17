@@ -96,8 +96,12 @@ export async function MimoAuthPlugin(_input: PluginInput): Promise<Hooks> {
       // free channel; moved here so it applies in every build (the free channel
       // is now an optional private overlay).
       input.disabled_providers ??= []
-      for (const id of ["opencode", "opencode-go"]) {
-        if (!input.disabled_providers.includes(id)) input.disabled_providers.push(id)
+      // MUMINAI(#79): keep disabled by default (don't auto-light upstream's free tier), but
+      // let power users who explicitly authenticated their own opencode key opt back in.
+      if (process.env.MUMINAI_ENABLE_OPENCODE_PROVIDERS !== "1") {
+        for (const id of ["opencode", "opencode-go"]) {
+          if (!input.disabled_providers.includes(id)) input.disabled_providers.push(id)
+        }
       }
     },
     auth: {

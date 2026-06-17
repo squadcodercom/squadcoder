@@ -14,7 +14,7 @@ import {
   batch,
   Show,
 } from "solid-js"
-import { win32DisableProcessedInput, win32InstallCtrlCGuard } from "./win32"
+import { win32DisableProcessedInput, win32InstallCtrlCGuard, win32InstallTerminalRestoreGuard } from "./win32"
 import { Flag } from "@/flag/flag"
 import semver from "semver"
 import { DialogProvider, useDialog } from "@tui/ui/dialog"
@@ -85,7 +85,9 @@ function rendererConfig(_config: TuiConfig.Info, plainTerminal: boolean): CliRen
     openConsoleOnError: false,
     enableMouseMovement: mouseEnabled,
     useMouse: mouseEnabled,
-    ...(plainTerminal
+    // MUMINAI(#11): MIMOCODE_TUI_MAIN_SCREEN forces main-screen mode so the native terminal
+    // scrollback is preserved for long output. Opt-in; the full-screen alt-screen UI stays default.
+    ...(plainTerminal || Flag.MIMOCODE_TUI_MAIN_SCREEN
       ? {
           maxFps: 15,
           screenMode: "main-screen" as const,
@@ -137,6 +139,7 @@ export function tui(input: {
   // oxlint-disable-next-line no-async-promise-executor -- intentional: async executor used for sequential setup before resolve
   return new Promise<void>(async (resolve) => {
     const unguard = win32InstallCtrlCGuard()
+    win32InstallTerminalRestoreGuard() // MUMINAI(#522): restore console on hard kill/crash
     win32DisableProcessedInput()
 
     const onExit = async () => {

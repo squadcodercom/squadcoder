@@ -1,7 +1,7 @@
 import { cmd } from "../cmd"
 import { UI } from "@/cli/ui"
 import { tui } from "./app"
-import { win32DisableProcessedInput, win32InstallCtrlCGuard } from "./win32"
+import { win32DisableProcessedInput, win32InstallCtrlCGuard, win32InstallTerminalRestoreGuard } from "./win32"
 import { TuiConfig } from "@/cli/cmd/tui/config/tui"
 
 export const AttachCommand = cmd({
@@ -39,6 +39,7 @@ export const AttachCommand = cmd({
       }),
   handler: async (args) => {
     const unguard = win32InstallCtrlCGuard()
+    win32InstallTerminalRestoreGuard() // MUMINAI(#522): restore console on hard kill/crash
     try {
       win32DisableProcessedInput()
 

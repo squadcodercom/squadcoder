@@ -53,6 +53,38 @@ export function win32FlushInputBuffer() {
   k32!.symbols.FlushConsoleInputBuffer(handle)
 }
 
+// MUMINAI(#522): best-effort terminal restore on abnormal exit. OpenTUI's native setupTerminal()
+// puts the Windows console into alt-screen + raw + VT-output mode and pushes theme colors via
+// OSC 10/11/12. A graceful /exit or caught error restores it, but a SIGINT/SIGTERM or process.exit
+// (e.g. the agent killing node) skips those JS paths and leaves the console emitting constant
+// mojibake. Install once; idempotent. (Does NOT cover hard SIGKILL/`taskkill /F`, which delivers
+// no JS-observable signal — that's a strict-improvement mitigation, not a total cure.)
+let restoreInstalled = false
+export function win32InstallTerminalRestoreGuard() {
+  if (process.platform !== "win32") return
+  if (restoreInstalled) return
+  restoreInstalled = true
+
+  let done = false
+  const restore = () => {
+    if (done) return
+    done = true
+    try {
+      // leave alt-screen; disable mouse + bracketed-paste; SGR reset; show cursor;
+      // reset terminal fg/bg/cursor colors pushed by the theme (OSC 110/111/112).
+      process.stdout.write("\x1b[?1049l\x1b[?1000l\x1b[?1002l\x1b[?1003l\x1b[?2004l\x1b[0m\x1b[?25h\x1b]110\x07\x1b]111\x07\x1b]112\x07")
+    } catch {}
+  }
+
+  process.once("exit", restore)
+  for (const sig of ["SIGINT", "SIGTERM", "SIGHUP", "SIGBREAK"] as const) {
+    process.once(sig as NodeJS.Signals, () => {
+      restore()
+      process.exit(1)
+    })
+  }
+}
+
 let unhook: (() => void) | undefined
 
 /**
