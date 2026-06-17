@@ -83,4 +83,38 @@ await write(path.join(ROOT, "assets/readme/mimocode-banner.png"), banner)
 await write(path.join(ROOT, "assets/brand/muminai-banner.png"), banner)
 await write(path.join(ROOT, "packages/desktop/resources/icons/icon-512.png"), PNG512)
 
+// Desktop channel SOURCE icons: packages/desktop/scripts/copy-icons.ts copies
+// packages/desktop/icons/<channel>/ into resources/icons at build time, so the SOURCE must be
+// branded or the build reverts to opencode. (icon.icns kept as-is — regenerate for mac builds.)
+const channelSizes: Record<string, number> = {
+  "icon.png": 1024,
+  "dock.png": 512,
+  "32x32.png": 32,
+  "64x64.png": 64,
+  "128x128.png": 128,
+  "128x128@2x.png": 256,
+  "StoreLogo.png": 50,
+  "Square30x30Logo.png": 30,
+  "Square44x44Logo.png": 44,
+  "Square71x71Logo.png": 71,
+  "Square89x89Logo.png": 89,
+  "Square107x107Logo.png": 107,
+  "Square142x142Logo.png": 142,
+  "Square150x150Logo.png": 150,
+  "Square284x284Logo.png": 284,
+  "Square310x310Logo.png": 310,
+}
+for (const ch of ["dev", "beta", "prod"]) {
+  const dir = path.join(ROOT, "packages/desktop/icons", ch)
+  try {
+    await fs.access(dir)
+  } catch {
+    continue
+  }
+  await write(path.join(dir, "icon.ico"), ICO)
+  for (const [name, size] of Object.entries(channelSizes)) {
+    await write(path.join(dir, name), await png(size))
+  }
+}
+
 console.log("done — MuminAI brand assets generated")
