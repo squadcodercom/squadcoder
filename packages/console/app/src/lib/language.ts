@@ -12,6 +12,7 @@ export const LOCALES = [
   "pl",
   "ru",
   "ar",
+  "he",
   "no",
   "br",
   "th",
@@ -42,6 +43,7 @@ const LABEL = {
   pl: "Polski",
   ru: "Русский",
   ar: "العربية",
+  he: "עברית",
   no: "Norsk",
   br: "Português (Brasil)",
   th: "ไทย",
@@ -62,6 +64,7 @@ const TAG = {
   pl: "pl",
   ru: "ru",
   ar: "ar",
+  he: "he",
   no: "no",
   br: "pt-BR",
   th: "th",
@@ -82,6 +85,7 @@ const DOCS = {
   pl: "pl",
   ru: "ru",
   ar: "ar",
+  he: "root",
   no: "nb",
   br: "pt-br",
   th: "th",
@@ -217,7 +221,7 @@ export function tag(locale: Locale) {
 }
 
 export function dir(locale: Locale) {
-  if (locale === "ar") return "rtl"
+  if (locale === "ar" || locale === "he") return "rtl"
   return "ltr"
 }
 
@@ -230,6 +234,7 @@ function match(input: string): Locale | null {
     return "zh"
   }
 
+  if (value.startsWith("he")) return "he"
   if (value.startsWith("ko")) return "ko"
   if (value.startsWith("de")) return "de"
   if (value.startsWith("es")) return "es"

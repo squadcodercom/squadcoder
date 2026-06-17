@@ -1,0 +1,22 @@
+# MuminAI — keep OUR files during merges from upstream (MiMoCode / opencode).
+# The `ours` merge driver is enabled via: git config merge.ours.driver true
+# (see FORK_STRATEGY.md). Only files that are 100% MuminAI-owned go here —
+# shared core files we edit (i18n tables, UI components) are intentionally NOT
+# listed, so we still receive and reconcile upstream fixes to them.
+
+# MuminAI-owned plugin packages (never exist upstream)
+packages/muminai-plugin-bootstrap/**      merge=ours
+packages/muminai-plugin-brand/**           merge=ours
+packages/muminai-plugin-anthropic-oauth/** merge=ours
+
+# MuminAI config, bundled skills, branding constants
+.muminai/**                                merge=ours
+
+# MuminAI project docs / instructions
+CLAUDE.md                                  merge=ours
+AGENTS.md                                  merge=ours
+FORK_STRATEGY.md                           merge=ours
+SKILLS_ATTRIBUTION.md                      merge=ours
+
+# Dependency overlay patches (bun patch)
+patches/**                                 merge=ours
