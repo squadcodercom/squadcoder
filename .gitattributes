@@ -19,6 +19,7 @@ AGENTS.md                                  merge=ours
 FORK_STRATEGY.md                           merge=ours
 SKILLS_ATTRIBUTION.md                      merge=ours
 REMOTE.md                                  merge=ours
+FIXED_ISSUES.md                            merge=ours
 
 # Dependency overlay patches (bun patch)
 patches/**                                 merge=ours
