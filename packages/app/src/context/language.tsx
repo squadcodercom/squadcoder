@@ -19,6 +19,7 @@ export type Locale =
   | "pl"
   | "ru"
   | "ar"
+  | "he"
   | "no"
   | "br"
   | "th"
@@ -47,6 +48,7 @@ const LOCALES: readonly Locale[] = [
   "ru",
   "bs",
   "ar",
+  "he",
   "no",
   "br",
   "th",
@@ -66,6 +68,7 @@ const INTL: Record<Locale, string> = {
   pl: "pl",
   ru: "ru",
   ar: "ar",
+  he: "he",
   no: "nb-NO",
   br: "pt-BR",
   th: "th",
@@ -86,6 +89,7 @@ const LABEL_KEY: Record<Locale, keyof Dictionary> = {
   pl: "language.pl",
   ru: "language.ru",
   ar: "language.ar",
+  he: "language.he",
   no: "language.no",
   br: "language.br",
   th: "language.th",
@@ -111,6 +115,7 @@ const loaders: Record<Exclude<Locale, "en">, () => Promise<Dictionary>> = {
   pl: () => merge(import("@/i18n/pl"), import("@mimo-ai/ui/i18n/pl")),
   ru: () => merge(import("@/i18n/ru"), import("@mimo-ai/ui/i18n/ru")),
   ar: () => merge(import("@/i18n/ar"), import("@mimo-ai/ui/i18n/ar")),
+  he: () => merge(import("@/i18n/he"), import("@mimo-ai/ui/i18n/he")),
   no: () => merge(import("@/i18n/no"), import("@mimo-ai/ui/i18n/no")),
   br: () => merge(import("@/i18n/br"), import("@mimo-ai/ui/i18n/br")),
   th: () => merge(import("@/i18n/th"), import("@mimo-ai/ui/i18n/th")),
@@ -146,6 +151,7 @@ const localeMatchers: Array<{ locale: Locale; match: (language: string) => boole
   { locale: "pl", match: (language) => language.startsWith("pl") },
   { locale: "ru", match: (language) => language.startsWith("ru") },
   { locale: "ar", match: (language) => language.startsWith("ar") },
+  { locale: "he", match: (language) => language.startsWith("he") },
   {
     locale: "no",
     match: (language) => language.startsWith("no") || language.startsWith("nb") || language.startsWith("nn"),
@@ -218,6 +224,8 @@ export const { use: useLanguage, provider: LanguageProvider } = createSimpleCont
     createEffect(() => {
       if (typeof document !== "object") return
       document.documentElement.lang = locale()
+      // MUMINAI: set text direction (RTL for Hebrew/Arabic) — upstream only set lang
+      document.documentElement.dir = locale() === "he" || locale() === "ar" ? "rtl" : "ltr"
       document.cookie = cookie(locale())
     })
 
