@@ -1,0 +1,4 @@
+# Release artifacts are large — distribute via GitHub Releases, not git.
+*
+!.gitignore
+!README.md
