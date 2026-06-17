@@ -27,7 +27,7 @@ const channel = (() => {
 })()
 
 const getBase = (): Configuration => ({
-  artifactName: "opencode-desktop-${os}-${arch}.${ext}",
+  artifactName: "muminai-desktop-${os}-${arch}.${ext}",
   directories: {
     output: "dist",
     buildResources: "resources",
@@ -54,8 +54,8 @@ const getBase = (): Configuration => ({
     sign: true,
   },
   protocols: {
-    name: "OpenCode",
-    schemes: ["opencode"],
+    name: "MuminAI",
+    schemes: ["muminai", "opencode"],
   },
   win: {
     icon: `resources/icons/icon.ico`,
@@ -84,9 +84,9 @@ function getConfig() {
     case "dev": {
       return {
         ...base,
-        appId: "ai.opencode.desktop.dev",
-        productName: "OpenCode Dev",
-        rpm: { packageName: "opencode-dev" },
+        appId: "ai.muminai.desktop.dev",
+        productName: "MuminAI Dev",
+        rpm: { packageName: "muminai-dev" },
       }
     }
     case "beta": {
@@ -102,11 +102,10 @@ function getConfig() {
     case "prod": {
       return {
         ...base,
-        appId: "ai.opencode.desktop",
-        productName: "OpenCode",
-        protocols: { name: "OpenCode", schemes: ["opencode"] },
-        publish: { provider: "github", owner: "anomalyco", repo: "opencode", channel: "latest" },
-        rpm: { packageName: "opencode" },
+        appId: "ai.muminai.desktop",
+        productName: "MuminAI",
+        protocols: { name: "MuminAI", schemes: ["muminai", "opencode"] },
+        rpm: { packageName: "muminai" },
       }
     }
   }

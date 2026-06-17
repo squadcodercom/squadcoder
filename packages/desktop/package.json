@@ -1,13 +1,12 @@
 {
-  "name": "@mimo-ai/desktop",
+  "name": "@muminai/desktop",
   "private": true,
   "version": "0.1.1",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://opencode.ai",
+  "homepage": "https://github.com/",
   "author": {
-    "name": "OpenCode",
-    "email": "hello@opencode.ai"
+    "name": "MuminAI"
   },
   "scripts": {
     "typecheck": "tsgo -b",
