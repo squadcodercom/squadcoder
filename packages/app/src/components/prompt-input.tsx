@@ -563,6 +563,15 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       .map((agent): AgentOption => ({ name: agent.name, display: agent.name })),
   )
   const agentNames = createMemo(() => local.agent.list().map((agent) => agent.name))
+  // SQUADCODER: explain each agent/mode in the dropdown. Prefer a localized description
+  // (agent.mode.desc.<name>), fall back to the agent's own config description.
+  const agentByName = createMemo(() => new Map(local.agent.list().map((a) => [a.name, a])))
+  const agentDescription = (name: string) => {
+    const key = `agent.mode.desc.${name}`
+    const localized = language.t(key as Parameters<typeof language.t>[0])
+    if (localized && localized !== key) return localized
+    return (agentByName().get(name) as { description?: string } | undefined)?.description ?? ""
+  }
 
   const handleAtSelect = (option: AtOption | undefined) => {
     if (!option) return
@@ -1504,7 +1513,18 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                         triggerStyle={control()}
                         triggerProps={{ "data-action": "prompt-agent" }}
                         variant="ghost"
-                      />
+                      >
+                        {(name) => (
+                          <div class="flex flex-col gap-0.5 min-w-0 max-w-[280px] py-0.5">
+                            <span class="text-13-medium text-text-strong capitalize">{name as string}</span>
+                            <Show when={agentDescription((name as string) ?? "")}>
+                              <span class="text-12-regular text-text-weak normal-case leading-snug whitespace-normal">
+                                {agentDescription((name as string) ?? "")}
+                              </span>
+                            </Show>
+                          </div>
+                        )}
+                      </Select>
                     </TooltipKeybind>
                   </div>
                 </Show>
