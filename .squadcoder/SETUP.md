@@ -8,6 +8,8 @@ All **enabled** servers are npx-based and need **NO API key**:
 - **sequential-thinking** (`@modelcontextprotocol/server-sequential-thinking`) — structured multi-step reasoning. Enabled.
 - **memory-graph** (`@modelcontextprotocol/server-memory`) — knowledge-graph memory. Disabled by default (SquadCoder already has its own session memory; enable if you want a separate graph).
 - **github** (`@modelcontextprotocol/server-github`) — disabled until you set `GITHUB_TOKEN`.
+- **higgsfield** (remote MCP, `https://higgsfield.ai/mcp`) — image/video generation. Disabled by default; enable it and authorize with your Higgsfield account when prompted (OAuth).
+- **google-ads** (`github:promobase/google-ads-mcp`) — Google Ads campaign data/management. Disabled until you set `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN`.
 
 > **Intentionally not bundled** (safety-vetted): `fetch` (unpatched SSRF advisory CVE-2025-65513),
 > `sqlite` & `puppeteer` (upstream **archived**, no security updates; Puppeteer is also redundant with

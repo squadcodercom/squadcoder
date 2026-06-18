@@ -42,6 +42,23 @@
       "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
       "environment": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" },
       "enabled": false
+    },
+    "higgsfield": {
+      "type": "remote",
+      "url": "https://higgsfield.ai/mcp",
+      "enabled": false
+    },
+    "google-ads": {
+      "type": "local",
+      "command": ["npx", "-y", "github:promobase/google-ads-mcp"],
+      "environment": {
+        "GOOGLE_ADS_DEVELOPER_TOKEN": "${GOOGLE_ADS_DEVELOPER_TOKEN}",
+        "GOOGLE_ADS_CLIENT_ID": "${GOOGLE_ADS_CLIENT_ID}",
+        "GOOGLE_ADS_CLIENT_SECRET": "${GOOGLE_ADS_CLIENT_SECRET}",
+        "GOOGLE_ADS_REFRESH_TOKEN": "${GOOGLE_ADS_REFRESH_TOKEN}"
+      },
+      "enabled": false,
+      "timeout": 20000
     }
   }
 }

@@ -41,7 +41,24 @@ Rebrand-relevant (review — may conflict with our branding):
 Docs/CI/community (low priority, mostly skip):
 - `ddb573b` ci workflows, `24df619` build tweaks, `43b915b`/`b3c8ec5` WeChat QR docs, `2ecfe94` release bump.
 
-### Plan to merge (do as a FOCUSED operation, not rushed)
+### ⚠️ 2026-06-18: WHOLESALE `git merge` IS IMPOSSIBLE — unrelated histories
+`git merge upstream/main` → **"fatal: refusing to merge unrelated histories"**, and
+`git merge-base HEAD upstream/main` returns **nothing** (no common ancestor). Our fork's history
+and `upstream/main` share zero commits — MiMoCode is a squashed import and our tree diverged
+completely. `--allow-unrelated-histories` would conflict on *every* shared file (no merge base),
+which is unusable. **The earlier "zero-conflict merge" note (when 1 behind) no longer holds.**
+
+**New strategy = selective port, NOT merge.** Treat upstream as a source to cherry-pick/diff-apply
+specific fixes from, opportunistically. For each wanted commit:
+`git show upstream/main -- <path>` or `git diff <our-file> upstream/main:<path>`, then hand-apply.
+The high-value targets are listed above (#1124 TUI repaint, #1122 compose scope, #911 test fixes,
+#932 model-selector search, #28d6f3c log-rotation flag). Skip rebrand/docs/CI commits.
+
+**This UNBLOCKS feature work:** since there's no merge gate (a merge can't happen), the "merge first,
+then features" ordering from the research is moot — build features now; port upstream fixes one-by-one
+when each is relevant. No double-conflict risk because there's no merge.
+
+### (obsolete) Plan to merge (do as a FOCUSED operation, not rushed)
 1. `git fetch upstream && git checkout -b sync/upstream-2026-06-18`.
 2. `git merge upstream/main` — `merge=ours` protects our isolated dirs; resolve conflicts in
    build.ts / session header-injection / branding by hand, KEEPING our changes.
