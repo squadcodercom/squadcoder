@@ -1515,14 +1515,12 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                         variant="ghost"
                       >
                         {(name) => (
-                          <div class="flex flex-col gap-0.5 min-w-0 max-w-[280px] py-0.5">
-                            <span class="text-13-medium text-text-strong capitalize">{name as string}</span>
-                            <Show when={agentDescription((name as string) ?? "")}>
-                              <span class="text-12-regular text-text-weak normal-case leading-snug whitespace-normal">
-                                {agentDescription((name as string) ?? "")}
-                              </span>
-                            </Show>
-                          </div>
+                          <span
+                            class="text-13-medium text-text-strong capitalize"
+                            title={agentDescription((name as string) ?? "") || undefined}
+                          >
+                            {name as string}
+                          </span>
                         )}
                       </Select>
                     </TooltipKeybind>

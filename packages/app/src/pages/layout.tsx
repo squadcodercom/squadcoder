@@ -2309,9 +2309,6 @@ export default function Layout(props: ParentProps) {
                 <Mark class="w-7 mb-1" />
                 <div class="text-14-medium text-text-strong">{language.t("sidebar.gettingStarted.title")}</div>
                 <div class="text-14-regular text-text-base" style={{ "line-height": "var(--line-height-normal)" }}>
-                  {language.t("sidebar.gettingStarted.line1")}
-                </div>
-                <div class="text-14-regular text-text-base" style={{ "line-height": "var(--line-height-normal)" }}>
                   {language.t("sidebar.gettingStarted.line2")}
                 </div>
               </div>
