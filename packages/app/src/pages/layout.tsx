@@ -20,6 +20,7 @@ import { Persist, persisted } from "@/utils/persist"
 import { base64Encode } from "@mimo-ai/shared/util/encode"
 import { decode64 } from "@/utils/base64"
 import { ResizeHandle } from "@mimo-ai/ui/resize-handle"
+import { Mark } from "@mimo-ai/ui/logo"
 import { Button } from "@mimo-ai/ui/button"
 import { IconButton } from "@mimo-ai/ui/icon-button"
 import { Tooltip } from "@mimo-ai/ui/tooltip"
@@ -2305,6 +2306,7 @@ export default function Layout(props: ParentProps) {
           <div class="rounded-xl bg-background-base shadow-xs-border-base" data-component="getting-started">
             <div class="p-3 flex flex-col gap-6">
               <div class="flex flex-col gap-2">
+                <Mark class="w-7 mb-1" />
                 <div class="text-14-medium text-text-strong">{language.t("sidebar.gettingStarted.title")}</div>
                 <div class="text-14-regular text-text-base" style={{ "line-height": "var(--line-height-normal)" }}>
                   {language.t("sidebar.gettingStarted.line1")}
