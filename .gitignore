@@ -49,3 +49,6 @@ experiment/last-outcome.json
 /seed/
 out/
 release/
+
+# SQUADCODER: machine-written config override (GUI Config.update writes here; per-machine, not shared)
+/config.json

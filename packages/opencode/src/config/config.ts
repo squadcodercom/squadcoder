@@ -759,6 +759,14 @@ export const layer = Layer.effect(
               yield* merge(file, yield* loadFile(file), "local")
             }
           }
+          // SQUADCODER: also load the machine-managed config.json that Config.update writes.
+          // GUI-written settings (e.g. permission.skill toggles, per-agent model) live here so they
+          // never clobber the hand-authored squadcoder.json; merged last as a local override so the
+          // app's writes take effect. (The global config.json is already merged via getGlobal above.)
+          for (const dir of new Set([ctx.directory, ctx.worktree])) {
+            const file = path.join(dir, "config.json")
+            yield* merge(file, yield* loadFile(file), "local")
+          }
         }
 
         result.agent = result.agent || {}
