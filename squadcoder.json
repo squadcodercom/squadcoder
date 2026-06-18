@@ -45,7 +45,7 @@
     },
     "higgsfield": {
       "type": "remote",
-      "url": "https://higgsfield.ai/mcp",
+      "url": "https://mcp.higgsfield.ai/mcp",
       "enabled": false
     },
     "google-ads": {
