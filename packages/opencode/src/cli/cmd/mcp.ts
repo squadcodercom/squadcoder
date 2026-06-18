@@ -678,7 +678,7 @@ export const McpDebugCommand = cmd({
         prompts.log.info(`Auth status: ${getAuthStatusIcon(authStatus)} ${getAuthStatusText(authStatus)}`)
 
         if (entry?.tokens) {
-          // MUMINAI(#155): never print any portion of the live OAuth access token (scrollback,
+          // SQUADCODER(#155): never print any portion of the live OAuth access token (scrollback,
           // screenshots, screen-shares). Mask it like the refresh token below.
           prompts.log.info(`  Access token: present (${entry.tokens.accessToken.length} chars)`)
           if (entry.tokens.expiresAt) {

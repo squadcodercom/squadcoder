@@ -1,21 +1,21 @@
-<!-- MUMINAI:start (merge=ours) -->
-# MuminAI
+<!-- SQUADCODER:start (merge=ours) -->
+# SquadCoder
 
-This repo is **MuminAI** — an open-source, **RTL/Hebrew-first** AI coding assistant, a rebranded
+This repo is **SquadCoder** — an open-source, **RTL/Hebrew-first** AI coding assistant, a rebranded
 fork of **MiMoCode** (`XiaomiMiMo/MiMo-Code`, itself a fork of `sst/opencode`).
 
 - **Goal:** keep pulling bug fixes/updates from MiMo/opencode (`upstream`/`opencode` remotes)
   while keeping our brand and developing our way. Isolate our diff — see `FORK_STRATEGY.md`.
-- **What's ours (don't expect upstream to maintain):** `.muminai/` (config, skills, plugins),
-  `packages/muminai-plugin-*`, and rebrand edits tagged `MUMINAI:`. These are `merge=ours`.
+- **What's ours (don't expect upstream to maintain):** `.squadcoder/` (config, skills, plugins),
+  `packages/squadcoder-plugin-*`, and rebrand edits tagged `SQUADCODER:`. These are `merge=ours`.
 - **Working method:** reuse before build (core → plugin/config → safe third-party → build);
   only i18n/RTL/branding touch core, kept small and marked.
 - **Durable context lives outside the repo:** the memory store at
-  `~/.claude/projects/C--Users-raviv-OneDrive-Desktop-MuminAI/memory/` (`MEMORY.md` index) and
+  `~/.claude/projects/C--Users-raviv-OneDrive-Desktop-SquadCoder/memory/` (`MEMORY.md` index) and
   the plan at `~/.claude/plans/i-decided-to-create-compiled-corbato.md`. Read them first.
 
 The opencode/MiMoCode developer style guide follows and still applies.
-<!-- MUMINAI:end -->
+<!-- SQUADCODER:end -->
 
 - Always use superpowers skill instead of builtin plan mode.
 - To regenerate the JavaScript SDK, run `./packages/sdk/js/script/build.ts`.

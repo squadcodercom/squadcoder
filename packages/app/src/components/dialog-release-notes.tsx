@@ -126,7 +126,7 @@ export function DialogReleaseNotes(props: { highlights: Highlight[] }) {
 
         {/* Right side - Media content (edge to edge) */}
         {feature()?.media && (
-          <div class="flex-1 min-w-0 bg-surface-base overflow-hidden rounded-r-xl">
+          <div class="flex-1 min-w-0 bg-surface-base overflow-hidden rounded-e-xl">
             {feature()!.media!.type === "image" ? (
               <img
                 src={feature()!.media!.src}

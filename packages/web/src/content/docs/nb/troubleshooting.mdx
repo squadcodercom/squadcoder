@@ -3,7 +3,7 @@ title: Feilsøking
 description: Vanlige problemer og hvordan de kan løses.
 ---
 
-For å feilsøke problemer med OpenCode, start med å sjekke loggene og lokale data den lagrer på disken.
+For å feilsøke problemer med SquadCoder, start med å sjekke loggene og lokale data den lagrer på disken.
 
 ---
 
@@ -22,7 +22,7 @@ Du kan angi loggnivået med kommandolinjealternativet `--log-level` for å få m
 
 ## Lagring
 
-OpenCode lagrer øktdata og andre applikasjonsdata på disken på:
+SquadCoder lagrer øktdata og andre applikasjonsdata på disken på:
 
 - **macOS/Linux**: `~/.local/share/opencode/`
 - **Windows**: Trykk `WIN+R` og lim inn `%USERPROFILE%\.local\share\opencode`
@@ -39,13 +39,13 @@ Denne katalogen inneholder:
 
 ## Skrivebordsapp
 
-OpenCode Desktop kjører en lokal OpenCode-server (`opencode-cli` sidevognen) i bakgrunnen. De fleste problemene er forårsaket av en plugin som fungerer dårlig, en ødelagt cache eller en dårlig serverinnstilling.
+SquadCoder Desktop kjører en lokal SquadCoder-server (`opencode-cli` sidevognen) i bakgrunnen. De fleste problemene er forårsaket av en plugin som fungerer dårlig, en ødelagt cache eller en dårlig serverinnstilling.
 
 ### Raske sjekker
 
 - Avslutt og start appen på nytt.
 - Hvis appen viser en feilskjerm, klikker du på **Start på nytt** og kopierer feildetaljene.
-- Bare macOS: `OpenCode`-meny -> **Last nettvisning på nytt** (hjelper hvis UI er tom/frosset).
+- Bare macOS: `SquadCoder`-meny -> **Last nettvisning på nytt** (hjelper hvis UI er tom/frosset).
 
 ---
 
@@ -72,7 +72,7 @@ Hvis du har konfigurert plugins, deaktiver dem midlertidig ved å fjerne nøkkel
 
 #### Sjekk plugin-kataloger
 
-OpenCode kan også laste lokale plugins fra disken. Flytt disse midlertidig ut av veien (eller gi nytt navn til mappen) og start skrivebordsappen på nytt:
+SquadCoder kan også laste lokale plugins fra disken. Flytt disse midlertidig ut av veien (eller gi nytt navn til mappen) og start skrivebordsappen på nytt:
 
 - **Globale plugins**
   - **macOS/Linux**: `~/.config/opencode/plugins/`
@@ -86,22 +86,22 @@ Hvis appen begynner å fungere igjen, aktiverer du plugins én om gangen for å 
 
 ### Tøm hurtigbufferen
 
-Hvis deaktivering av plugins ikke hjelper (eller en plugin-installasjon sitter fast), tøm hurtigbufferen slik at OpenCode kan gjenoppbygge den.
+Hvis deaktivering av plugins ikke hjelper (eller en plugin-installasjon sitter fast), tøm hurtigbufferen slik at SquadCoder kan gjenoppbygge den.
 
-1. Avslutt OpenCode Desktop helt.
+1. Avslutt SquadCoder Desktop helt.
 2. Slett hurtigbufferkatalogen:
 
 - **macOS**: Finder -> `Cmd+Shift+G` -> lim inn `~/.cache/opencode`
 - **Linux**: slett `~/.cache/opencode` (eller kjør `rm -rf ~/.cache/opencode`)
 - **Windows**: Trykk `WIN+R` og lim inn `%USERPROFILE%\.cache\opencode`
 
-3. Start OpenCode Desktop på nytt.
+3. Start SquadCoder Desktop på nytt.
 
 ---
 
 ### Løs problemer med servertilkobling
 
-OpenCode Desktop kan enten starte sin egen lokale server (standard) eller koble til en server URL du har konfigurert.
+SquadCoder Desktop kan enten starte sin egen lokale server (standard) eller koble til en server URL du har konfigurert.
 
 Hvis du ser en **"Tilkobling mislyktes"**-dialogboks (eller appen kommer aldri forbi splash-skjermen), se etter en tilpasset server URL.
 
@@ -132,21 +132,21 @@ På Linux kan noen Wayland-oppsett forårsake tomme vinduer eller kompositorfeil
 
 ### Windows: WebView2 kjøretid
 
-På Windows krever OpenCode Desktop Microsoft Edge **WebView2 Runtime**. Hvis appen åpnes i et tomt vindu eller ikke starter, installer/oppdater WebView2 og prøv igjen.
+På Windows krever SquadCoder Desktop Microsoft Edge **WebView2 Runtime**. Hvis appen åpnes i et tomt vindu eller ikke starter, installer/oppdater WebView2 og prøv igjen.
 
 ---
 
 ### Windows: Generelle ytelsesproblemer
 
-Hvis du opplever treg ytelse, problemer med filtilgang eller terminalproblemer på Windows, kan du prøve å bruke [WSL (Windows Subsystem for Linux)](/docs/windows-wsl). WSL gir et Linux-miljø som fungerer mer sømløst med funksjonene til OpenCode.
+Hvis du opplever treg ytelse, problemer med filtilgang eller terminalproblemer på Windows, kan du prøve å bruke [WSL (Windows Subsystem for Linux)](/docs/windows-wsl). WSL gir et Linux-miljø som fungerer mer sømløst med funksjonene til SquadCoder.
 
 ---
 
 ### Varsler vises ikke
 
-OpenCode Desktop viser bare systemvarsler når:
+SquadCoder Desktop viser bare systemvarsler når:
 
-- varsler er aktivert for OpenCode i OS-innstillingene dine, og
+- varsler er aktivert for SquadCoder i OS-innstillingene dine, og
 - appvinduet er ikke fokusert.
 
 ---
@@ -155,8 +155,8 @@ OpenCode Desktop viser bare systemvarsler når:
 
 Hvis appen ikke starter og du ikke kan slette innstillingene fra UI-et, tilbakestill skrivebordsappens lagrede tilstand.
 
-1. Avslutt OpenCode Desktop.
-2. Finn og slett disse filene (de finnes i OpenCode Desktop-appens datakatalog):
+1. Avslutt SquadCoder Desktop.
+2. Finn og slett disse filene (de finnes i SquadCoder Desktop-appens datakatalog):
 
 - `opencode.settings.dat` (stasjonær standardserver URL)
 - `opencode.global.dat` og `opencode.workspace.*.dat` (UI tilstand som nylige servere/prosjekter)
@@ -177,7 +177,7 @@ Modeller skal refereres slik: `<providerId>/<modelId>`
 
 ### AI_APICallError og leverandørpakkeproblemer
 
-Hvis du støter på API-anropsfeil, kan dette skyldes utdaterte provider-pakker. OpenCode installerer dynamisk provider-pakker (OpenAI, Anthropic, Google, etc.) etter behov og cacher dem lokalt.
+Hvis du støter på API-anropsfeil, kan dette skyldes utdaterte provider-pakker. SquadCoder installerer dynamisk provider-pakker (OpenAI, Anthropic, Google, etc.) etter behov og cacher dem lokalt.
 
 For å løse problemer med leverandørpakke:
 
@@ -189,9 +189,9 @@ For å løse problemer med leverandørpakke:
 
    På Windows, trykk `WIN+R` og slett: `%USERPROFILE%\.cache\opencode`
 
-2. Start OpenCode på nytt for å installere de nyeste provider-pakkene på nytt
+2. Start SquadCoder på nytt for å installere de nyeste provider-pakkene på nytt
 
-Dette vil tvinge OpenCode til å laste ned de nyeste versjonene av provider-pakkene, som ofte løser kompatibilitetsproblemer med modellparametere og API-endringer.
+Dette vil tvinge SquadCoder til å laste ned de nyeste versjonene av provider-pakkene, som ofte løser kompatibilitetsproblemer med modellparametere og API-endringer.
 
 ---
 
@@ -222,4 +222,4 @@ Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 export DISPLAY=:99.0
 ```
 
-OpenCode vil oppdage om du bruker Wayland og foretrekker `wl-clipboard`, ellers vil den prøve å finne utklippstavle-verktøy i rekkefølgen: `xclip` og `xsel`.
+SquadCoder vil oppdage om du bruker Wayland og foretrekker `wl-clipboard`, ellers vil den prøve å finne utklippstavle-verktøy i rekkefølgen: `xclip` og `xsel`.

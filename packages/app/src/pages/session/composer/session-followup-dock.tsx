@@ -30,12 +30,12 @@ export function SessionFollowupDock(props: {
       data-component="session-followup-dock"
       style={{
         "margin-bottom": "-0.875rem",
-        "border-bottom-left-radius": 0,
-        "border-bottom-right-radius": 0,
+        "border-bottom-start-radius": 0,
+        "border-bottom-end-radius": 0,
       }}
     >
       <div
-        class="pl-3 pr-2 py-2 flex items-center gap-2"
+        class="ps-3 pe-2 py-2 flex items-center gap-2"
         role="button"
         tabIndex={0}
         onClick={toggle}
@@ -49,7 +49,7 @@ export function SessionFollowupDock(props: {
         <Show when={store.collapsed && preview()}>
           <span class="min-w-0 flex-1 truncate text-13-regular text-text-base cursor-default">{preview()}</span>
         </Show>
-        <div class="ml-auto shrink-0">
+        <div class="ms-auto shrink-0">
           <IconButton
             data-collapsed={store.collapsed ? "true" : "false"}
             icon="chevron-down"

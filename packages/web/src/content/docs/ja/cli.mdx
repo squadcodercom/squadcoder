@@ -1,17 +1,17 @@
 ---
 title: CLI
-description: OpenCode CLI のオプションとコマンド。
+description: SquadCoder CLI のオプションとコマンド。
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 
-OpenCode CLI は、引数なしで実行すると、デフォルトで [TUI](/docs/tui) を開始します。
+SquadCoder CLI は、引数なしで実行すると、デフォルトで [TUI](/docs/tui) を開始します。
 
 ```bash
 opencode
 ```
 
-ただし、このページに記載されているようにコマンドも受け入れます。これにより、OpenCode をプログラム的に操作できるようになります。
+ただし、このページに記載されているようにコマンドも受け入れます。これにより、SquadCoder をプログラム的に操作できるようになります。
 
 ```bash
 opencode run "Explain how closures work in JavaScript"
@@ -21,7 +21,7 @@ opencode run "Explain how closures work in JavaScript"
 
 ### tui
 
-OpenCode ターミナルユーザーインターフェイスを開始します。
+SquadCoder ターミナルユーザーインターフェイスを開始します。
 
 ```bash
 opencode [project]
@@ -44,13 +44,13 @@ opencode [project]
 
 ## コマンド
 
-OpenCode CLI には次のコマンドもあります。
+SquadCoder CLI には次のコマンドもあります。
 
 ---
 
 ### agent
 
-OpenCode のエージェントを管理します。
+SquadCoder のエージェントを管理します。
 
 ```bash
 opencode agent [command]
@@ -60,13 +60,13 @@ opencode agent [command]
 
 ### attach
 
-`serve` または `web` コマンドを使用して起動された、すでに実行中の OpenCode バックエンドサーバーにターミナルを接続します。
+`serve` または `web` コマンドを使用して起動された、すでに実行中の SquadCoder バックエンドサーバーにターミナルを接続します。
 
 ```bash
 opencode attach [url]
 ```
 
-これにより、リモート OpenCode バックエンドで TUI を使用できるようになります。例えば：
+これにより、リモート SquadCoder バックエンドで TUI を使用できるようになります。例えば：
 
 ```bash
 # Start the backend server for web/mobile access
@@ -119,13 +119,13 @@ opencode auth [command]
 
 #### login
 
-OpenCode は [Models.dev](https://models.dev) のプロバイダーリストを利用しているため、`opencode auth login` を使用して、使用したいプロバイダーの API キーを構成できます。これは `~/.local/share/opencode/auth.json` に保存されます。
+SquadCoder は [Models.dev](https://models.dev) のプロバイダーリストを利用しているため、`opencode auth login` を使用して、使用したいプロバイダーの API キーを構成できます。これは `~/.local/share/opencode/auth.json` に保存されます。
 
 ```bash
 opencode auth login
 ```
 
-OpenCode が起動すると、認証情報ファイルからプロバイダーがロードされます。また、環境またはプロジェクト内の `.env` ファイルで定義されたキーがあるかどうかも確認します。
+SquadCoder が起動すると、認証情報ファイルからプロバイダーがロードされます。また、環境またはプロジェクト内の `.env` ファイルで定義されたキーがあるかどうかも確認します。
 
 ---
 
@@ -301,7 +301,7 @@ opencode models anthropic
 | `--refresh` | models.dev からモデルキャッシュを更新します。                   |
 | `--verbose` | より詳細なモデル出力を使用します (コストなどのメタデータを含む) |
 
-`--refresh` フラグを使用して、キャッシュされたモデルリストを更新します。これは、新しいモデルがプロバイダーに追加され、それを OpenCode で確認したい場合に便利です。
+`--refresh` フラグを使用して、キャッシュされたモデルリストを更新します。これは、新しいモデルがプロバイダーに追加され、それを SquadCoder で確認したい場合に便利です。
 
 ```bash
 opencode models --refresh
@@ -354,7 +354,7 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 
 ### serve
 
-API アクセスのためにヘッドレス OpenCode サーバーを起動します。完全な HTTP インターフェイスについては、[サーバーのドキュメント](/docs/server) を確認してください。
+API アクセスのためにヘッドレス SquadCoder サーバーを起動します。完全な HTTP インターフェイスについては、[サーバーのドキュメント](/docs/server) を確認してください。
 
 ```bash
 opencode serve
@@ -375,7 +375,7 @@ opencode serve
 
 ### session
 
-OpenCode セッションを管理します。
+SquadCoder セッションを管理します。
 
 ```bash
 opencode session [command]
@@ -385,7 +385,7 @@ opencode session [command]
 
 #### list
 
-すべての OpenCode セッションをリストします。
+すべての SquadCoder セッションをリストします。
 
 ```bash
 opencode session list
@@ -402,7 +402,7 @@ opencode session list
 
 ### stats
 
-OpenCode セッションのトークンの使用状況とコストの統計を表示します。
+SquadCoder セッションのトークンの使用状況とコストの統計を表示します。
 
 ```bash
 opencode stats
@@ -433,13 +433,13 @@ opencode export [sessionID]
 
 ### import
 
-JSON ファイルまたは OpenCode 共有 URL からセッションデータをインポートします。
+JSON ファイルまたは SquadCoder 共有 URL からセッションデータをインポートします。
 
 ```bash
 opencode import <file>
 ```
 
-ローカルファイルまたは OpenCode 共有 URL からインポートできます。
+ローカルファイルまたは SquadCoder 共有 URL からインポートできます。
 
 ```bash
 opencode import session.json
@@ -450,13 +450,13 @@ opencode import https://opncd.ai/s/abc123
 
 ### web
 
-Web インターフェイスを使用してヘッドレス OpenCode サーバーを起動します。
+Web インターフェイスを使用してヘッドレス SquadCoder サーバーを起動します。
 
 ```bash
 opencode web
 ```
 
-これにより、HTTP サーバーが起動し、Web ブラウザが開き、Web インターフェイスを通じて OpenCode にアクセスします。 `OPENCODE_SERVER_PASSWORD` を設定して HTTP 基本認証を有効にします (ユーザー名のデフォルトは `opencode`)。
+これにより、HTTP サーバーが起動し、Web ブラウザが開き、Web インターフェイスを通じて SquadCoder にアクセスします。 `OPENCODE_SERVER_PASSWORD` を設定して HTTP 基本認証を有効にします (ユーザー名のデフォルトは `opencode`)。
 
 #### フラグ
 
@@ -491,7 +491,7 @@ opencode acp
 
 ### uninstall
 
-OpenCode をアンインストールし、関連ファイルをすべて削除します。
+SquadCoder をアンインストールし、関連ファイルをすべて削除します。
 
 ```bash
 opencode uninstall
@@ -551,7 +551,7 @@ opencode CLI は次のグローバルフラグを受け取ります。
 
 ## 環境変数
 
-OpenCode は環境変数を使用して構成できます。
+SquadCoder は環境変数を使用して構成できます。
 
 | 変数                                  | タイプ   | 説明                                                                |
 | ------------------------------------- | -------- | ------------------------------------------------------------------- |

@@ -146,13 +146,13 @@ const FileTreeNode = (
     <Dynamic
       component={local.as ?? "div"}
       classList={{
-        "w-full min-w-0 h-6 flex items-center justify-start gap-x-1.5 rounded-md px-1.5 py-0 text-left hover:bg-surface-raised-base-hover active:bg-surface-base-active transition-colors cursor-pointer": true,
+        "w-full min-w-0 h-6 flex items-center justify-start gap-x-1.5 rounded-md px-1.5 py-0 text-start hover:bg-surface-raised-base-hover active:bg-surface-base-active transition-colors cursor-pointer": true,
         "bg-surface-base-active": local.node.path === local.active,
         ...local.classList,
         [local.class ?? ""]: !!local.class,
         [local.nodeClass ?? ""]: !!local.nodeClass,
       }}
-      style={`padding-left: ${Math.max(0, 8 + local.level * 12 - (local.node.type === "file" ? 24 : 4))}px`}
+      style={`padding-inline-start: ${Math.max(0, 8 + local.level * 12 - (local.node.type === "file" ? 24 : 4))}px`}
       draggable={local.draggable}
       onDragStart={(event: DragEvent) => {
         if (!local.draggable) return
@@ -184,7 +184,7 @@ const FileTreeNode = (
             </span>
           )
         }
-        return <div class="shrink-0 size-1.5 mr-1.5 rounded-full" style={kindDotColor(value)} />
+        return <div class="shrink-0 size-1.5 me-1.5 rounded-full" style={kindDotColor(value)} />
       })()}
     </Dynamic>
   )
@@ -425,7 +425,7 @@ export default function FileTree(props: {
                         "group-hover/filetree:opacity-100": expanded() && deep() === level,
                         "group-hover/filetree:opacity-50": !(expanded() && deep() === level),
                       }}
-                      style={`left: ${Math.max(0, 8 + level * 12 - 4) + 8}px`}
+                      style={`inset-inline-start: ${Math.max(0, 8 + level * 12 - 4) + 8}px`}
                     />
                     <Show
                       when={level < MAX_DEPTH && !chain.includes(key(node.path))}

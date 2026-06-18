@@ -135,7 +135,7 @@ const reset = Effect.sync(() => {
 // u2 is seeded with a synthetic part of type "tool_result" to exercise the
 // alignToNonToolResultUser helper: when rawDeltaStart=2 (u2), align must walk
 // back past u2 to u1 (idx 0) because u2's parts are all tool_result-only.
-// OpenCode's storage doesn't normally produce tool_result parts (tools are
+// SquadCoder's storage doesn't normally produce tool_result parts (tools are
 // unified on assistants), so we use `as never` to bypass the discriminated
 // union — the helper only inspects part.type as a string.
 const PAD = "x ".repeat(25_000)  // ~50K chars → ~12.5K tokens
@@ -202,7 +202,7 @@ const seedFourMessages = Effect.fn("seedFourMessages")(function* () {
   })
   // Synthetic tool_result part: alignToNonToolResultUser keys on
   // parts.every(p => p.type === "tool_result"); cast through `as never`
-  // because OpenCode's MessageV2.Part discriminator does not include
+  // because SquadCoder's MessageV2.Part discriminator does not include
   // tool_result. The Part data is round-tripped as JSON unchanged.
   // Padded body so the natural tail at startIdx=2 exceeds TAIL_MAX_TOKENS
   // and computeBoundary doesn't walk back further than idx=2.

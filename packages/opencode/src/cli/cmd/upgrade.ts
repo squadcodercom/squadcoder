@@ -46,7 +46,7 @@ export const UpgradeCommand = {
     prompts.log.info("Using method: " + method)
     const target = args.target
       ? args.target.replace(/^v/, "")
-      : // MUMINAI(#212): pass the resolved method so `--method` (and the curl-detected channel)
+      : // SQUADCODER(#212): pass the resolved method so `--method` (and the curl-detected channel)
         // is honored. Previously latest() re-detected "curl" and ignored --method, and the
         // failure surfaced as an opaque "Unexpected error, check log file".
         await AppRuntime.runPromise(Installation.Service.use((svc) => svc.latest(method))).catch((err) => {

@@ -14,6 +14,9 @@ export function MessageNav(
   },
 ) {
   const i18n = useI18n()
+  // SQUADCODER: Kobalte placement sides are physical; flip the compact-nav flyout to the
+  // inline-start side in RTL (Hebrew/Arabic) so it opens toward content, not off-screen.
+  const isRtl = () => i18n.locale() === "he" || i18n.locale() === "ar"
   const [local, others] = splitProps(props, ["messages", "current", "size", "onMessageSelect", "getLabel"])
 
   const content = () => (
@@ -72,7 +75,7 @@ export function MessageNav(
       <Match when={local.size === "compact"}>
         <Tooltip
           openDelay={0}
-          placement="right-start"
+          placement={isRtl() ? "left-start" : "right-start"}
           gutter={-40}
           shift={-10}
           overlap

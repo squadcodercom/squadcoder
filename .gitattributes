@@ -1,31 +1,46 @@
-# MuminAI — keep OUR files during merges from upstream (MiMoCode / opencode).
+# SquadCoder — keep OUR files during merges from upstream (MiMoCode / opencode).
 # The `ours` merge driver is enabled via: git config merge.ours.driver true
-# (see FORK_STRATEGY.md). Only files that are 100% MuminAI-owned go here —
+# (see FORK_STRATEGY.md). Only files that are 100% SquadCoder-owned go here —
 # shared core files we edit (i18n tables, UI components) are intentionally NOT
 # listed, so we still receive and reconcile upstream fixes to them.
 
-# MuminAI-owned plugin packages (never exist upstream)
-packages/muminai-plugin-bootstrap/**      merge=ours
+# SquadCoder-owned plugin packages (never exist upstream)
+packages/squadcoder-plugin-bootstrap/**    merge=ours
+packages/squadcoder-plugin-brand/**         merge=ours
+packages/squadcoder-plugin-anthropic-oauth/** merge=ours
+# legacy (pre-rename) — harmless if absent
+packages/muminai-plugin-bootstrap/**       merge=ours
 packages/muminai-plugin-brand/**           merge=ours
 packages/muminai-plugin-anthropic-oauth/** merge=ours
 
-# MuminAI config, bundled skills, branding constants
+# SquadCoder config, bundled skills, agents, branding constants
+.squadcoder/**                             merge=ours
+squadcoder.json                            merge=ours
+seed/**                                    merge=ours
+# legacy config dir/file (pre-rename)
 .muminai/**                                merge=ours
 muminai.json                               merge=ours
 
-# MuminAI project docs / instructions
+# SquadCoder project docs / instructions
 CLAUDE.md                                  merge=ours
 AGENTS.md                                  merge=ours
 FORK_STRATEGY.md                           merge=ours
 SKILLS_ATTRIBUTION.md                      merge=ours
 REMOTE.md                                  merge=ours
 FIXED_ISSUES.md                            merge=ours
+UPSTREAM_SYNC.md                           merge=ours
+PLACEHOLDER_LINKS.md                       merge=ours
+REBRAND.md                                 merge=ours
 
-# MuminAI brand assets (icons / favicons / logos / banner)
+# SquadCoder brand assets (icons / favicons / logos / banner)
 assets/**                                  merge=ours
 script/gen-brand-icons.ts                  merge=ours
+packages/ui/src/components/logo.tsx        merge=ours
+packages/ui/src/assets/favicon/**          merge=ours
 packages/desktop/resources/icons/**        merge=ours
 packages/app/public/favicon**              merge=ours
+packages/app/public/site.webmanifest       merge=ours
+packages/app/public/web-app-manifest**     merge=ours
 packages/app/public/apple-touch-icon**     merge=ours
 packages/web/public/favicon**              merge=ours
 packages/web/public/apple-touch-icon**     merge=ours

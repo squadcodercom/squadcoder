@@ -3,7 +3,7 @@ title: Dozvole
 description: Kontrolirajte koje radnje zahtijevaju odobrenje za pokretanje.
 ---
 
-OpenCode koristi `permission` konfiguraciju da odluči da li će se određena radnja pokrenuti automatski, zatražiti od vas ili biti blokirana.
+SquadCoder koristi `permission` konfiguraciju da odluči da li će se određena radnja pokrenuti automatski, zatražiti od vas ili biti blokirana.
 Od `v1.1.1`, naslijeđena `tools` logička konfiguracija je zastarjela i spojena je u `permission`. Stara `tools` konfiguracija je još uvijek podržana za kompatibilnost unatrag.
 
 ---
@@ -87,7 +87,7 @@ Možete koristiti `~` ili `$HOME` na početku obrasca da referencirate svoj poč
 
 ### Vanjski direktoriji
 
-Koristite `external_directory` da dozvolite pozive alata koji dodiruju putanje izvan radnog direktorija gdje je OpenCode pokrenut. Ovo se odnosi na bilo koji alat koji uzima putanju kao ulaz (na primjer `read`, `edit`, `glob`, `grep` i mnoge `bash` komande).
+Koristite `external_directory` da dozvolite pozive alata koji dodiruju putanje izvan radnog direktorija gdje je SquadCoder pokrenut. Ovo se odnosi na bilo koji alat koji uzima putanju kao ulaz (na primjer `read`, `edit`, `glob`, `grep` i mnoge `bash` komande).
 Proširenje kuće (poput `~/...`) utiče samo na način na koji je obrazac napisan. Ne čini vanjsku stazu dijelom trenutnog radnog prostora, tako da staze izvan radnog direktorija i dalje moraju biti dozvoljene preko `external_directory`.
 Na primjer, ovo omogućava pristup svemu pod `~/projects/personal/`:
 
@@ -122,7 +122,7 @@ Držite ovu listu fokusiranom na pouzdane putanje, a dodatna allow/deny pravila 
 
 ## Dostupne dozvole
 
-Dozvole OpenCode su označene imenom alata, plus nekoliko sigurnosnih mjera:
+Dozvole SquadCoder su označene imenom alata, plus nekoliko sigurnosnih mjera:
 
 - `read` — čitanje datoteke (odgovara putanji datoteke)
 - `edit` — sve izmjene fajlova (pokriva `edit`, `write`, `patch`, `multiedit`)
@@ -141,7 +141,7 @@ Dozvole OpenCode su označene imenom alata, plus nekoliko sigurnosnih mjera:
 
 ## Zadane postavke
 
-Ako ništa ne navedete, OpenCode počinje od dozvoljenih zadanih vrijednosti:
+Ako ništa ne navedete, SquadCoder počinje od dozvoljenih zadanih vrijednosti:
 
 - Većina dozvola je zadana na `"allow"`.
 - `doom_loop` i `external_directory` zadano na `"ask"`.
@@ -164,10 +164,10 @@ Ako ništa ne navedete, OpenCode počinje od dozvoljenih zadanih vrijednosti:
 
 ## Šta radi “Ask”
 
-Kada OpenCode zatraži odobrenje, korisničko sučelje nudi tri ishoda:
+Kada SquadCoder zatraži odobrenje, korisničko sučelje nudi tri ishoda:
 
 - `once` — odobri samo ovaj zahtjev
-- `always` — odobri buduće zahtjeve koji odgovaraju predloženim obrascima (za ostatak trenutne OpenCode sesije)
+- `always` — odobri buduće zahtjeve koji odgovaraju predloženim obrascima (za ostatak trenutne SquadCoder sesije)
 - `reject` — odbiti zahtjev
   Skup obrazaca koje bi `always` odobrio pruža alat (na primjer, bash odobrenja obično stavljaju na bijelu listu sigurni prefiks komande kao što je `git status*`).
 

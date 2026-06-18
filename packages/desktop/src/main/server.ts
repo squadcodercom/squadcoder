@@ -1,3 +1,4 @@
+import path from "path"
 import { app } from "electron"
 import { DEFAULT_SERVER_URL_KEY, WSL_ENABLED_KEY } from "./constants"
 import { getUserShell, loadShellEnv } from "./shell-env"
@@ -37,7 +38,7 @@ export async function spawnLocalServer(hostname: string, port: number, password:
   const listener = await Server.listen({
     port,
     hostname,
-    username: "opencode",
+    username: "squadcoder",
     password,
     cors: ["oc://renderer"],
   })
@@ -61,15 +62,21 @@ export async function spawnLocalServer(hostname: string, port: number, password:
 function prepareServerEnv(password: string) {
   const shell = process.platform === "win32" ? null : getUserShell()
   const shellEnv = shell ? (loadShellEnv(shell) ?? {}) : {}
+  // SQUADCODER: point the first-run seeder at the bundled defaults (extraResources →
+  // resources/seed). Harmless in dev: that path won't contain the seed sentinel, so
+  // the seeder no-ops. Set before the engine module is imported so its boot-time seed
+  // sees it.
+  const seedDir = process.resourcesPath ? path.join(process.resourcesPath, "seed") : undefined
   const env = {
     ...process.env,
     ...shellEnv,
     OPENCODE_EXPERIMENTAL_ICON_DISCOVERY: "true",
     OPENCODE_EXPERIMENTAL_FILEWATCHER: "true",
     OPENCODE_CLIENT: "desktop",
-    OPENCODE_SERVER_USERNAME: "opencode",
+    OPENCODE_SERVER_USERNAME: "squadcoder",
     OPENCODE_SERVER_PASSWORD: password,
     XDG_STATE_HOME: app.getPath("userData"),
+    ...(seedDir ? { SQUADCODER_SEED_DIR: seedDir } : {}),
   }
   Object.assign(process.env, env)
 }

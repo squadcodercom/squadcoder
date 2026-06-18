@@ -1,4 +1,5 @@
 import { BoxRenderable, RGBA, TextareaRenderable, MouseEvent, PasteEvent, decodePasteBytes } from "@opentui/core"
+import { stripBidiControls } from "@tui/i18n/bidi"
 import { createEffect, createMemo, onMount, createSignal, onCleanup, on, Show, Switch, Match } from "solid-js"
 import "opentui-spinner/solid"
 import path from "path"
@@ -1319,7 +1320,7 @@ export function Prompt(props: PromptProps) {
       })
       return
     }
-    await pastePlainText(content.data.replace(/\r\n/g, "\n").replace(/\r/g, "\n"))
+    await pastePlainText(stripBidiControls(content.data).replace(/\r\n/g, "\n").replace(/\r/g, "\n"))
   }
 
   async function pasteAttachment(file: { filename?: string; filepath?: string; content: string; mime: string }) {
@@ -1600,7 +1601,7 @@ export function Prompt(props: PromptProps) {
                 // Normalize line endings at the boundary
                 // Windows ConPTY/Terminal often sends CR-only newlines in bracketed paste
                 // Replace CRLF first, then any remaining CR
-                const normalizedText = decodePasteBytes(event.bytes).replace(/\r\n/g, "\n").replace(/\r/g, "\n")
+                const normalizedText = stripBidiControls(decodePasteBytes(event.bytes)).replace(/\r\n/g, "\n").replace(/\r/g, "\n")
 
                 // Windows Terminal <1.25 can surface image-only clipboard as an
                 // empty bracketed paste. Windows Terminal 1.25+ does not.

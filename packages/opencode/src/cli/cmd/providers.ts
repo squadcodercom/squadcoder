@@ -584,7 +584,7 @@ export const ProvidersLoginCommand = cmd({
           }
 
           prompts.log.warn(
-            // MUMINAI(#79): be explicit that a credential alone won't surface models, so users
+            // SQUADCODER(#79): be explicit that a credential alone won't surface models, so users
             // aren't confused when `models refresh`/restart shows nothing for this provider.
             `Stored a credential for ${provider}. This provider has no model catalog, so its models will NOT appear after \`models refresh\` or restart until you declare them in mimocode.json under \`provider.${provider}.models\` (with api/baseURL + each model's limit.context). See the custom-provider docs.`,
           )

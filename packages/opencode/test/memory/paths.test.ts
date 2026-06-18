@@ -149,7 +149,7 @@ describe("parsePath", () => {
     expect(parsePath("/data/memory/tasks/T1/progress.md")).toBeNull()
   })
 
-  // MUMINAI(#908/#861): on Windows, reconcile builds paths with backslashes; parsePath must
+  // SQUADCODER(#908/#861): on Windows, reconcile builds paths with backslashes; parsePath must
   // normalize them or memory never indexes (full cross-session amnesia on Windows).
   test("windows backslash path parses (global MEMORY.md)", () => {
     expect(parsePath("C:\\Users\\me\\.local\\share\\mimocode\\memory\\global\\MEMORY.md")).toEqual({

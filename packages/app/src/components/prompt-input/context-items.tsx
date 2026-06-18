@@ -41,7 +41,7 @@ export const PromptContextItems: Component<ContextItemsProps> = (props) => {
               >
                 <div
                   classList={{
-                    "group shrink-0 flex flex-col rounded-[6px] pl-2 pr-1 py-1 max-w-[200px] h-12 cursor-default transition-all transition-transform shadow-xs-border hover:shadow-xs-border-hover": true,
+                    "group shrink-0 flex flex-col rounded-[6px] ps-2 pe-1 py-1 max-w-[200px] h-12 cursor-default transition-all transition-transform shadow-xs-border hover:shadow-xs-border-hover": true,
                     "hover:bg-surface-interactive-weak": !!item.commentID && !selected,
                     "bg-surface-interactive-hover hover:bg-surface-interactive-hover shadow-xs-border-hover": selected,
                     "bg-background-stronger": !selected,
@@ -66,7 +66,7 @@ export const PromptContextItems: Component<ContextItemsProps> = (props) => {
                       type="button"
                       icon="close-small"
                       variant="ghost"
-                      class="ml-auto size-3.5 text-text-weak hover:text-text-strong transition-all"
+                      class="ms-auto size-3.5 text-text-weak hover:text-text-strong transition-all"
                       onClick={(e) => {
                         e.stopPropagation()
                         props.remove(item)
@@ -75,7 +75,7 @@ export const PromptContextItems: Component<ContextItemsProps> = (props) => {
                     />
                   </div>
                   <Show when={item.comment}>
-                    {(comment) => <div class="text-12-regular text-text-strong ml-5 pr-1 truncate">{comment()}</div>}
+                    {(comment) => <div class="text-12-regular text-text-strong ms-5 pe-1 truncate">{comment()}</div>}
                   </Show>
                 </div>
               </Tooltip>

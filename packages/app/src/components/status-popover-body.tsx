@@ -284,7 +284,7 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                   return (
                     <button
                       type="button"
-                      class="flex items-center gap-2 w-full h-8 pl-3 pr-1.5 py-1.5 rounded-md transition-colors text-left"
+                      class="flex items-center gap-2 w-full h-8 ps-3 pe-1.5 py-1.5 rounded-md transition-colors text-start"
                       classList={{
                         "hover:bg-surface-raised-base-hover": !blocked(),
                         "cursor-not-allowed": blocked(),
@@ -355,7 +355,7 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                     return (
                       <button
                         type="button"
-                        class="flex items-center gap-2 w-full h-8 pl-3 pr-2 py-1 rounded-md hover:bg-surface-raised-base-hover transition-colors text-left"
+                        class="flex items-center gap-2 w-full h-8 ps-3 pe-2 py-1 rounded-md hover:bg-surface-raised-base-hover transition-colors text-start"
                         onClick={() => {
                           if (toggleMcp.isPending) return
                           toggleMcp.mutate(name)

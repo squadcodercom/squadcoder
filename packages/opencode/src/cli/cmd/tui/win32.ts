@@ -53,7 +53,7 @@ export function win32FlushInputBuffer() {
   k32!.symbols.FlushConsoleInputBuffer(handle)
 }
 
-// MUMINAI(#522): best-effort terminal restore on abnormal exit. OpenTUI's native setupTerminal()
+// SQUADCODER(#522): best-effort terminal restore on abnormal exit. OpenTUI's native setupTerminal()
 // puts the Windows console into alt-screen + raw + VT-output mode and pushes theme colors via
 // OSC 10/11/12. A graceful /exit or caught error restores it, but a SIGINT/SIGTERM or process.exit
 // (e.g. the agent killing node) skips those JS paths and leaves the console emitting constant

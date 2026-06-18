@@ -17,7 +17,7 @@ await import("./generate.ts")
 import { Script } from "@mimo-ai/script"
 import pkg from "../package.json"
 
-const BINARY_PREFIX = "muminai"
+const BINARY_PREFIX = "squadcoder"
 
 // Load migrations from migration directories
 const migrationDirs = (
@@ -232,7 +232,7 @@ for (const item of targets) {
       autoloadTsconfig: true,
       autoloadPackageJson: true,
       target: name.replace(BINARY_PREFIX, "bun") as any,
-      outfile: `dist/${name}/bin/mumin`,
+      outfile: `dist/${name}/bin/squadcoder`,
       execArgv: [`--user-agent=mimocode/${Script.version}`, "--use-system-ca", "--"],
       windows: {},
     },
@@ -250,7 +250,7 @@ for (const item of targets) {
 
   // Smoke test: only run if binary is for current platform
   if (item.os === process.platform && item.arch === process.arch && !item.abi) {
-    const binaryPath = `dist/${name}/bin/mumin`
+    const binaryPath = `dist/${name}/bin/squadcoder`
     console.log(`Running smoke test: ${binaryPath} --version`)
     try {
       const versionOutput = await $`${binaryPath} --version`.text()
@@ -262,23 +262,34 @@ for (const item of targets) {
   }
 
   await $`rm -rf ./dist/${name}/bin/tui`
+
+  // SQUADCODER: ship the first-run seed (config + skills + agents + instructions) beside
+  // the binary so a fresh CLI install seeds the global config dir on first run. The
+  // seeder resolves <execDir>/seed. Assemble it first with `bun script/make-seed.ts`.
+  const seedSrc = path.resolve(dir, "../../seed")
+  if (fs.existsSync(seedSrc)) {
+    fs.cpSync(seedSrc, `dist/${name}/bin/seed`, { recursive: true })
+  } else {
+    console.warn("⚠ seed/ not found — run `bun script/make-seed.ts` first to bundle SquadCoder defaults")
+  }
+
   await Bun.file(`dist/${name}/README.md`).write(
-    `This is the ${item.os}-${item.arch} binary for [@muminai/cli](https://www.npmjs.com/package/@muminai/cli). Install that package directly.\n`,
+    `This is the ${item.os}-${item.arch} binary for [@squadcoder/cli](https://www.npmjs.com/package/@squadcoder/cli). Install that package directly.\n`,
   )
   await Bun.file(`dist/${name}/package.json`).write(
     JSON.stringify(
       {
-        name: `@muminai/${name}`,
+        name: `@squadcoder/${name}`,
         version: Script.version,
-        description: "Platform-specific binary for @muminai/cli.",
+        description: "Platform-specific binary for @squadcoder/cli.",
         license: "MIT",
-        author: "MuminAI",
+        author: "SquadCoder",
         homepage: "https://github.com/",
         repository: {
           type: "git",
           url: "git+https://github.com/XiaomiMiMo/MiMo-Code.git",
         },
-        keywords: ["ai", "coding", "agent", "cli", "mumin", "muminai", "rtl", "hebrew"],
+        keywords: ["ai", "coding", "agent", "cli", "mumin", "squadcoder", "rtl", "hebrew"],
         os: [item.os],
         cpu: [item.arch],
       },

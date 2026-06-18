@@ -1,5 +1,9 @@
 import { ComponentProps } from "solid-js"
 
+// SQUADCODER: brand mark — a terminal-prompt ">_" glyph. Replaces the inherited
+// opencode square block so the empty-state / loading icon reads as SquadCoder, not
+// opencode. Stroked (not filled) so it stays crisp at every size and follows the
+// theme via the icon color vars. The underscore cursor uses the weaker var for depth.
 export const Mark = (props: { class?: string }) => {
   return (
     <svg
@@ -9,8 +13,21 @@ export const Mark = (props: { class?: string }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path data-slot="logo-logo-mark-shadow" d="M12 16H4V8H12V16Z" fill="var(--icon-weak-base)" />
-      <path data-slot="logo-logo-mark-o" d="M12 4H4V16H12V4ZM16 20H0V0H16V20Z" fill="var(--icon-strong-base)" />
+      <path
+        data-slot="logo-mark-prompt"
+        d="M3.5 6 L8.5 10 L3.5 14"
+        stroke="var(--icon-strong-base)"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        data-slot="logo-mark-cursor"
+        d="M8.5 14 H13"
+        stroke="var(--icon-base)"
+        stroke-width="2"
+        stroke-linecap="round"
+      />
     </svg>
   )
 }
@@ -25,12 +42,26 @@ export const Splash = (props: Pick<ComponentProps<"svg">, "ref" | "class">) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M60 80H20V40H60V80Z" fill="var(--icon-base)" />
-      <path d="M60 20H20V80H60V20ZM80 100H0V0H80V100Z" fill="var(--icon-strong-base)" />
+      <path
+        d="M20 34 L46 50 L20 66"
+        stroke="var(--icon-strong-base)"
+        stroke-width="9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M46 66 H64"
+        stroke="var(--icon-base)"
+        stroke-width="9"
+        stroke-linecap="round"
+      />
     </svg>
   )
 }
 
+// SQUADCODER: brand wordmark. Rendered as SVG text (not hand-pixeled paths) so it
+// auto-updates if the brand name changes; matches the prior viewBox so existing
+// `class` sizing (e.g. md:w-xl, opacity-12 watermark) keeps working.
 export const Logo = (props: { class?: string }) => {
   return (
     <svg
@@ -39,24 +70,18 @@ export const Logo = (props: { class?: string }) => {
       fill="none"
       classList={{ [props.class ?? ""]: !!props.class }}
     >
-      <g>
-        <path d="M18 30H6V18H18V30Z" fill="var(--icon-weak-base)" />
-        <path d="M18 12H6V30H18V12ZM24 36H0V6H24V36Z" fill="var(--icon-base)" />
-        <path d="M48 30H36V18H48V30Z" fill="var(--icon-weak-base)" />
-        <path d="M36 30H48V12H36V30ZM54 36H36V42H30V6H54V36Z" fill="var(--icon-base)" />
-        <path d="M84 24V30H66V24H84Z" fill="var(--icon-weak-base)" />
-        <path d="M84 24H66V30H84V36H60V6H84V24ZM66 18H78V12H66V18Z" fill="var(--icon-base)" />
-        <path d="M108 36H96V18H108V36Z" fill="var(--icon-weak-base)" />
-        <path d="M108 12H96V36H90V6H108V12ZM114 36H108V12H114V36Z" fill="var(--icon-base)" />
-        <path d="M144 30H126V18H144V30Z" fill="var(--icon-weak-base)" />
-        <path d="M144 12H126V30H144V36H120V6H144V12Z" fill="var(--icon-strong-base)" />
-        <path d="M168 30H156V18H168V30Z" fill="var(--icon-weak-base)" />
-        <path d="M168 12H156V30H168V12ZM174 36H150V6H174V36Z" fill="var(--icon-strong-base)" />
-        <path d="M198 30H186V18H198V30Z" fill="var(--icon-weak-base)" />
-        <path d="M198 12H186V30H198V12ZM204 36H180V6H198V0H204V36Z" fill="var(--icon-strong-base)" />
-        <path d="M234 24V30H216V24H234Z" fill="var(--icon-weak-base)" />
-        <path d="M216 12V18H228V12H216ZM234 24H216V30H234V36H210V6H234V24Z" fill="var(--icon-strong-base)" />
-      </g>
+      <text
+        x="117"
+        y="33"
+        text-anchor="middle"
+        font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Rubik, Heebo, sans-serif"
+        font-size="34"
+        font-weight="800"
+        letter-spacing="-1"
+        fill="var(--icon-strong-base)"
+      >
+        SquadCoder
+      </text>
     </svg>
   )
 }

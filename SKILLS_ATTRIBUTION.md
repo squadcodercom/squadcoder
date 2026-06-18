@@ -1,13 +1,13 @@
 # Bundled Skills — Attribution
 
-MuminAI ships a curated set of **81 skills** under `.muminai/skills/`, auto-discovered by the
-skill loader (`{skill,skills}/**/SKILL.md` in the `.muminai` config dir + `skills.paths`).
+SquadCoder ships a curated set of **81 skills** under `.squadcoder/skills/`, auto-discovered by the
+skill loader (`{skill,skills}/**/SKILL.md` in the `.squadcoder` config dir + `skills.paths`).
 All bundled skills are **MIT-licensed** and work with **no network / no external API key**.
 
 ## Skills-IL (agentskills.co.il) — MIT
 Hebrew/Israeli skills by **Skills-IL / YooTech** — https://agentskills.co.il, source
 https://github.com/skills-il. Vendored unchanged with each repo's `LICENSE` preserved
-(`.muminai/skills/LICENSE-skills-il-*.txt`).
+(`.squadcoder/skills/LICENSE-skills-il-*.txt`).
 
 - **localization/** — Hebrew core: `hebrew-rtl-best-practices`, `hebrew-document-generator`
   (RTL PDF/DOCX/PPTX), `hebrew-content-writer`, `hebrew-i18n`, and more.

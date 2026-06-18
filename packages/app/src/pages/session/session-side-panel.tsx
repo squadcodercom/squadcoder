@@ -214,7 +214,7 @@ export function SessionSidePanel(props: {
         }}
         style={{ width: panelWidth() }}
       >
-        <div class="size-full flex border-l border-border-weaker-base">
+        <div class="size-full flex border-s border-border-weaker-base">
           <div
             aria-hidden={!reviewOpen()}
             inert={!reviewOpen()}
@@ -281,7 +281,7 @@ export function SessionSidePanel(props: {
                       <SortableProvider ids={openedTabs()}>
                         <For each={openedTabs()}>{(tab) => <SortableTab tab={tab} onTabClose={tabs().close} />}</For>
                       </SortableProvider>
-                      <div class="bg-background-stronger h-full shrink-0 sticky right-0 z-10 flex items-center justify-center pr-3">
+                      <div class="bg-background-stronger h-full shrink-0 sticky end-0 z-10 flex items-center justify-center pe-3">
                         <TooltipKeybind
                           title={language.t("command.file.open")}
                           keybind={command.keybind("file.open")}
@@ -368,7 +368,7 @@ export function SessionSidePanel(props: {
             >
               <div
                 class="h-full flex flex-col overflow-hidden group/filetree"
-                classList={{ "border-l border-border-weaker-base": reviewOpen() }}
+                classList={{ "border-s border-border-weaker-base": reviewOpen() }}
               >
                 <Tabs
                   variant="pill"

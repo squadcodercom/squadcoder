@@ -1,12 +1,12 @@
 {
-  "name": "@muminai/desktop",
+  "name": "@squadcoder/desktop",
   "private": true,
   "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/",
   "author": {
-    "name": "MuminAI"
+    "name": "SquadCoder"
   },
   "scripts": {
     "typecheck": "tsgo -b",
@@ -30,7 +30,8 @@
     "electron-updater": "^6",
     "electron-window-state": "^5.0.3",
     "drizzle-orm": "catalog:",
-    "marked": "^15"
+    "marked": "^15",
+    "jsonc-parser": "3.3.1"
   },
   "devDependencies": {
     "@actions/artifact": "4.0.0",

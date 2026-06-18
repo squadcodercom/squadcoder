@@ -49,6 +49,12 @@ await Bun.build({
   outdir: "./dist/node",
   format: "esm",
   sourcemap: "linked",
+  // jsonc-parser has a dynamic require Bun can't statically inline, so it stays external
+  // (bundling it fails with "Cannot find module './impl/format'"). node-pty is native and
+  // must be external. The desktop now loads this bundle directly (see electron.vite.config.ts),
+  // so both externals are made resolvable at runtime: jsonc-parser is added to the desktop's
+  // dependencies (so electron-builder packages it), and the node-pty meta-import is rewritten
+  // to the platform package at copy time.
   external: ["jsonc-parser", "@lydell/node-pty"],
   define: {
     OPENCODE_MIGRATIONS: JSON.stringify(migrations),

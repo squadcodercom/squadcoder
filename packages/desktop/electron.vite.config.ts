@@ -35,15 +35,34 @@ export default defineConfig({
         name: "opencode:virtual-server-module",
         enforce: "pre",
         resolveId(id) {
-          if (id === "virtual:opencode-server") return this.resolve(`${OPENCODE_SERVER_DIST}/node.js`)
+          // Externalize the prebuilt engine bundle instead of letting rollup re-bundle it.
+          // node.js is a COMPLETE, valid Bun bundle (esbuild transpiles it cleanly; the
+          // Bun-built CLI runs from it). Re-bundling its 21MB output through rollup's
+          // CJS-interop/chunking corrupts it — rollup emits an unterminated string in the
+          // re-chunked engine ("Unterminated string literal" at esbuild-transpile). So we
+          // ship node.js verbatim into out/main/chunks/ (beside its .wasm, which it
+          // references relatively) and load it at runtime via the dynamic import below.
+          if (id === "virtual:opencode-server") return { id: "./chunks/node.js", external: true }
         },
       },
       {
         name: "opencode:copy-server-assets",
         async writeBundle() {
+          await fs.mkdir("./out/main/chunks", { recursive: true })
           for (const l of await fs.readdir(OPENCODE_SERVER_DIST)) {
-            if (!l.endsWith(".wasm")) continue
-            await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${OPENCODE_SERVER_DIST}/${l}`))
+            // Copy the engine bundle itself (now external) plus its .wasm siblings.
+            if (l !== "node.js" && !l.endsWith(".wasm")) continue
+            if (l === "node.js") {
+              // The engine is now self-contained except the native node-pty meta-package.
+              // Rewrite that specifier to the concrete platform package (the only one
+              // installed/packaged) — same job the build-time node-pty-narrower does for
+              // rollup-bundled code, applied here to the externalized engine.
+              let code = await fs.readFile(`${OPENCODE_SERVER_DIST}/${l}`, "utf8")
+              code = code.replaceAll(`"@lydell/node-pty"`, `"${nodePtyPkg}"`).replaceAll(`'@lydell/node-pty'`, `'${nodePtyPkg}'`)
+              await fs.writeFile(`./out/main/chunks/${l}`, code)
+            } else {
+              await fs.writeFile(`./out/main/chunks/${l}`, await fs.readFile(`${OPENCODE_SERVER_DIST}/${l}`))
+            }
           }
         },
       },

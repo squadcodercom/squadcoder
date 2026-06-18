@@ -1,13 +1,13 @@
 ---
 title: SDK
-description: OpenCode サーバー用の型安全な JS クライアント。
+description: SquadCoder サーバー用の型安全な JS クライアント。
 ---
 
 import config from "../../../../config.mjs"
 export const typesUrl = `${config.github}/blob/dev/packages/sdk/js/src/gen/types.gen.ts`
 
-OpenCode JS/TS SDK は、サーバーと対話するための型安全なクライアントを提供します。
-これを使用して、統合を構築し、OpenCode をプログラムで制御します。
+SquadCoder JS/TS SDK は、サーバーと対話するための型安全なクライアントを提供します。
+これを使用して、統合を構築し、SquadCoder をプログラムで制御します。
 
 [サーバーの仕組みについての詳細](/docs/server) をご覧ください。たとえば、コミュニティによって構築された [projects](/docs/ecosystem#projects) をチェックしてください。
 
@@ -25,7 +25,7 @@ npm install @mimo-ai/sdk
 
 ## クライアントの作成
 
-OpenCode のインスタンスを作成します。
+SquadCoder のインスタンスを作成します。
 
 ```javascript
 import { createOpencode } from "@mimo-ai/sdk"
@@ -69,7 +69,7 @@ opencode.server.close()
 
 ## クライアントのみ
 
-すでに実行中の OpenCode のインスタンスがある場合は、それに接続するためのクライアントインスタンスを作成できます。
+すでに実行中の SquadCoder のインスタンスがある場合は、それに接続するためのクライアントインスタンスを作成できます。
 
 ```javascript
 import { createOpencodeClient } from "@mimo-ai/sdk"

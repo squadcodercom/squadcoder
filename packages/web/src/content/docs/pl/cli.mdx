@@ -1,17 +1,17 @@
 ---
 title: CLI
-description: Opcje i polecenia wiersza poleceń OpenCode.
+description: Opcje i polecenia wiersza poleceń SquadCoder.
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 
-CLI OpenCode domyślnie uruchamia [TUI](/docs/tui), gdy wywołasz je bez argumentów.
+CLI SquadCoder domyślnie uruchamia [TUI](/docs/tui), gdy wywołasz je bez argumentów.
 
 ```bash
 opencode
 ```
 
-CLI obsługuje też polecenia opisane na tej stronie, więc możesz używać OpenCode programowo.
+CLI obsługuje też polecenia opisane na tej stronie, więc możesz używać SquadCoder programowo.
 
 ```bash
 opencode run "Explain how closures work in JavaScript"
@@ -21,7 +21,7 @@ opencode run "Explain how closures work in JavaScript"
 
 ### tui
 
-Uruchamia interfejs terminalowy (TUI) OpenCode.
+Uruchamia interfejs terminalowy (TUI) SquadCoder.
 
 ```bash
 opencode [project]
@@ -44,13 +44,13 @@ opencode [project]
 
 ## Polecenia
 
-Interfejs CLI OpenCode zawiera także dodatkowe polecenia.
+Interfejs CLI SquadCoder zawiera także dodatkowe polecenia.
 
 ---
 
 ### agent
 
-Zarządzaj agentami OpenCode.
+Zarządzaj agentami SquadCoder.
 
 ```bash
 opencode agent [command]
@@ -60,13 +60,13 @@ opencode agent [command]
 
 ### attach
 
-Dołącz terminal do już działającego serwera backendu OpenCode uruchomionego za pomocą `serve` lub `web`.
+Dołącz terminal do już działającego serwera backendu SquadCoder uruchomionego za pomocą `serve` lub `web`.
 
 ```bash
 opencode attach [url]
 ```
 
-Pozwala to połączyć TUI ze zdalnym backendem OpenCode. Na przykład:
+Pozwala to połączyć TUI ze zdalnym backendem SquadCoder. Na przykład:
 
 ```bash
 # Start the backend server for web/mobile access
@@ -119,13 +119,13 @@ opencode auth [command]
 
 #### login
 
-OpenCode integruje się z wieloma dostawcami. Możesz użyć `opencode auth login`, aby skonfigurować klucz API dla dowolnego obsługiwanego dostawcy. Klucze są bezpiecznie przechowywane w `~/.local/share/opencode/auth.json`.
+SquadCoder integruje się z wieloma dostawcami. Możesz użyć `opencode auth login`, aby skonfigurować klucz API dla dowolnego obsługiwanego dostawcy. Klucze są bezpiecznie przechowywane w `~/.local/share/opencode/auth.json`.
 
 ```bash
 opencode auth login
 ```
 
-Podczas uruchamiania OpenCode ładuje dostawców z pliku poświadczeń, a także ze zmiennych środowiskowych lub pliku `.env` w Twoim projekcie.
+Podczas uruchamiania SquadCoder ładuje dostawców z pliku poświadczeń, a także ze zmiennych środowiskowych lub pliku `.env` w Twoim projekcie.
 
 ---
 
@@ -301,7 +301,7 @@ opencode models anthropic
 | `--refresh` | Odśwież pamięć podręczną modeli                                                 |
 | `--verbose` | Bardziej szczegółowe dane wyjściowe modelu (zawiera metadane, takie jak koszty) |
 
-Użyj flagi `--refresh`, aby zaktualizować listę modeli w pamięci podręcznej. Jest to przydatne, gdy dostawca dodał nowe modele, które chcesz zobaczyć w OpenCode.
+Użyj flagi `--refresh`, aby zaktualizować listę modeli w pamięci podręcznej. Jest to przydatne, gdy dostawca dodał nowe modele, które chcesz zobaczyć w SquadCoder.
 
 ```bash
 opencode models --refresh
@@ -311,7 +311,7 @@ opencode models --refresh
 
 ### run
 
-Uruchom OpenCode w trybie nieinteraktywnym, przekazując bezpośrednio prompt.
+Uruchom SquadCoder w trybie nieinteraktywnym, przekazując bezpośrednio prompt.
 
 ```bash
 opencode run [message..]
@@ -347,20 +347,20 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 | `--file`     | `-f`  | Pliki do załączenia do wiadomości                                       |
 | `--format`   |       | Format wyjściowy: `default` (sformatowany) lub `json` (surowy JSON)     |
 | `--title`    |       | Tytuł sesji (jeśli nie podano, zostanie wygenerowany z promptu)         |
-| `--attach`   |       | Dołącz do działającego serwera OpenCode (np. http://localhost:4096)     |
+| `--attach`   |       | Dołącz do działającego serwera SquadCoder (np. http://localhost:4096)     |
 | `--port`     |       | Port dla serwera lokalnego (domyślnie losowy)                           |
 
 ---
 
 ### serve
 
-Uruchom serwer OpenCode (bez interfejsu) w celu uzyskania dostępu do API. Pełny opis API HTTP znajduje się w [dokumentacji serwera](/docs/server).
+Uruchom serwer SquadCoder (bez interfejsu) w celu uzyskania dostępu do API. Pełny opis API HTTP znajduje się w [dokumentacji serwera](/docs/server).
 
 ```bash
 opencode serve
 ```
 
-Uruchamia to serwer HTTP, który zapewnia dostęp do API OpenCode bez interfejsu TUI. Ustaw `OPENCODE_SERVER_PASSWORD`, aby włączyć podstawowe uwierzytelnianie HTTP (domyślna nazwa użytkownika to `opencode`).
+Uruchamia to serwer HTTP, który zapewnia dostęp do API SquadCoder bez interfejsu TUI. Ustaw `OPENCODE_SERVER_PASSWORD`, aby włączyć podstawowe uwierzytelnianie HTTP (domyślna nazwa użytkownika to `opencode`).
 
 #### Flagi
 
@@ -375,7 +375,7 @@ Uruchamia to serwer HTTP, który zapewnia dostęp do API OpenCode bez interfejsu
 
 ### session
 
-Zarządzaj sesjami OpenCode.
+Zarządzaj sesjami SquadCoder.
 
 ```bash
 opencode session [command]
@@ -385,7 +385,7 @@ opencode session [command]
 
 #### list
 
-Lista wszystkich sesji OpenCode.
+Lista wszystkich sesji SquadCoder.
 
 ```bash
 opencode session list
@@ -402,7 +402,7 @@ opencode session list
 
 ### stats
 
-Pokaż statystyki wykorzystania tokenów i sesji OpenCode.
+Pokaż statystyki wykorzystania tokenów i sesji SquadCoder.
 
 ```bash
 opencode stats
@@ -433,7 +433,7 @@ Jeśli nie podasz identyfikatora sesji, zostaniesz poproszony o wybranie jednej 
 
 ### import
 
-Importuj dane sesji z pliku JSON lub adresu URL udostępniania OpenCode.
+Importuj dane sesji z pliku JSON lub adresu URL udostępniania SquadCoder.
 
 ```bash
 opencode import <file>
@@ -450,13 +450,13 @@ opencode import https://opncd.ai/s/abc123
 
 ### web
 
-Uruchom serwer OpenCode z interfejsem internetowym.
+Uruchom serwer SquadCoder z interfejsem internetowym.
 
 ```bash
 opencode web
 ```
 
-Uruchamia to serwer HTTP i udostępnia OpenCode przez interfejs przeglądarkowy. Ustaw `OPENCODE_SERVER_PASSWORD`, aby włączyć podstawowe uwierzytelnianie HTTP (domyślna nazwa użytkownika to `opencode`).
+Uruchamia to serwer HTTP i udostępnia SquadCoder przez interfejs przeglądarkowy. Ustaw `OPENCODE_SERVER_PASSWORD`, aby włączyć podstawowe uwierzytelnianie HTTP (domyślna nazwa użytkownika to `opencode`).
 
 #### Flagi
 
@@ -491,7 +491,7 @@ Uruchamia serwer ACP, który komunikuje się przez stdin/stdout przy użyciu JSO
 
 ### uninstall
 
-Odinstaluj OpenCode i usuń wszystkie powiązane pliki.
+Odinstaluj SquadCoder i usuń wszystkie powiązane pliki.
 
 ```bash
 opencode uninstall
@@ -510,7 +510,7 @@ opencode uninstall
 
 ### upgrade
 
-Aktualizuj OpenCode do najnowszej lub określonej wersji.
+Aktualizuj SquadCoder do najnowszej lub określonej wersji.
 
 ```bash
 opencode upgrade [target]
@@ -538,7 +538,7 @@ opencode upgrade v0.1.48
 
 ## Flagi globalne
 
-Interfejs CLI OpenCode przyjmuje następujące flagi globalne dla każdego polecenia.
+Interfejs CLI SquadCoder przyjmuje następujące flagi globalne dla każdego polecenia.
 
 | Flaga          | Skrót | Opis                                        |
 | -------------- | ----- | ------------------------------------------- |
@@ -551,7 +551,7 @@ Interfejs CLI OpenCode przyjmuje następujące flagi globalne dla każdego polec
 
 ## Zmienne środowiskowe
 
-OpenCode można skonfigurować za pomocą zmiennych środowiskowych.
+SquadCoder można skonfigurować za pomocą zmiennych środowiskowych.
 
 | Zmienna                               | Typ     | Opis                                                       |
 | ------------------------------------- | ------- | ---------------------------------------------------------- |

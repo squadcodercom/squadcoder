@@ -1810,7 +1810,7 @@ export default function Page() {
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="changes"
-                class="!w-1/2 !max-w-none !border-r-0"
+                class="!w-1/2 !max-w-none !border-e-0"
                 classes={{ button: "w-full" }}
                 onClick={() => setStore("mobileTab", "changes")}
               >

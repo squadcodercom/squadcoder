@@ -7,15 +7,15 @@ import config from "../../../../config.mjs"
 export const console = config.console
 export const email = `mailto:${config.email}`
 
-O OpenCode Go é uma assinatura de baixo custo — **US$ 5 no seu primeiro mês**, depois **US$ 10/mês** — que oferece acesso confiável a modelos abertos de programação populares.
+O SquadCoder Go é uma assinatura de baixo custo — **US$ 5 no seu primeiro mês**, depois **US$ 10/mês** — que oferece acesso confiável a modelos abertos de programação populares.
 
 :::note
-O OpenCode Go está atualmente em beta.
+O SquadCoder Go está atualmente em beta.
 :::
 
-O Go funciona como qualquer outro provedor no OpenCode. Você assina o OpenCode Go e
+O Go funciona como qualquer outro provedor no SquadCoder. Você assina o SquadCoder Go e
 obtém a sua chave de API. Ele é **totalmente opcional** e você não precisa usá-lo para
-usar o OpenCode.
+usar o SquadCoder.
 
 Ele foi projetado principalmente para usuários internacionais, com modelos hospedados nos EUA, na UE e em Singapura para um acesso global estável.
 
@@ -31,7 +31,7 @@ No entanto, obter um acesso confiável e de baixa latência a eles pode ser dif�
 variam em qualidade e disponibilidade.
 
 :::tip
-Testamos um grupo selecionado de modelos e provedores que funcionam bem com o OpenCode.
+Testamos um grupo selecionado de modelos e provedores que funcionam bem com o SquadCoder.
 :::
 
 Para resolver isso, fizemos algumas coisas:
@@ -43,22 +43,22 @@ Para resolver isso, fizemos algumas coisas:
 3. Por fim, avaliamos por benchmark a combinação de modelo/provedor e elaboramos
    uma lista que nos sentimos confortáveis em recomendar.
 
-O OpenCode Go lhe dá acesso a esses modelos por **US$ 5 no seu primeiro mês**, depois **US$ 10/mês**.
+O SquadCoder Go lhe dá acesso a esses modelos por **US$ 5 no seu primeiro mês**, depois **US$ 10/mês**.
 
 ---
 
 ## Como funciona
 
-O OpenCode Go funciona como qualquer outro provedor no OpenCode.
+O SquadCoder Go funciona como qualquer outro provedor no SquadCoder.
 
-1. Você entra no **<a href={console}>OpenCode Zen</a>**, assina o Go e
+1. Você entra no **<a href={console}>SquadCoder Zen</a>**, assina o Go e
    copia a sua chave de API.
-2. Você executa o comando `/connect` na TUI, seleciona `OpenCode Go` e cola
+2. Você executa o comando `/connect` na TUI, seleciona `SquadCoder Go` e cola
    a sua chave de API.
 3. Execute `/models` na TUI para ver a lista de modelos disponíveis através do Go.
 
 :::note
-Apenas um membro por workspace pode assinar o OpenCode Go.
+Apenas um membro por workspace pode assinar o SquadCoder Go.
 :::
 
 A lista atual de modelos inclui:
@@ -80,7 +80,7 @@ A lista de modelos pode mudar conforme testamos e adicionamos novos.
 
 ## Limites de uso
 
-O OpenCode Go inclui os seguintes limites:
+O SquadCoder Go inclui os seguintes limites:
 
 - **Limite de 5 horas** — US$ 12 de uso
 - **Limite semanal** — US$ 30 de uso
@@ -148,7 +148,7 @@ Você também pode acessar os modelos do Go através dos seguintes endpoints de 
 | Qwen3.6 Plus | qwen3.6-plus | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/alibaba`           |
 | Qwen3.5 Plus | qwen3.5-plus | `https://opencode.ai/zen/go/v1/chat/completions` | `@ai-sdk/alibaba`           |
 
-O [ID do modelo](/docs/config/#models) na sua configuração do OpenCode
+O [ID do modelo](/docs/config/#models) na sua configuração do SquadCoder
 usa o formato `opencode-go/<model-id>`. Por exemplo, para o Kimi K2.6, você usaria
 `opencode-go/kimi-k2.6` na sua configuração.
 
@@ -162,9 +162,9 @@ O plano foi projetado principalmente para usuários internacionais, com modelos 
 
 ## Objetivos
 
-Criamos o OpenCode Go para:
+Criamos o SquadCoder Go para:
 
 1. Tornar a programação com IA **acessível** a mais pessoas com uma assinatura de baixo custo.
 2. Fornecer acesso **confiável** aos melhores modelos abertos de programação.
 3. Ter modelos sob curadoria que são **testados e avaliados (benchmarked)** para o uso por agentes de programação.
-4. Não ter **nenhuma restrição de fornecedor (lock-in)**, permitindo que você use qualquer outro provedor com o OpenCode também.
+4. Não ter **nenhuma restrição de fornecedor (lock-in)**, permitindo que você use qualquer outro provedor com o SquadCoder também.

@@ -19,11 +19,25 @@ describe("resolveMimocodeHome", () => {
     const result = resolveMimocodeHome({})
     expect(result.mode).toBe("xdg")
     expect(result.root).toBeUndefined()
-    // xdg paths end with "/mimocode"
-    expect(result.config.endsWith(path.join("", "mimocode"))).toBe(true)
-    expect(result.data.endsWith(path.join("", "mimocode"))).toBe(true)
-    expect(result.state.endsWith(path.join("", "mimocode"))).toBe(true)
-    expect(result.cache.endsWith(path.join("", "mimocode"))).toBe(true)
+    // xdg paths end with "/squadcoder" (rebranded from mimocode)
+    expect(result.config.endsWith(path.join("", "squadcoder"))).toBe(true)
+    expect(result.data.endsWith(path.join("", "squadcoder"))).toBe(true)
+    expect(result.state.endsWith(path.join("", "squadcoder"))).toBe(true)
+    expect(result.cache.endsWith(path.join("", "squadcoder"))).toBe(true)
+  })
+
+  test("xdg mode exposes legacy mimocode paths for one-time migration", () => {
+    const result = resolveMimocodeHome({})
+    expect(result.legacy).toBeDefined()
+    expect(result.legacy!.config.endsWith(path.join("", "mimocode"))).toBe(true)
+    expect(result.legacy!.data.endsWith(path.join("", "mimocode"))).toBe(true)
+    // new and legacy must differ
+    expect(result.config).not.toBe(result.legacy!.config)
+  })
+
+  test("MIMOCODE_HOME mode does not expose legacy paths", () => {
+    const result = resolveMimocodeHome({ MIMOCODE_HOME: "/tmp/profile-a" })
+    expect(result.legacy).toBeUndefined()
   })
 
   test("empty MIMOCODE_HOME string is treated as unset (xdg mode)", () => {

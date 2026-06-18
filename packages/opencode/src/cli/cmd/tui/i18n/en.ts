@@ -12,6 +12,7 @@ export const dict: Record<string, string> = {
   "language.pl": "Polski",
   "language.ru": "Русский",
   "language.ar": "العربية",
+  "language.he": "עברית",
   "language.no": "Norsk",
   "language.br": "Português (Brasil)",
   "language.bs": "Bosanski",

@@ -440,7 +440,7 @@ name: opencode-skill
 description: A skill in the .mimocode/skill directory.
 ---
 
-# OpenCode Skill
+# SquadCoder Skill
 `,
               ),
               Bun.write(
@@ -450,7 +450,7 @@ name: opencode-skill
 description: A skill in the .mimocode/skills directory.
 ---
 
-# OpenCode Skill
+# SquadCoder Skill
 `,
               ),
             ]),

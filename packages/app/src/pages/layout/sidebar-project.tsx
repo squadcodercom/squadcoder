@@ -253,7 +253,7 @@ const ProjectPreviewPanel = (props: {
     <div class="px-2 py-2 border-t border-border-weak-base">
       <Button
         variant="ghost"
-        class="flex w-full text-left justify-start text-text-base px-2 hover:bg-transparent active:bg-transparent"
+        class="flex w-full text-start justify-start text-text-base px-2 hover:bg-transparent active:bg-transparent"
         onClick={() => {
           props.ctx.openSidebar()
           props.ctx.onHoverOpenChanged(props.project.worktree, false)
@@ -339,7 +339,7 @@ export const SortableProject = (props: {
           open={!state.suppressHover && hoverOpen() && !state.menu}
           openDelay={0}
           closeDelay={0}
-          placement="right-start"
+          placement={language.isRtl() ? "left-start" : "right-start"}
           gutter={6}
           trigger={tile()}
           onOpenChange={(value) => {

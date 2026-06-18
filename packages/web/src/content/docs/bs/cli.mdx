@@ -1,17 +1,17 @@
 ---
 title: CLI
-description: OpenCode CLI opcije i naredbe.
+description: SquadCoder CLI opcije i naredbe.
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 
-OpenCode CLI po defaultu pokreće [TUI](/docs/tui) kada se pokrene bez ikakvih argumenata.
+SquadCoder CLI po defaultu pokreće [TUI](/docs/tui) kada se pokrene bez ikakvih argumenata.
 
 ```bash
 opencode
 ```
 
-Ali takođe prihvata naredbe kao što je dokumentovano na ovoj stranici. Ovo vam omogućava programsku interakciju sa OpenCode.
+Ali takođe prihvata naredbe kao što je dokumentovano na ovoj stranici. Ovo vam omogućava programsku interakciju sa SquadCoder.
 
 ```bash
 opencode run "Explain how closures work in JavaScript"
@@ -21,7 +21,7 @@ opencode run "Explain how closures work in JavaScript"
 
 ### tui
 
-Pokrenite OpenCode terminalski korisnički interfejs.
+Pokrenite SquadCoder terminalski korisnički interfejs.
 
 ```bash
 opencode [project]
@@ -44,13 +44,13 @@ opencode [project]
 
 ## Naredbe
 
-OpenCode CLI takođe ima sljedeće naredbe.
+SquadCoder CLI takođe ima sljedeće naredbe.
 
 ---
 
 ### agent
 
-Upravljajte OpenCode agentima.
+Upravljajte SquadCoder agentima.
 
 ```bash
 opencode agent [command]
@@ -60,13 +60,13 @@ opencode agent [command]
 
 ### attach
 
-Priključite terminal na već pokrenut OpenCode backend server pokrenut putem `serve` ili `web` naredbi.
+Priključite terminal na već pokrenut SquadCoder backend server pokrenut putem `serve` ili `web` naredbi.
 
 ```bash
 opencode attach [url]
 ```
 
-Ovo omogućava korištenje TUI-ja sa udaljenim OpenCode backend-om. Na primjer:
+Ovo omogućava korištenje TUI-ja sa udaljenim SquadCoder backend-om. Na primjer:
 
 ```bash
 # Start the backend server for web/mobile access
@@ -119,13 +119,13 @@ opencode auth [command]
 
 #### login
 
-OpenCode pokreće lista provajdera na [Models.dev](https://models.dev), tako da možete koristiti `opencode auth login` da konfigurirate API ključeve za bilo kojeg provajdera kojeg želite koristiti. Ovo je pohranjeno u `~/.local/share/opencode/auth.json`.
+SquadCoder pokreće lista provajdera na [Models.dev](https://models.dev), tako da možete koristiti `opencode auth login` da konfigurirate API ključeve za bilo kojeg provajdera kojeg želite koristiti. Ovo je pohranjeno u `~/.local/share/opencode/auth.json`.
 
 ```bash
 opencode auth login
 ```
 
-Kada se OpenCode pokrene, učitava dobavljače iz datoteke vjerodajnica. I ako postoje neki ključevi definirani u vašim okruženjima ili `.env` fajl u vašem projektu.
+Kada se SquadCoder pokrene, učitava dobavljače iz datoteke vjerodajnica. I ako postoje neki ključevi definirani u vašim okruženjima ili `.env` fajl u vašem projektu.
 
 ---
 
@@ -298,7 +298,7 @@ opencode models anthropic
 | `--refresh` | Osvježite keš modela sa models.dev                                       |
 | `--verbose` | Koristite detaljniji izlaz modela (uključuje metapodatke poput troškova) |
 
-Koristite `--refresh` zastavicu da ažurirate keširanu listu modela. Ovo je korisno kada su novi modeli dodani provajderu i želite da ih vidite u OpenCode.
+Koristite `--refresh` zastavicu da ažurirate keširanu listu modela. Ovo je korisno kada su novi modeli dodani provajderu i želite da ih vidite u SquadCoder.
 
 ```bash
 opencode models --refresh
@@ -308,7 +308,7 @@ opencode models --refresh
 
 ### run
 
-Pokrenite OpenCode u neinteraktivnom modu tako što ćete direktno proslijediti prompt.
+Pokrenite SquadCoder u neinteraktivnom modu tako što ćete direktno proslijediti prompt.
 
 ```bash
 opencode run [message..]
@@ -344,20 +344,20 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 | `--file`     | `-f`   | Fajlovi koje treba priložiti poruci                                      |
 | `--format`   |        | Format: default (formatiran) ili json (sirovi JSON događaji)             |
 | `--title`    |        | Naslov sesije (koristi skraćeni prompt ako nije navedena vrijednost)     |
-| `--attach`   |        | Priključite na pokrenuti OpenCode server (npr. http://localhost:4096)    |
+| `--attach`   |        | Priključite na pokrenuti SquadCoder server (npr. http://localhost:4096)    |
 | `--port`     |        | Port za lokalni server (zadano na nasumični port)                        |
 
 ---
 
 ### serve
 
-Pokrenite OpenCode headless server za API pristup. Pogledajte [server docs](/docs/server) za kompletan HTTP interfejs.
+Pokrenite SquadCoder headless server za API pristup. Pogledajte [server docs](/docs/server) za kompletan HTTP interfejs.
 
 ```bash
 opencode serve
 ```
 
-Ovo pokreće HTTP server koji pruža API pristup funkcionalnosti OpenCode-a bez TUI interfejsa. Postavite `OPENCODE_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `opencode`).
+Ovo pokreće HTTP server koji pruža API pristup funkcionalnosti SquadCoder-a bez TUI interfejsa. Postavite `OPENCODE_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `opencode`).
 
 #### Opcije
 
@@ -372,7 +372,7 @@ Ovo pokreće HTTP server koji pruža API pristup funkcionalnosti OpenCode-a bez 
 
 ### session
 
-Upravljajte OpenCode sesijama.
+Upravljajte SquadCoder sesijama.
 
 ```bash
 opencode session [command]
@@ -382,7 +382,7 @@ opencode session [command]
 
 #### list
 
-Navedite sve OpenCode sesije.
+Navedite sve SquadCoder sesije.
 
 ```bash
 opencode session list
@@ -399,7 +399,7 @@ opencode session list
 
 ### stats
 
-Prikaži statistiku upotrebe tokena i troškova za vaše OpenCode sesije.
+Prikaži statistiku upotrebe tokena i troškova za vaše SquadCoder sesije.
 
 ```bash
 opencode stats
@@ -430,13 +430,13 @@ Ako ne unesete ID sesije, od vas će biti zatraženo da odaberete neku od dostup
 
 ### import
 
-Uvezite podatke sesije iz JSON datoteke ili OpenCode dijeljenog URL-a.
+Uvezite podatke sesije iz JSON datoteke ili SquadCoder dijeljenog URL-a.
 
 ```bash
 opencode import <file>
 ```
 
-Možete uvesti iz lokalne datoteke ili OpenCode dijeljenog URL-a.
+Možete uvesti iz lokalne datoteke ili SquadCoder dijeljenog URL-a.
 
 ```bash
 opencode import session.json
@@ -447,13 +447,13 @@ opencode import https://opncd.ai/s/abc123
 
 ### web
 
-Pokrenite OpenCode headless server sa web interfejsom.
+Pokrenite SquadCoder headless server sa web interfejsom.
 
 ```bash
 opencode web
 ```
 
-Ovo pokreće HTTP server i otvara web pretraživač za pristup OpenCode-u preko web interfejsa. Postavite `OPENCODE_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `opencode`).
+Ovo pokreće HTTP server i otvara web pretraživač za pristup SquadCoder-u preko web interfejsa. Postavite `OPENCODE_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `opencode`).
 
 #### Opcije
 
@@ -488,7 +488,7 @@ Ova naredba pokreće ACP server koji komunicira preko stdin/stdout koristeći nd
 
 ### uninstall
 
-Deinstalirajte OpenCode i uklonite sve povezane datoteke.
+Deinstalirajte SquadCoder i uklonite sve povezane datoteke.
 
 ```bash
 opencode uninstall
@@ -507,7 +507,7 @@ opencode uninstall
 
 ### upgrade
 
-Ažurira OpenCode na najnoviju verziju ili određenu verziju.
+Ažurira SquadCoder na najnoviju verziju ili određenu verziju.
 
 ```bash
 opencode upgrade [target]
@@ -535,7 +535,7 @@ opencode upgrade v0.1.48
 
 ## Globalne opcije
 
-OpenCode CLI prihvata sljedeće globalne zastavice.
+SquadCoder CLI prihvata sljedeće globalne zastavice.
 
 | Opcija         | Kratko | Opis                                      |
 | -------------- | ------ | ----------------------------------------- |
@@ -548,7 +548,7 @@ OpenCode CLI prihvata sljedeće globalne zastavice.
 
 ## Varijable okruženja
 
-OpenCode se može konfigurirati pomoću varijabli okruženja.
+SquadCoder se može konfigurirati pomoću varijabli okruženja.
 
 | Varijabla                             | Tip     | Opis                                                               |
 | ------------------------------------- | ------- | ------------------------------------------------------------------ |

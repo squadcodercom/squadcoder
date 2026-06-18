@@ -3,7 +3,7 @@ import { EOL } from "os"
 import { NamedError } from "@mimo-ai/shared/util/error"
 import { logo as glyphs } from "./logo"
 
-// MUMINAI: rebranded --help wordmark (was "MIMOCODE")
+// SQUADCODER: rebranded --help wordmark (was "MIMOCODE")
 const wordmark = [
   `⠀                                  `,
   `█▀▄▀█ █  █ █▀▄▀█ █ █▄ █  █▀▀█ █`,

@@ -34,7 +34,7 @@ export function SessionRevertDock(props: {
   return (
     <DockTray data-component="session-revert-dock">
       <div
-        class="pl-3 pr-2 py-2 flex items-center gap-2"
+        class="ps-3 pe-2 py-2 flex items-center gap-2"
         role="button"
         tabIndex={0}
         onClick={toggle}
@@ -48,7 +48,7 @@ export function SessionRevertDock(props: {
         <Show when={store.collapsed && preview()}>
           <span class="min-w-0 flex-1 truncate text-14-regular text-text-base cursor-default">{preview()}</span>
         </Show>
-        <div class="ml-auto shrink-0">
+        <div class="ms-auto shrink-0">
           <IconButton
             data-collapsed={store.collapsed ? "true" : "false"}
             icon="chevron-down"

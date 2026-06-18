@@ -157,7 +157,7 @@ export const SettingsProviders: Component = () => {
                     <Show
                       when={canDisconnect(item)}
                       fallback={
-                        <span class="text-14-regular text-text-base opacity-0 group-hover:opacity-100 transition-opacity duration-200 pr-3 cursor-default">
+                        <span class="text-14-regular text-text-base opacity-0 group-hover:opacity-100 transition-opacity duration-200 pe-3 cursor-default">
                           {language.t("settings.providers.connected.environmentDescription")}
                         </span>
                       }
@@ -191,7 +191,7 @@ export const SettingsProviders: Component = () => {
                       </Show>
                     </div>
                     <Show when={note(item.id)}>
-                      {(key) => <span class="text-12-regular text-text-weak pl-8">{language.t(key())}</span>}
+                      {(key) => <span class="text-12-regular text-text-weak ps-8">{language.t(key())}</span>}
                     </Show>
                   </div>
                   <Button
@@ -218,7 +218,7 @@ export const SettingsProviders: Component = () => {
                   <span class="text-14-medium text-text-strong">{language.t("provider.custom.title")}</span>
                   <Tag>{language.t("settings.providers.tag.custom")}</Tag>
                 </div>
-                <span class="text-12-regular text-text-weak pl-8">
+                <span class="text-12-regular text-text-weak ps-8">
                   {language.t("settings.providers.custom.description")}
                 </span>
               </div>
@@ -237,7 +237,7 @@ export const SettingsProviders: Component = () => {
 
           <Button
             variant="ghost"
-            class="px-0 py-0 mt-5 text-14-medium text-text-interactive-base text-left justify-start hover:bg-transparent active:bg-transparent"
+            class="px-0 py-0 mt-5 text-14-medium text-text-interactive-base text-start justify-start hover:bg-transparent active:bg-transparent"
             onClick={() => {
               dialog.show(() => <DialogSelectProvider />)
             }}

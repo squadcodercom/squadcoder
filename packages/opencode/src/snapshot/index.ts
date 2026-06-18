@@ -33,7 +33,7 @@ export type FileDiff = z.infer<typeof FileDiff>
 const log = Log.create({ service: "snapshot" })
 const prune = "7.days"
 const limit = 2 * 1024 * 1024
-// MUMINAI(#460): default ignore patterns so undo-snapshots of NON-git projects stay bounded
+// SQUADCODER(#460): default ignore patterns so undo-snapshots of NON-git projects stay bounded
 // (never snapshot dependency/build dirs). Written into the shadow git's info/exclude, which is
 // the LOWEST git-exclude precedence, so a user's own .gitignore can still override these.
 const defaultIgnore = [
@@ -202,7 +202,7 @@ export const layer: Layer.Layer<
         const locked = <A, E, R>(fx: Effect.Effect<A, E, R>) => lock(state.gitdir).withPermits(1)(fx)
 
         const enabled = Effect.fnUntraced(function* () {
-          // MUMINAI(#460): the snapshot uses a SHADOW git (separate gitdir + work-tree), so it
+          // SQUADCODER(#460): the snapshot uses a SHADOW git (separate gitdir + work-tree), so it
           // works even when the user's project is NOT a git repo. Enabling it for non-git
           // projects makes destructive ops (e.g. `rm -rf` via the bash tool, or edits)
           // recoverable via /undo even BEFORE the user runs `git init` — fixing the
@@ -224,7 +224,7 @@ export const layer: Layer.Layer<
           const file = yield* excludes()
           const target = path.join(state.gitdir, "info", "exclude")
           const text = [
-            defaultIgnore.join("\n"), // MUMINAI(#460): bound non-git snapshots
+            defaultIgnore.join("\n"), // SQUADCODER(#460): bound non-git snapshots
             file ? (yield* read(file)).trimEnd() : "",
             ...list.map((item) => `/${item.replaceAll("\\", "/")}`),
           ]

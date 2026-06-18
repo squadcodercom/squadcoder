@@ -30,6 +30,7 @@ const loaders: Record<Exclude<Locale, "en">, () => Promise<Dictionary>> = {
   pl: () => merge(import("@mimo-ai/ui/i18n/pl")),
   ru: () => merge(import("@mimo-ai/ui/i18n/ru"), import("../i18n/ru")),
   ar: () => merge(import("@mimo-ai/ui/i18n/ar")),
+  he: () => merge(import("@mimo-ai/ui/i18n/he"), import("../i18n/he")),
   no: () => merge(import("@mimo-ai/ui/i18n/no")),
   br: () => merge(import("@mimo-ai/ui/i18n/br")),
   th: () => merge(import("@mimo-ai/ui/i18n/th")),

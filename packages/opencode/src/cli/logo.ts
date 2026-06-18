@@ -1,4 +1,4 @@
-// MUMINAI: rebranded wordmark (was MiMo Code / Xiaomi). Spells "MUMIN AI".
+// SQUADCODER: rebranded wordmark (was MiMo Code / Xiaomi). Spells "MUMIN AI".
 export const logoThin = {
   left: [
     "                     ",
@@ -8,7 +8,7 @@ export const logoThin = {
     "▀   ▀ ▀▀▀ ▀   ▀ ▀ ▀  ▀",
   ],
   right: [
-    "  MuminAI",
+    "  SquadCoder",
     "         ",
     " █▀▀█ █",
     " █▀▀█ █",

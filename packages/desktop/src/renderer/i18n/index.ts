@@ -186,7 +186,7 @@ export function initI18n(): Promise<Locale> {
 
     state.locale = next
     state.dict = build(next)
-    // MUMINAI: apply text direction for the desktop shell (RTL for Hebrew/Arabic)
+    // SQUADCODER: apply text direction for the desktop shell (RTL for Hebrew/Arabic)
     if (typeof document === "object") {
       document.documentElement.lang = next
       document.documentElement.dir = next === "he" || next === "ar" ? "rtl" : "ltr"

@@ -3,7 +3,11 @@ import { xdgData, xdgCache, xdgConfig, xdgState } from "xdg-basedir"
 import os from "os"
 import { Context, Effect, Layer } from "effect"
 
-const APP = "mimocode"
+// SQUADCODER: the on-disk app dir is now "squadcoder" (was "mimocode"). XDG installs of
+// previous mimocode builds keep their data via the `legacy` paths below, which the
+// runtime migrates from on first launch (see packages/opencode/src/global/index.ts).
+const APP = "squadcoder"
+const LEGACY_APP = "mimocode"
 
 export type ResolvedPaths = {
   mode: "mimocode_home" | "xdg"
@@ -12,6 +16,13 @@ export type ResolvedPaths = {
   cache: string
   config: string
   state: string
+  /** Previous-brand (mimocode) XDG paths, present only in xdg mode, for one-time migration. */
+  legacy?: {
+    data: string
+    cache: string
+    config: string
+    state: string
+  }
 }
 
 /**
@@ -46,6 +57,12 @@ export function resolveMimocodeHome(env: NodeJS.ProcessEnv = process.env): Resol
     cache: path.join(xdgCache!, APP),
     config: path.join(xdgConfig!, APP),
     state: path.join(xdgState!, APP),
+    legacy: {
+      data: path.join(xdgData!, LEGACY_APP),
+      cache: path.join(xdgCache!, LEGACY_APP),
+      config: path.join(xdgConfig!, LEGACY_APP),
+      state: path.join(xdgState!, LEGACY_APP),
+    },
   }
 }
 

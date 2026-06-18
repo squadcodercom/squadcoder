@@ -175,7 +175,7 @@ export const TuiThreadCommand = cmd({
     // Keep ENABLE_PROCESSED_INPUT cleared even if other code flips it.
     // (Important when running under `bun run` wrappers on Windows.)
     const unguard = win32InstallCtrlCGuard()
-    win32InstallTerminalRestoreGuard() // MUMINAI(#522): restore console on hard kill/crash
+    win32InstallTerminalRestoreGuard() // SQUADCODER(#522): restore console on hard kill/crash
     try {
       // Must be the very first thing — disables CTRL_C_EVENT before any Worker
       // spawn or async work so the OS cannot kill the process group.
@@ -254,7 +254,7 @@ export const TuiThreadCommand = cmd({
         process.off("uncaughtException", error)
         process.off("unhandledRejection", error)
         process.off("SIGUSR2", reload)
-        // MUMINAI(#216): 5s force-killed cleanup on large workspaces (stale locks, "crash on quit").
+        // SQUADCODER(#216): 5s force-killed cleanup on large workspaces (stale locks, "crash on quit").
         // Give graceful disposal more room; overridable for very large workspaces.
         await withTimeout(client.call("shutdown", undefined), Number(process.env.MIMOCODE_SHUTDOWN_TIMEOUT_MS) || 15000).catch((error) => {
           Log.Default.warn("worker shutdown failed", {

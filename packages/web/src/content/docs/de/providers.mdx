@@ -1,17 +1,17 @@
 ---
 title: Anbieter
-description: Verwendung eines beliebigen LLM-Anbieters in OpenCode.
+description: Verwendung eines beliebigen LLM-Anbieters in SquadCoder.
 ---
 
 import config from "../../../../config.mjs"
 export const console = config.console
 
-OpenCode verwendet [AI SDK](https://ai-sdk.dev/) und [Models.dev](https://models.dev) zur Unterstützung von **75+ LLM-Anbietern** und unterstützt die Ausführung lokaler Modelle.
+SquadCoder verwendet [AI SDK](https://ai-sdk.dev/) und [Models.dev](https://models.dev) zur Unterstützung von **75+ LLM-Anbietern** und unterstützt die Ausführung lokaler Modelle.
 
 Um einen Anbieter hinzuzufügen, müssen Sie:
 
 1. Fügen Sie die API-Schlüssel für den Anbieter mit dem Befehl `/connect` hinzu.
-2. Konfigurieren Sie den Anbieter in Ihrer OpenCode-Konfiguration.
+2. Konfigurieren Sie den Anbieter in Ihrer SquadCoder-Konfiguration.
 
 ---
 
@@ -24,7 +24,7 @@ in `~/.local/share/opencode/auth.json`.
 
 ### Konfiguration
 
-Sie können die Anbieter über den Abschnitt `provider` in Ihrem OpenCode anpassen
+Sie können die Anbieter über den Abschnitt `provider` in Ihrem SquadCoder anpassen
 config.
 
 ---
@@ -48,16 +48,16 @@ Sie können die Base URL für jeden Anbieter anpassen, indem Sie die Option `bas
 
 ---
 
-## OpenCode Zen
+## SquadCoder Zen
 
-OpenCode Zen ist eine Liste von Modellen, die vom OpenCode-Team bereitgestellt wurden
-Getestet und verifiziert, dass es gut mit OpenCode funktioniert. [Learn more](/docs/zen).
+SquadCoder Zen ist eine Liste von Modellen, die vom SquadCoder-Team bereitgestellt wurden
+Getestet und verifiziert, dass es gut mit SquadCoder funktioniert. [Learn more](/docs/zen).
 
 :::tip
-Wenn Sie neu sind, empfehlen wir Ihnen, mit OpenCode Zen zu beginnen.
+Wenn Sie neu sind, empfehlen wir Ihnen, mit SquadCoder Zen zu beginnen.
 :::
 
-1. Führen Sie den Befehl `/connect` in TUI aus, wählen Sie OpenCode aus und gehen Sie zu [opencode.ai/auth](https://opencode.ai/auth).
+1. Führen Sie den Befehl `/connect` in TUI aus, wählen Sie SquadCoder aus und gehen Sie zu [opencode.ai/auth](https://opencode.ai/auth).
 
    ```txt
    /connect
@@ -80,15 +80,15 @@ Wenn Sie neu sind, empfehlen wir Ihnen, mit OpenCode Zen zu beginnen.
    /models
    ```
 
-Es funktioniert wie jeder andere Anbieter in OpenCode und ist völlig optional.
+Es funktioniert wie jeder andere Anbieter in SquadCoder und ist völlig optional.
 
 ---
 
-## OpenCode Go
+## SquadCoder Go
 
-OpenCode Go ist ein kostenguenstiges Abonnement, das zuverlaessigen Zugriff auf beliebte Open-Coding-Modelle bietet, die vom OpenCode-Team getestet und verifiziert wurden, dass sie gut mit OpenCode funktionieren.
+SquadCoder Go ist ein kostenguenstiges Abonnement, das zuverlaessigen Zugriff auf beliebte Open-Coding-Modelle bietet, die vom SquadCoder-Team getestet und verifiziert wurden, dass sie gut mit SquadCoder funktionieren.
 
-1. Führen Sie den Befehl `/connect` in der TUI aus, waehlen Sie `OpenCode Go` und gehen Sie zu [opencode.ai/auth](https://opencode.ai/zen).
+1. Führen Sie den Befehl `/connect` in der TUI aus, waehlen Sie `SquadCoder Go` und gehen Sie zu [opencode.ai/auth](https://opencode.ai/zen).
 
    ```txt
    /connect
@@ -111,7 +111,7 @@ OpenCode Go ist ein kostenguenstiges Abonnement, das zuverlaessigen Zugriff auf 
    /models
    ```
 
-Es funktioniert wie jeder andere Anbieter in OpenCode und ist völlig optional.
+Es funktioniert wie jeder andere Anbieter in SquadCoder und ist völlig optional.
 
 ---
 
@@ -155,7 +155,7 @@ Sehen Sie hier keinen Anbieter? Senden Sie einen PR.
 
 ### Amazon Bedrock
 
-So verwenden Sie Amazon Bedrock mit OpenCode:
+So verwenden Sie Amazon Bedrock mit SquadCoder:
 
 1. Gehen Sie zum **Modellkatalog** in der Amazon Bedrock-Konsole und fordern Sie an
    Zugriff auf die gewünschten Modelle.
@@ -168,7 +168,7 @@ So verwenden Sie Amazon Bedrock mit OpenCode:
 
    #### Umgebungsvariablen (Schnellstart)
 
-   Legen Sie eine dieser Umgebungsvariablen fest, während Sie OpenCode ausführen:
+   Legen Sie eine dieser Umgebungsvariablen fest, während Sie SquadCoder ausführen:
 
    ```bash
    # Option 1: Using AWS access keys
@@ -310,7 +310,7 @@ Verwenden Sie für benutzerdefinierte Inferenzprofile den Modell- und Anbieterna
    ```
 
 :::info
-Die Verwendung Ihres Claude Pro/Max-Abonnements in OpenCode wird von [Anthropic](https://anthropic.com) nicht offiziell unterstützt.
+Die Verwendung Ihres Claude Pro/Max-Abonnements in SquadCoder wird von [Anthropic](https://anthropic.com) nicht offiziell unterstützt.
 :::
 
 ##### Verwendung von API-Keys
@@ -334,7 +334,7 @@ Wenn Sie auf die Fehlermeldung „Es tut mir leid, aber ich kann Ihnen bei diese
 2. Gehen Sie zu [Azure AI Foundry](https://ai.azure.com/) und stellen Sie ein Modell bereit.
 
    :::note
-   Der Bereitstellungsname muss mit dem Modellnamen übereinstimmen, damit OpenCode ordnungsgemäß funktioniert.
+   Der Bereitstellungsname muss mit dem Modellnamen übereinstimmen, damit SquadCoder ordnungsgemäß funktioniert.
    :::
 
 3. Führen Sie den Befehl `/connect` aus und suchen Sie nach **Azure**.
@@ -381,7 +381,7 @@ Wenn Sie auf die Fehlermeldung „Es tut mir leid, aber ich kann Ihnen bei diese
 2. Gehen Sie zu [Azure AI Foundry](https://ai.azure.com/) und stellen Sie ein Modell bereit.
 
    :::note
-   Der Bereitstellungsname muss mit dem Modellnamen übereinstimmen, damit OpenCode ordnungsgemäß funktioniert.
+   Der Bereitstellungsname muss mit dem Modellnamen übereinstimmen, damit SquadCoder ordnungsgemäß funktioniert.
    :::
 
 3. Führen Sie den Befehl `/connect` aus und suchen Sie nach **Azure Cognitive Services**.
@@ -513,7 +513,7 @@ Mit dem Cloudflare AI Gateway können Sie über einen einheitlichen Endpunkt auf
    /models
    ```
 
-   Sie können Modelle auch über Ihre OpenCode-Konfiguration hinzufügen.
+   Sie können Modelle auch über Ihre SquadCoder-Konfiguration hinzufügen.
 
    ```json title="opencode.json"
    {
@@ -693,7 +693,7 @@ GitLab Duo bietet AI-gestützten Agenten-Chat mit nativen Tool-Aufruffunktionen 
    #### Verwendung eines persönlichen Zugriffstokens
    1. Gehe zu [GitLab User Settings > Access Tokens](https://gitlab.com/-/user_settings/personal_access_tokens)
    2. Klicken Sie auf **Neues Token hinzufügen**
-   3. Name: `OpenCode`, Bereiche: `api`
+   3. Name: `SquadCoder`, Bereiche: `api`
    4. Kopieren Sie das Token (beginnt mit `glpat-`)
    5. Geben Sie es im Terminal ein
 
@@ -710,14 +710,14 @@ GitLab Duo bietet AI-gestützten Agenten-Chat mit nativen Tool-Aufruffunktionen 
 
 :::note
 Sie können auch die Umgebungsvariable „GITLAB_TOKEN“ angeben, wenn Sie dies nicht möchten
-um das Token im OpenCode-Authentifizierungsspeicher zu speichern.
+um das Token im SquadCoder-Authentifizierungsspeicher zu speichern.
 :::
 
 ##### Selbstgehostetes GitLab
 
 :::note[Compliance-Hinweis]
-OpenCode verwendet ein kleines Modell für einige AI-Aufgaben wie das Generieren des Sitzungstitels.
-Es ist standardmäßig für die Verwendung von gpt-5-nano konfiguriert und wird von Zen gehostet. Zum Sperren von OpenCode
+SquadCoder verwendet ein kleines Modell für einige AI-Aufgaben wie das Generieren des Sitzungstitels.
+Es ist standardmäßig für die Verwendung von gpt-5-nano konfiguriert und wird von Zen gehostet. Zum Sperren von SquadCoder
 Um nur Ihre eigene von GitLab gehostete Instanz zu verwenden, fügen Sie Folgendes zu Ihrer hinzu
 `opencode.json`-Datei. Es wird außerdem empfohlen, die Sitzungsfreigabe zu deaktivieren.
 
@@ -813,7 +813,7 @@ Dieses Plugin bietet umfassende GitLab-Repository-Verwaltungsfunktionen, einschl
 
 ### GitHub Copilot
 
-So verwenden Sie Ihr GitHub Copilot-Abonnement mit OpenCode:
+So verwenden Sie Ihr GitHub Copilot-Abonnement mit SquadCoder:
 
 :::note
 Einige Modelle benötigen möglicherweise ein [Pro+
@@ -850,7 +850,7 @@ Einige Modelle müssen in Ihrem [GitHub Copilot settings](https://docs.github.co
 
 ### Google Vertex AI
 
-So verwenden Sie Google Vertex AI mit OpenCode:
+So verwenden Sie Google Vertex AI mit SquadCoder:
 
 1. Gehen Sie zum **Model Garden** in der Google Cloud Console und überprüfen Sie die
    Modelle, die in Ihrer Region verfügbar sind.
@@ -866,7 +866,7 @@ So verwenden Sie Google Vertex AI mit OpenCode:
      - `GOOGLE_APPLICATION_CREDENTIALS`: Pfad zur Schlüsseldatei Ihres Dienstkontos JSON
      - Authentifizieren Sie sich mit gcloud CLI: `gcloud auth application-default login`
 
-   Legen Sie sie fest, während Sie OpenCode ausführen.
+   Legen Sie sie fest, während Sie SquadCoder ausführen.
 
    ```bash
    GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json GOOGLE_CLOUD_PROJECT=your-project-id opencode
@@ -979,7 +979,7 @@ Weitere Anbieter und erweiterte Funktionen wie Caching und Ratenbegrenzung finde
 
 #### Optionale Konfigurationen
 
-Falls Sie eine Funktion oder ein Modell von Helicone sehen, das nicht automatisch über OpenCode konfiguriert wird, können Sie es jederzeit selbst konfigurieren.
+Falls Sie eine Funktion oder ein Modell von Helicone sehen, das nicht automatisch über SquadCoder konfiguriert wird, können Sie es jederzeit selbst konfigurieren.
 
 Hier ist [Helicone's Model Directory](https://helicone.ai/models). Sie benötigen dies, um die IDs der Modelle abzurufen, die Sie hinzufügen möchten.
 
@@ -1032,7 +1032,7 @@ Helicone unterstützt benutzerdefinierte Header für Funktionen wie Caching, Ben
 
 ##### Sitzungsverfolgung
 
-Mit der [Sessions](https://docs.helicone.ai/features/sessions)-Funktion von Helicone können Sie zusammengehörige LLM-Anfragen gruppieren. Verwenden Sie das [opencode-helicone-session](https://github.com/H2Shami/opencode-helicone-session)-Plugin, um jede OpenCode-Konversation automatisch als Sitzung in Helicone zu protokollieren.
+Mit der [Sessions](https://docs.helicone.ai/features/sessions)-Funktion von Helicone können Sie zusammengehörige LLM-Anfragen gruppieren. Verwenden Sie das [opencode-helicone-session](https://github.com/H2Shami/opencode-helicone-session)-Plugin, um jede SquadCoder-Konversation automatisch als Sitzung in Helicone zu protokollieren.
 
 ```bash
 npm install -g opencode-helicone-session
@@ -1046,7 +1046,7 @@ Fügen Sie es Ihrer Konfiguration hinzu.
 }
 ```
 
-Das Plugin fügt `Helicone-Session-Id`- und `Helicone-Session-Name`-Header in Ihre Anfragen ein. Auf der Seite „Sitzungen“ von Helicone wird jede OpenCode-Konversation als separate Sitzung aufgeführt.
+Das Plugin fügt `Helicone-Session-Id`- und `Helicone-Session-Name`-Header in Ihre Anfragen ein. Auf der Seite „Sitzungen“ von Helicone wird jede SquadCoder-Konversation als separate Sitzung aufgeführt.
 
 ##### Gängige Helicone-Header
 
@@ -1063,7 +1063,7 @@ Alle verfügbaren Header finden Sie unter [Helicone Header Directory](https://do
 
 ### llama.cpp
 
-Sie können OpenCode für die Verwendung lokaler Modelle über das Dienstprogramm [llama.cpp's](https://github.com/ggml-org/llama.cpp) llama-server konfigurieren
+Sie können SquadCoder für die Verwendung lokaler Modelle über das Dienstprogramm [llama.cpp's](https://github.com/ggml-org/llama.cpp) llama-server konfigurieren
 
 ```json title="opencode.json" "llama.cpp" {5, 6, 8, 10-15}
 {
@@ -1130,7 +1130,7 @@ IO.NET bietet 17-Modelle, die für verschiedene Anwendungsfälle optimiert sind:
 
 ### LM Studio
 
-Sie können OpenCode über LM Studio für die Verwendung lokaler Modelle konfigurieren.
+Sie können SquadCoder über LM Studio für die Verwendung lokaler Modelle konfigurieren.
 
 ```json title="opencode.json" "lmstudio" {5, 6, 8, 10-14}
 {
@@ -1247,10 +1247,10 @@ So verwenden Sie Kimi K2 von Moonshot AI:
 
 ### Ollama
 
-Sie können OpenCode über Ollama für die Verwendung lokaler Modelle konfigurieren.
+Sie können SquadCoder über Ollama für die Verwendung lokaler Modelle konfigurieren.
 
 :::tip
-Ollama kann sich automatisch für OpenCode konfigurieren. Weitere Informationen finden Sie unter [Ollama integration docs](https://docs.ollama.com/integrations/opencode).
+Ollama kann sich automatisch für SquadCoder konfigurieren. Weitere Informationen finden Sie unter [Ollama integration docs](https://docs.ollama.com/integrations/opencode).
 :::
 
 ```json title="opencode.json" "ollama" {5, 6, 8, 10-14}
@@ -1289,13 +1289,13 @@ Wenn Toolaufrufe nicht funktionieren, versuchen Sie, `num_ctx` in Ollama zu erh�
 
 ### Ollama Cloud
 
-So verwenden Sie Ollama Cloud mit OpenCode:
+So verwenden Sie Ollama Cloud mit SquadCoder:
 
 1. Gehen Sie zu [https://ollama.com/](https://ollama.com/) und melden Sie sich an oder erstellen Sie ein Konto.
 
 2. Navigieren Sie zu **Einstellungen** > **Schlüssel** und klicken Sie auf **Add API Key**, um einen neuen API-Schlüssel zu generieren.
 
-3. Kopieren Sie den API-Schlüssel zur Verwendung in OpenCode.
+3. Kopieren Sie den API-Schlüssel zur Verwendung in SquadCoder.
 
 4. Führen Sie den Befehl `/connect` aus und suchen Sie nach **Ollama Cloud**.
 
@@ -1312,7 +1312,7 @@ So verwenden Sie Ollama Cloud mit OpenCode:
    └ enter
    ```
 
-6. **Wichtig**: Bevor Sie Cloud-Modelle in OpenCode verwenden, müssen Sie die Modellinformationen lokal abrufen:
+6. **Wichtig**: Bevor Sie Cloud-Modelle in SquadCoder verwenden, müssen Sie die Modellinformationen lokal abrufen:
 
    ```bash
    ollama pull gpt-oss:20b-cloud
@@ -1359,19 +1359,19 @@ Wenn Sie bereits über einen API-Schlüssel verfügen, können Sie **API-Schlüs
 
 ---
 
-### OpenCode Zen
+### SquadCoder Zen
 
-OpenCode Zen ist eine Liste getesteter und verifizierter Modelle, die vom OpenCode-Team bereitgestellt werden. [Learn more](/docs/zen).
+SquadCoder Zen ist eine Liste getesteter und verifizierter Modelle, die vom SquadCoder-Team bereitgestellt werden. [Learn more](/docs/zen).
 
-1. Melden Sie sich bei **<a href={console}>OpenCode Zen</a>** an und klicken Sie auf **Create API Key**.
+1. Melden Sie sich bei **<a href={console}>SquadCoder Zen</a>** an und klicken Sie auf **Create API Key**.
 
-2. Führen Sie den Befehl `/connect` aus und suchen Sie nach **OpenCode Zen**.
+2. Führen Sie den Befehl `/connect` aus und suchen Sie nach **SquadCoder Zen**.
 
    ```txt
    /connect
    ```
 
-3. Geben Sie Ihren OpenCode API-Schlüssel ein.
+3. Geben Sie Ihren SquadCoder API-Schlüssel ein.
 
    ```txt
    ┌ API key
@@ -1413,7 +1413,7 @@ OpenCode Zen ist eine Liste getesteter und verifizierter Modelle, die vom OpenCo
    /models
    ```
 
-   Sie können auch zusätzliche Modelle über Ihre OpenCode-Konfiguration hinzufügen.
+   Sie können auch zusätzliche Modelle über Ihre SquadCoder-Konfiguration hinzufügen.
 
    ```json title="opencode.json" {6}
    {
@@ -1428,7 +1428,7 @@ OpenCode Zen ist eine Liste getesteter und verifizierter Modelle, die vom OpenCo
    }
    ```
 
-5. Sie können sie auch über Ihre OpenCode-Konfiguration anpassen. Hier ist ein Beispiel für die Angabe eines Anbieters
+5. Sie können sie auch über Ihre SquadCoder-Konfiguration anpassen. Hier ist ein Beispiel für die Angabe eines Anbieters
 
    ```json title="opencode.json"
    {
@@ -1569,7 +1569,7 @@ STACKIT AI Model Serving bietet eine voll verwaltete, souveraene Hosting-Umgebun
 
 ### Scaleway
 
-So verwenden Sie [Scaleway Generative APIs](https://www.scaleway.com/en/docs/generative-apis/) mit OpenCode:
+So verwenden Sie [Scaleway Generative APIs](https://www.scaleway.com/en/docs/generative-apis/) mit SquadCoder:
 
 1. Gehen Sie zu [Scaleway Console IAM settings](https://console.scaleway.com/iam/api-keys), um einen neuen API-Schlüssel zu generieren.
 
@@ -1677,7 +1677,7 @@ Mit dem Vercel AI Gateway können Sie über einen einheitlichen Endpunkt auf Mod
    /models
    ```
 
-Sie können Modelle auch über Ihre OpenCode-Konfiguration anpassen. Hier ist ein Beispiel für die Angabe der Provider-Routing-Reihenfolge.
+Sie können Modelle auch über Ihre SquadCoder-Konfiguration anpassen. Hier ist ein Beispiel für die Angabe der Provider-Routing-Reihenfolge.
 
 ```json title="opencode.json"
 {
@@ -1787,7 +1787,7 @@ Einige nützliche Routing-Optionen:
    /models
    ```
 
-   Sie können auch zusätzliche Modelle über Ihre OpenCode-Konfiguration hinzufügen.
+   Sie können auch zusätzliche Modelle über Ihre SquadCoder-Konfiguration hinzufügen.
 
    ```json title="opencode.json" {6}
    {
@@ -1809,7 +1809,7 @@ Einige nützliche Routing-Optionen:
 So fügen Sie einen **OpenAI-kompatiblen** Anbieter hinzu, der nicht im Befehl `/connect` aufgeführt ist:
 
 :::tip
-Sie können jeden OpenAI-kompatiblen Anbieter mit OpenCode verwenden. Die meisten modernen AI-Anbieter bieten OpenAI-kompatible APIs an.
+Sie können jeden OpenAI-kompatiblen Anbieter mit SquadCoder verwenden. Die meisten modernen AI-Anbieter bieten OpenAI-kompatible APIs an.
 :::
 
 1. Führen Sie den Befehl `/connect` aus und scrollen Sie nach unten zu **Andere**.
@@ -1930,7 +1930,7 @@ Konfigurationsdetails:
 - **limit.context**: Maximale Eingabetokens, die das Modell akzeptiert.
 - **limit.output**: Maximale Token, die das Modell generieren kann.
 
-Mithilfe der `limit`-Felder kann OpenCode erkennen, wie viel Kontext Sie noch haben. Standardanbieter beziehen diese automatisch von models.dev.
+Mithilfe der `limit`-Felder kann SquadCoder erkennen, wie viel Kontext Sie noch haben. Standardanbieter beziehen diese automatisch von models.dev.
 
 ---
 
@@ -1943,7 +1943,7 @@ Wenn Sie Probleme beim Konfigurieren eines Anbieters haben, überprüfen Sie Fol
 
    Dies gilt nicht für Anbieter wie Amazon Bedrock, die für ihre Authentifizierung auf Umgebungsvariablen angewiesen sind.
 
-2. Überprüfen Sie bei benutzerdefinierten Anbietern die OpenCode-Konfiguration und:
-   - Stellen Sie sicher, dass der im Befehl `/connect` verwendete Anbieter ID mit dem ID in Ihrer OpenCode-Konfiguration übereinstimmt.
+2. Überprüfen Sie bei benutzerdefinierten Anbietern die SquadCoder-Konfiguration und:
+   - Stellen Sie sicher, dass der im Befehl `/connect` verwendete Anbieter ID mit dem ID in Ihrer SquadCoder-Konfiguration übereinstimmt.
    - Für den Anbieter wird das richtige npm-Paket verwendet. Verwenden Sie beispielsweise `@ai-sdk/cerebras` für Cerebras. Und für alle anderen OpenAI-kompatiblen Anbieter verwenden Sie `@ai-sdk/openai-compatible`.
    - Überprüfen Sie, ob im Feld `options.baseURL` der richtige Endpunkt API verwendet wird.

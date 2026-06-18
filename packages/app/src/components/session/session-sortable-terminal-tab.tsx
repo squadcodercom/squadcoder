@@ -177,11 +177,11 @@ export function SortableTerminalTab(props: { terminal: LocalPTY; onClose?: () =>
               }}
             >
               <DropdownMenu.Item onSelect={() => (editRequested = true)}>
-                <Icon name="edit" class="w-4 h-4 mr-2" />
+                <Icon name="edit" class="w-4 h-4 me-2" />
                 {language.t("common.rename")}
               </DropdownMenu.Item>
               <DropdownMenu.Item onSelect={close}>
-                <Icon name="close" class="w-4 h-4 mr-2" />
+                <Icon name="close" class="w-4 h-4 me-2" />
                 {language.t("common.close")}
               </DropdownMenu.Item>
             </DropdownMenu.Content>

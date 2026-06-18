@@ -174,7 +174,7 @@ export function Titlebar() {
       <div
         classList={{
           "flex items-center min-w-0": true,
-          "pl-2": !mac(),
+          "ps-2": !mac(),
         }}
       >
         <Show when={mac()}>
@@ -204,7 +204,7 @@ export function Titlebar() {
         </Show>
         <div class="flex items-center gap-1 shrink-0">
           <TooltipKeybind
-            class={web() ? "hidden xl:flex shrink-0 ml-14" : "hidden xl:flex shrink-0 ml-2"}
+            class={web() ? "hidden xl:flex shrink-0 ms-14" : "hidden xl:flex shrink-0 ms-2"}
             placement="bottom"
             title={language.t("command.sidebar.toggle")}
             keybind={command.keybind("sidebar.toggle")}
@@ -222,7 +222,7 @@ export function Titlebar() {
           <div class="hidden xl:flex items-center shrink-0">
             <Show when={params.dir}>
               <div
-                class="flex items-center shrink-0 w-8 mr-1"
+                class="flex items-center shrink-0 w-8 me-1"
                 aria-hidden={layout.sidebar.opened() ? "true" : undefined}
               >
                 <div
@@ -258,7 +258,10 @@ export function Titlebar() {
             <div
               class="flex items-center shrink-0"
               classList={{
+                // SQUADCODER: fill the gap left by the fading new-session button; the gap is
+                // on the inline-start side, so shift toward start — left in LTR, right in RTL.
                 "-translate-x-[36px]": layout.sidebar.opened() && !!params.dir,
+                "rtl:translate-x-[36px]": layout.sidebar.opened() && !!params.dir,
                 "duration-180 ease-out": !layout.sidebar.opened(),
                 "duration-180 ease-in": layout.sidebar.opened(),
               }}
@@ -305,7 +308,7 @@ export function Titlebar() {
       <div
         classList={{
           "flex items-center min-w-0 justify-end": true,
-          "pr-2": !windows(),
+          "pe-2": !windows(),
         }}
         data-tauri-drag-region
         onMouseDown={drag}

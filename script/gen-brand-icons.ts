@@ -1,4 +1,4 @@
-// MUMINAI: generate all brand icons/favicons/banner from assets/brand/*.svg
+// SQUADCODER: generate all brand icons/favicons/banner from assets/brand/*.svg
 // Run: bun run script/gen-brand-icons.ts
 import { promises as fs } from "fs"
 import path from "path"
@@ -12,8 +12,8 @@ const sharpDir = (await fs.readdir(bunStore)).find((d) => d.startsWith("sharp@")
 if (!sharpDir) throw new Error("sharp not found in node_modules/.bun")
 const sharp = require(path.join(bunStore, sharpDir, "node_modules", "sharp")) as typeof import("sharp")
 const BRAND = path.join(ROOT, "assets", "brand")
-const iconSvg = await fs.readFile(path.join(BRAND, "muminai-icon.svg"))
-const bannerSvg = await fs.readFile(path.join(BRAND, "muminai-banner.svg"))
+const iconSvg = await fs.readFile(path.join(BRAND, "squadcoder-icon.svg"))
+const bannerSvg = await fs.readFile(path.join(BRAND, "squadcoder-banner.svg"))
 
 const png = (size: number) =>
   sharp(iconSvg, { density: 384 }).resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer()
@@ -80,7 +80,7 @@ for (const base of ["packages/app/public", "packages/web/public"]) {
 
 // README banner (keep legacy filename so existing README markdown still resolves) + branded copy
 await write(path.join(ROOT, "assets/readme/mimocode-banner.png"), banner)
-await write(path.join(ROOT, "assets/brand/muminai-banner.png"), banner)
+await write(path.join(ROOT, "assets/brand/squadcoder-banner.png"), banner)
 await write(path.join(ROOT, "packages/desktop/resources/icons/icon-512.png"), PNG512)
 
 // Desktop channel SOURCE icons: packages/desktop/scripts/copy-icons.ts copies
@@ -117,4 +117,4 @@ for (const ch of ["dev", "beta", "prod"]) {
   }
 }
 
-console.log("done — MuminAI brand assets generated")
+console.log("done — SquadCoder brand assets generated")

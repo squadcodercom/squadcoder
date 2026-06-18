@@ -17,7 +17,7 @@ import { usePlatform } from "@/context/platform"
 import { normalizeServerUrl, ServerConnection, useServer } from "@/context/server"
 import { type ServerHealth, useCheckServerHealth } from "@/utils/server-health"
 
-const DEFAULT_USERNAME = "opencode"
+const DEFAULT_USERNAME = "squadcoder"
 
 interface ServerFormProps {
   value: string
@@ -482,7 +482,7 @@ export function DialogSelectServer() {
   const formTitle = createMemo(() => {
     if (!isFormMode()) return language.t("dialog.server.title")
     return (
-      <div class="flex items-center gap-2 -ml-2">
+      <div class="flex items-center gap-2 -ms-2">
         <IconButton icon="arrow-left" variant="ghost" onClick={resetForm} aria-label={language.t("common.goBack")} />
         <span>{isAddMode() ? language.t("dialog.server.add.title") : language.t("dialog.server.edit.title")}</span>
       </div>
@@ -562,7 +562,7 @@ export function DialogSelectServer() {
                     }
                     showCredentials
                   />
-                  <div class="flex items-center justify-center gap-4 pl-4">
+                  <div class="flex items-center justify-center gap-4 ps-4">
                     <Show when={ServerConnection.key(current()) === key}>
                       <Icon name="check" class="h-6" />
                     </Show>
@@ -628,7 +628,7 @@ export function DialogSelectServer() {
                 icon="plus-small"
                 size="large"
                 onClick={startAdd}
-                class="py-1.5 pl-1.5 pr-3 flex items-center gap-1.5"
+                class="py-1.5 ps-1.5 pe-3 flex items-center gap-1.5"
               >
                 {language.t("dialog.server.add.button")}
               </Button>

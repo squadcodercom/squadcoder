@@ -11,6 +11,7 @@ import { ConstrainDragXAxis } from "@/utils/solid-dnd"
 import { IconButton } from "@mimo-ai/ui/icon-button"
 import { Tooltip, TooltipKeybind } from "@mimo-ai/ui/tooltip"
 import { type LocalProject } from "@/context/layout"
+import { useLanguage } from "@/context/language"
 
 export const SidebarContent = (props: {
   mobile?: boolean
@@ -32,8 +33,11 @@ export const SidebarContent = (props: {
   onOpenHelp: () => void
   renderPanel: () => JSX.Element
 }): JSX.Element => {
+  const language = useLanguage()
   const expanded = createMemo(() => !!props.mobile || props.opened())
-  const placement = () => (props.mobile ? "bottom" : "right")
+  // SQUADCODER: rail tooltips must open toward the content side; in RTL the rail is on
+  // the right, so flip "right" → "left" (Kobalte placement sides are physical).
+  const placement = () => (props.mobile ? "bottom" : language.isRtl() ? "left" : "right")
   let panel: HTMLDivElement | undefined
 
   createEffect(() => {

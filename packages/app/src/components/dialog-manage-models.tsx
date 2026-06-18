@@ -56,7 +56,7 @@ export const DialogManageModels: Component = () => {
                 value={language.t("dialog.model.manage.provider.toggle", { provider: provider.name })}
               >
                 <Switch
-                  class="-mr-1"
+                  class="-me-1"
                   checked={providerVisible(provider.id)}
                   onChange={(checked) => setProviderVisibility(provider.id, checked)}
                   hideLabel

@@ -53,7 +53,7 @@ export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props
           itemWrapper={(item, node) => (
             <Tooltip
               class="w-full"
-              placement="right-start"
+              placement={language.isRtl() ? "left-start" : "right-start"}
               gutter={12}
               value={
                 <ModelTooltip

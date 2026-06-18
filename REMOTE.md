@@ -1,6 +1,6 @@
-# MuminAI Remote Sessions (`mumin` over SSH / tunnels)
+# SquadCoder Remote Sessions (`mumin` over SSH / tunnels)
 
-MuminAI reuses MiMoCode/opencode's existing client–server split — **no new core code** — so you
+SquadCoder reuses MiMoCode/opencode's existing client–server split — **no new core code** — so you
 can run the agent on a remote dev box and drive it locally. This doc is the `mumin remote` story.
 
 ## What core already gives us
@@ -40,7 +40,7 @@ cloudflared tunnel --url http://localhost:4096   # gives a temporary https URL
 ## Security notes
 - Prefer Tailscale or SSH (private) over public tunnels for real work.
 - Always set a `--password`/token on `mumin serve` if it can be reached beyond localhost.
-- Keys/credentials stay on your machines; MuminAI adds no credential middleman.
+- Keys/credentials stay on your machines; SquadCoder adds no credential middleman.
 
 ## Roadmap (`mumin remote` sugar)
 A thin `mumin remote` wrapper (reconnect-resilience + `--tailscale` auto-resolve) is planned on top

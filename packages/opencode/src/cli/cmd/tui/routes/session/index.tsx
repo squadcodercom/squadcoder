@@ -54,6 +54,7 @@ import { useKeyboard, useRenderer, useTerminalDimensions, type JSX } from "@open
 import { useSDK } from "@tui/context/sdk"
 import { useCommandDialog } from "@tui/component/dialog-command"
 import { useLanguage } from "@tui/context/language"
+import { hasRtl, reorderForTerminal } from "@tui/i18n/bidi"
 import type { DialogContext } from "@tui/ui/dialog"
 import { useKeybind } from "@tui/context/keybind"
 import { useDialog } from "../../ui/dialog"
@@ -1153,6 +1154,7 @@ export function Session() {
                     <Match when={message.role === "user"}>
                       <UserMessage
                         index={index()}
+                        width={contentWidth()}
                         onMouseUp={() => {
                           if (renderer.getSelection()?.getSelectedText()) return
                           dialog.replace(() => (
@@ -1255,11 +1257,21 @@ function UserMessage(props: {
   parts: Part[]
   onMouseUp: () => void
   index: number
+  width: number
   pending?: string
 }) {
   const ctx = use()
   const local = useLocal()
+  const lang = useLanguage()
   const text = createMemo(() => props.parts.flatMap((x) => (x.type === "text" && !x.synthetic ? [x] : []))[0])
+  // SQUADCODER: Hebrew RTL — reorder the user's own message to visual order for the L2R terminal
+  // grid (display-only; input stays LTR). Gated on the Hebrew locale + actual RTL content, so
+  // non-Hebrew users are byte-for-byte unchanged. Box has paddingLeft=2 + a 1-col left border.
+  const isHe = createMemo(() => lang.effective() === "he" && hasRtl(text()?.text ?? ""))
+  const displayText = createMemo(() => {
+    const raw = text()?.text ?? ""
+    return isHe() ? reorderForTerminal(raw, Math.max(8, props.width - 3), true) : raw
+  })
   const files = createMemo(() => props.parts.flatMap((x) => (x.type === "file" ? [x] : [])))
   const { theme } = useTheme()
   const [hover, setHover] = createSignal(false)
@@ -1292,7 +1304,7 @@ function UserMessage(props: {
             backgroundColor={hover() ? theme.backgroundElement : theme.backgroundPanel}
             flexShrink={0}
           >
-            <text fg={theme.text}>{text()?.text}</text>
+            <text fg={theme.text} wrapMode={isHe() ? "none" : "word"}>{displayText()}</text>
             <Show when={files().length}>
               <box flexDirection="row" paddingBottom={metadataVisible() ? 1 : 0} paddingTop={1} gap={1} flexWrap="wrap">
                 <For each={files()}>

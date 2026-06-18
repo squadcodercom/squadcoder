@@ -27,17 +27,33 @@ const channel = (() => {
 })()
 
 const getBase = (): Configuration => ({
-  artifactName: "muminai-desktop-${os}-${arch}.${ext}",
+  // Descriptive default name, e.g. SquadCoder-desktop-windows-x64.zip / .dmg / .AppImage
+  artifactName: "SquadCoder-desktop-${os}-${arch}.${ext}",
   directories: {
     output: "dist",
     buildResources: "resources",
   },
   files: ["out/**/*", "resources/**/*"],
+  // The engine (out/main/chunks/node.js) is now an external ESM bundle loaded at
+  // runtime via dynamic import, and it reads its tree-sitter .wasm from disk. Unpack
+  // the chunks dir from the asar so both resolve to real files (ESM-from-asar + WASM
+  // reads are unreliable packed). jsonc-parser is the engine's one pure-JS external —
+  // unpack it too so the (unpacked) engine can resolve it on disk (a packed copy in a
+  // different asar tree is unreachable from the unpacked engine).
+  asarUnpack: ["out/main/chunks/**", "**/node_modules/jsonc-parser/**"],
   extraResources: [
     {
       from: "native/",
       to: "native/",
       filter: ["index.js", "index.d.ts", "build/Release/mac_window.node", "swift-build/**"],
+    },
+    {
+      // SQUADCODER first-run seed (config + skills + agents + instructions). Assembled by
+      // `bun script/make-seed.ts` → repo-root seed/. Lands at resources/seed; the main
+      // process exports SQUADCODER_SEED_DIR=<resources>/seed so the engine seeds on first run.
+      from: "../../seed/",
+      to: "seed/",
+      filter: ["**/*"],
     },
   ],
   mac: {
@@ -54,8 +70,8 @@ const getBase = (): Configuration => ({
     sign: true,
   },
   protocols: {
-    name: "MuminAI",
-    schemes: ["muminai", "opencode"],
+    name: "SquadCoder",
+    schemes: ["squadcoder", "opencode"],
   },
   win: {
     icon: `resources/icons/icon.ico`,
@@ -65,6 +81,9 @@ const getBase = (): Configuration => ({
     target: ["nsis"],
   },
   nsis: {
+    // Explicit installer name with short "win" token (fresh Explorer icon-cache key),
+    // e.g. SquadCoder-desktop-win-x64-installer.exe
+    artifactName: "SquadCoder-desktop-win-${arch}-installer.${ext}",
     oneClick: false,
     allowToChangeInstallationDirectory: true,
     installerIcon: `resources/icons/icon.ico`,
@@ -84,28 +103,27 @@ function getConfig() {
     case "dev": {
       return {
         ...base,
-        appId: "ai.muminai.desktop.dev",
-        productName: "MuminAI Dev",
-        rpm: { packageName: "muminai-dev" },
+        appId: "ai.squadcoder.desktop.dev",
+        productName: "SquadCoder Dev",
+        rpm: { packageName: "squadcoder-dev" },
       }
     }
     case "beta": {
       return {
         ...base,
-        appId: "ai.opencode.desktop.beta",
-        productName: "OpenCode Beta",
-        protocols: { name: "OpenCode Beta", schemes: ["opencode"] },
-        publish: { provider: "github", owner: "anomalyco", repo: "opencode-beta", channel: "latest" },
-        rpm: { packageName: "opencode-beta" },
+        appId: "ai.squadcoder.desktop.beta",
+        productName: "SquadCoder Beta",
+        protocols: { name: "SquadCoder Beta", schemes: ["squadcoder", "opencode"] },
+        rpm: { packageName: "squadcoder-beta" },
       }
     }
     case "prod": {
       return {
         ...base,
-        appId: "ai.muminai.desktop",
-        productName: "MuminAI",
-        protocols: { name: "MuminAI", schemes: ["muminai", "opencode"] },
-        rpm: { packageName: "muminai" },
+        appId: "ai.squadcoder.desktop",
+        productName: "SquadCoder",
+        protocols: { name: "SquadCoder", schemes: ["squadcoder", "opencode"] },
+        rpm: { packageName: "squadcoder" },
       }
     }
   }

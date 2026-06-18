@@ -404,7 +404,7 @@ export function DialogSelectFile(props: { mode?: DialogSelectFileMode; onOpenFil
         {(item) => (
           <Switch
             fallback={
-              <div class="w-full flex items-center justify-between rounded-md pl-1">
+              <div class="w-full flex items-center justify-between rounded-md ps-1">
                 <div class="flex items-center gap-x-3 grow min-w-0">
                   <FileIcon node={{ path: item.path ?? "", type: "file" }} class="shrink-0 size-4" />
                   <div class="flex items-center text-14-regular">
@@ -431,7 +431,7 @@ export function DialogSelectFile(props: { mode?: DialogSelectFileMode; onOpenFil
               </div>
             </Match>
             <Match when={item.type === "session"}>
-              <div class="w-full flex items-center justify-between rounded-md pl-1">
+              <div class="w-full flex items-center justify-between rounded-md ps-1">
                 <div class="flex items-center gap-x-3 grow min-w-0">
                   <Icon name="bubble-5" size="small" class="shrink-0 text-icon-weak" />
                   <div class="flex items-center gap-2 min-w-0">
@@ -452,7 +452,7 @@ export function DialogSelectFile(props: { mode?: DialogSelectFileMode; onOpenFil
                   </div>
                 </div>
                 <Show when={item.updated}>
-                  <span class="text-12-regular text-text-weak whitespace-nowrap ml-2">
+                  <span class="text-12-regular text-text-weak whitespace-nowrap ms-2">
                     {getRelativeTime(new Date(item.updated!).toISOString(), language.t)}
                   </span>
                 </Show>

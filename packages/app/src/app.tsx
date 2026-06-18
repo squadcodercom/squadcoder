@@ -252,7 +252,7 @@ function ConnectionError(props: { onRetry?: () => void; onServerSelected?: (key:
                 return (
                   <button
                     type="button"
-                    class="flex items-center gap-3 w-full px-3 py-2 rounded-md hover:bg-surface-raised-base-hover transition-colors text-left"
+                    class="flex items-center gap-3 w-full px-3 py-2 rounded-md hover:bg-surface-raised-base-hover transition-colors text-start"
                     onClick={() => props.onServerSelected?.(key)}
                   >
                     <span class="text-14-regular text-text-strong truncate">{serverName(conn)}</span>

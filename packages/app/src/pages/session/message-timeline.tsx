@@ -604,7 +604,7 @@ export function MessageTimeline(props: {
 
     return (
       <Dialog title={language.t("session.delete.title")} fit>
-        <div class="flex flex-col gap-4 pl-6 pr-2.5 pb-3">
+        <div class="flex flex-col gap-4 ps-6 pe-2.5 pb-3">
           <div class="flex flex-col gap-1">
             <span class="text-14-regular text-text-strong">
               {language.t("session.delete.confirm", { name: name() })}
@@ -630,7 +630,7 @@ export function MessageTimeline(props: {
     >
       <div class="relative w-full h-full min-w-0">
         <div
-          class="absolute left-1/2 -translate-x-1/2 bottom-6 z-[60] pointer-events-none transition-all duration-200 ease-out"
+          class="absolute start-1/2 -translate-x-1/2 bottom-6 z-[60] pointer-events-none transition-all duration-200 ease-out"
           classList={{
             "opacity-100 translate-y-0 scale-100": props.scroll.overflow && props.scroll.jump && !staging.isStaging(),
             "opacity-0 translate-y-2 scale-95 pointer-events-none":
@@ -717,7 +717,7 @@ export function MessageTimeline(props: {
                   relative: true,
                   "w-full": true,
                   "pb-4": true,
-                  "pl-2 pr-3 md:pl-4 md:pr-3": true,
+                  "ps-2 pe-3 md:ps-4 md:pe-3": true,
                   "md:max-w-200 md:mx-auto 2xl:max-w-[1000px]": props.centered,
                 }}
               >
@@ -735,7 +735,7 @@ export function MessageTimeline(props: {
                   </div>
                 </Show>
                 <div class="h-12 w-full flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-1 min-w-0 flex-1 pr-3">
+                  <div class="flex items-center gap-1 min-w-0 flex-1 pe-3">
                     <div class="flex items-center min-w-0 grow-1">
                       <Show when={parentID()}>
                         <button
@@ -791,7 +791,7 @@ export function MessageTimeline(props: {
                             data-slot="session-title-child"
                             value={title.draft}
                             disabled={titleMutation.isPending}
-                            class="text-14-medium text-text-strong grow-1 min-w-0 rounded-[6px] pl-1 -ml-1"
+                            class="text-14-medium text-text-strong grow-1 min-w-0 rounded-[6px] ps-1 -ms-1"
                             style={{ "--inline-input-shadow": "var(--shadow-xs-border-select)" }}
                             onInput={(event) => setTitle("draft", event.currentTarget.value)}
                             onKeyDown={(event) => {
@@ -1051,7 +1051,7 @@ export function MessageTimeline(props: {
                     >
                       <Show when={commentCount() > 0}>
                         <div class="w-full px-4 md:px-5 pb-2">
-                          <div class="ml-auto max-w-[82%] overflow-x-auto no-scrollbar">
+                          <div class="ms-auto max-w-[82%] overflow-x-auto no-scrollbar">
                             <div class="flex w-max min-w-full justify-end gap-2">
                               <Index each={comments()}>
                                 {(commentAccessor: () => MessageComment) => {

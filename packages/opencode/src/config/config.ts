@@ -474,7 +474,9 @@ export interface Interface {
 export class Service extends Context.Service<Service, Interface>()("@opencode/Config") {}
 
 function globalConfigFile() {
-  const candidates = ["mimocode.jsonc", "mimocode.json", "config.json"].map((file) =>
+  // SQUADCODER: prefer squadcoder.json(c) (new brand) for the global config, falling back
+  // to legacy mimocode/config files so existing global configs keep working.
+  const candidates = ["squadcoder.jsonc", "squadcoder.json", "mimocode.jsonc", "mimocode.json", "config.json"].map((file) =>
     path.join(Global.Path.config, file),
   )
   for (const file of candidates) {
@@ -569,6 +571,9 @@ export const layer = Layer.effect(
         mergeDeep(yield* loadFile(path.join(Global.Path.config, "config.json"))),
         mergeDeep(yield* loadFile(path.join(Global.Path.config, "mimocode.json"))),
         mergeDeep(yield* loadFile(path.join(Global.Path.config, "mimocode.jsonc"))),
+        // SQUADCODER: new-brand global config wins on merge (mirrors project-level precedence)
+        mergeDeep(yield* loadFile(path.join(Global.Path.config, "squadcoder.json"))),
+        mergeDeep(yield* loadFile(path.join(Global.Path.config, "squadcoder.jsonc"))),
       )
 
       const legacy = path.join(Global.Path.config, "config")
@@ -748,8 +753,8 @@ export const layer = Layer.effect(
         }
 
         if (!Flag.MIMOCODE_DISABLE_PROJECT_CONFIG) {
-          // MUMINAI: load mimocode.json (back-compat) then muminai.json (new brand wins on merge)
-          for (const cfgName of ["mimocode", "muminai"]) {
+          // SQUADCODER: load mimocode.json (back-compat) then squadcoder.json (new brand wins on merge)
+          for (const cfgName of ["mimocode", "squadcoder"]) {
             for (const file of yield* ConfigPaths.files(cfgName, ctx.directory, ctx.worktree).pipe(Effect.orDie)) {
               yield* merge(file, yield* loadFile(file), "local")
             }

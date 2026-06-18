@@ -31,7 +31,7 @@ export const ErrorMiddleware: ErrorHandler = (err, c) => {
     return c.json(new NamedError.Unknown({ message: err.message }).toObject(), { status: 409 })
   }
   if (err instanceof HTTPException) return err.getResponse()
-  // MUMINAI(#152): don't leak full stack traces (absolute paths, versions, internals) to HTTP
+  // SQUADCODER(#152): don't leak full stack traces (absolute paths, versions, internals) to HTTP
   // clients. The full stack is still captured server-side via log.error above.
   const message = err instanceof Error ? err.message : String(err)
   return c.json(new NamedError.Unknown({ message }).toObject(), {

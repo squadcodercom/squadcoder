@@ -44,3 +44,8 @@ experiment/last-outcome.json
 /experiment
 
 /mimoapi/
+
+# MUMINAI: assembled first-run seed (build artifact)
+/seed/
+out/
+release/

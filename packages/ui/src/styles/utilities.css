@@ -116,3 +116,21 @@
   line-height: var(--line-height-x-large); /* 120% */
   letter-spacing: var(--letter-spacing-tightest);
 }
+
+/* SQUADCODER: RTL — mirror horizontal directional icons (chevrons + horizontal arrows) so
+   "next/prev/expand" point the right way in Hebrew. Vertical chevrons (down/up/grabber)
+   and non-directional icons are intentionally NOT mirrored. */
+[dir="rtl"] [data-component="icon"][data-name="chevron-left"],
+[dir="rtl"] [data-component="icon"][data-name="chevron-right"],
+[dir="rtl"] [data-component="icon"][data-name="chevron-double-right"],
+[dir="rtl"] [data-component="icon"][data-name="arrow-left"],
+[dir="rtl"] [data-component="icon"][data-name="arrow-right"],
+/* panel/sidebar toggle glyphs — flip so the panel sits on the RTL (right) side */
+[dir="rtl"] [data-component="icon"][data-name="sidebar"],
+[dir="rtl"] [data-component="icon"][data-name="sidebar-active"],
+[dir="rtl"] [data-component="icon"][data-name="layout-left"],
+[dir="rtl"] [data-component="icon"][data-name="layout-right"],
+[dir="rtl"] [data-component="icon"][data-name="console"],
+[dir="rtl"] [data-component="icon"][data-name="enter"] {
+  transform: scaleX(-1);
+}

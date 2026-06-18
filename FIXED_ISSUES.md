@@ -1,7 +1,7 @@
-# MuminAI — Upstream Issue Tracker (do not re-investigate these)
+# SquadCoder — Upstream Issue Tracker (do not re-investigate these)
 
 Status of XiaomiMiMo/MiMo-Code issues vs our fork. **Check this file before triaging upstream
-issues again** so we don't repeat work. Branch: `feat/muminai-foundation`.
+issues again** so we don't repeat work. Branch: `feat/squadcoder-foundation`.
 
 ## Upstream sync
 - Fork point: `e8775a4`. Merged `upstream/main` → **at parity** (last pull brought `98c283a`
@@ -13,7 +13,7 @@ issues again** so we don't repeat work. Branch: `feat/muminai-foundation`.
 |---|---|---|---|
 | **#460** data loss: Auto agent `rm`-deletes files with no backup (no `.git`) | enabled undo-snapshots for **non-git** projects (shadow git never needed user `.git`); seeded default ignores so non-git snapshots stay bounded | `packages/opencode/src/snapshot/index.ts` (`enabled()`, `sync()`, `defaultIgnore`) | empirically proven: shadow git over non-git dir restores `rm -rf`'d files |
 | **#212** `mimo upgrade` "unsupported update channel: curl"; `--method` ignored | pass resolved `method` into `latest()`; clean error instead of opaque "Unexpected error" | `packages/opencode/src/cli/cmd/upgrade.ts` | typecheck; trace matches sibling call sites |
-| **#79** custom/opencode provider models invisible after login | opencode/opencode-go disable now opt-out via `MUMINAI_ENABLE_OPENCODE_PROVIDERS=1` (default unchanged); clearer custom-provider login warning | `packages/opencode/src/plugin/mimo.ts`, `cli/cmd/providers.ts` | typecheck; default path unchanged |
+| **#79** custom/opencode provider models invisible after login | opencode/opencode-go disable now opt-out via `SQUADCODER_ENABLE_OPENCODE_PROVIDERS=1` (default unchanged); clearer custom-provider login warning | `packages/opencode/src/plugin/mimo.ts`, `cli/cmd/providers.ts` | typecheck; default path unchanged |
 | **#522** Windows mojibake after the node/TUI process is killed | idempotent **win32-only** terminal-restore guard on `exit`/SIGINT/SIGTERM (strict improvement; hard `taskkill /F` still needs a shell reset) | `cli/cmd/tui/win32.ts` (`win32InstallTerminalRestoreGuard`) wired into `app.tsx`/`thread.ts`/`attach.ts` | typecheck; manual Windows repro pending |
 | **#11** can't scroll up to view long TUI output | opt-in `MIMOCODE_TUI_MAIN_SCREEN=1` forces main-screen (native scrollback); default full-screen UI unchanged | `cli/cmd/tui/app.tsx` (rendererConfig), `flag/flag.ts` | typecheck; live-terminal check pending |
 | **#908 / #861** memory system never loads on **Windows** ("path outside memory layout") — full cross-session amnesia | normalize `\`→`/` before the path regex in `parsePath`/`parseCcPath` (reconcile builds backslash paths via `path.join`) | `packages/opencode/src/memory/paths.ts` | **unit test added** (`test/memory/paths.test.ts`, Windows cases pass) |
@@ -22,7 +22,7 @@ issues again** so we don't repeat work. Branch: `feat/muminai-foundation`.
 | **#758** `mimo -c` hangs on a blank screen when there's no prior session (invalid `dummy` route) | fall back to home + toast once sync is `complete` instead of hanging | `packages/opencode/src/cli/cmd/tui/app.tsx` (continue effect) | typecheck |
 | **#216** worker shutdown 5s timeout force-kills mid-cleanup on large workspaces ("crash on quit") | bump grace to 15s, overridable via `MIMOCODE_SHUTDOWN_TIMEOUT_MS` | `packages/opencode/src/cli/cmd/tui/thread.ts` | typecheck |
 
-All fixes are tagged `MUMINAI(#NN)` in code and documented in `.muminai/SETUP.md` (env flags).
+All fixes are tagged `SQUADCODER(#NN)` in code and documented in `.squadcoder/SETUP.md` (env flags).
 
 ## ✅ Already fixed at our fork point (no action)
 | Issue | Note |
@@ -58,5 +58,5 @@ Do not blind-patch these; a wrong change risks a no-op or regression.
 - **#125 / #75 / #509 / #130 / #588 / #711 / #672** — feature requests / meta / informational.
 
 ## How to extend
-When you fix another issue: tag it `MUMINAI(#NN)` in code, add a row above, update `.muminai/SETUP.md`
+When you fix another issue: tag it `SQUADCODER(#NN)` in code, add a row above, update `.squadcoder/SETUP.md`
 if it adds a flag, and (if user-facing) note it in `release/README.md`.

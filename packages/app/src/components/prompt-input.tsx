@@ -1379,7 +1379,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               onKeyDown={handleKeyDown}
               classList={{
                 "select-text": true,
-                "w-full pl-3 pr-2 pt-2 text-14-regular text-text-strong focus:outline-none whitespace-pre-wrap": true,
+                "w-full ps-3 pe-2 pt-2 text-14-regular text-text-strong focus:outline-none whitespace-pre-wrap": true,
                 "[&_[data-type=file]]:text-syntax-property": true,
                 "[&_[data-type=agent]]:text-syntax-type": true,
                 "font-mono!": store.mode === "shell",
@@ -1387,7 +1387,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               style={{ "padding-bottom": space }}
             />
             <div
-              class="absolute top-0 inset-x-0 pl-3 pr-2 pt-2 text-14-regular text-text-weak pointer-events-none whitespace-nowrap truncate"
+              class="absolute top-0 inset-x-0 ps-3 pe-2 pt-2 text-14-regular text-text-weak pointer-events-none whitespace-nowrap truncate"
               classList={{ "font-mono!": store.mode === "shell" }}
               style={{ "padding-bottom": space, display: prompt.dirty() ? "none" : undefined }}
             >
@@ -1405,7 +1405,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             }}
           />
 
-          <div class="pointer-events-none absolute bottom-2 right-2 flex items-center gap-2">
+          <div class="pointer-events-none absolute bottom-2 end-2 flex items-center gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -1436,7 +1436,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             </div>
           </div>
 
-          <div class="pointer-events-none absolute bottom-2 left-2">
+          <div class="pointer-events-none absolute bottom-2 start-2">
             <div
               aria-hidden={store.mode !== "normal"}
               class="pointer-events-auto"
@@ -1472,9 +1472,10 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
           <div class="px-1.75 pt-5.5 pb-2 flex items-center gap-2 min-w-0">
             <div class="flex items-center gap-1.5 min-w-0 flex-1 relative">
               <div
-                class="h-7 flex items-center gap-1.5 max-w-[160px] min-w-0 absolute inset-y-0 left-0"
+                class="h-7 flex items-center gap-1.5 max-w-[160px] min-w-0 absolute inset-y-0 start-0"
                 style={{
-                  padding: "0 4px 0 8px",
+                  "padding-block": "0",
+                  "padding-inline": "8px 4px",
                   ...shell(),
                 }}
               >

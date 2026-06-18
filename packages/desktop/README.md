@@ -1,6 +1,6 @@
-# OpenCode Desktop
+# SquadCoder Desktop
 
-The OpenCode Desktop app, built with Electron.
+The SquadCoder Desktop app, built with Electron.
 
 ## Development
 

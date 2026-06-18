@@ -56,7 +56,7 @@ const ModelList: Component<{
       itemWrapper={(item, node) => (
         <Tooltip
           class="w-full"
-          placement="right-start"
+          placement={language.isRtl() ? "left-start" : "right-start"}
           gutter={12}
           value={<ModelTooltip model={item} latest={item.latest} free={isFree(item.provider.id, item.cost)} />}
         >
@@ -222,7 +222,7 @@ export const DialogSelectModel: Component<{ provider?: string; model?: ModelStat
       }
     >
       <ModelList provider={props.provider} model={props.model} onSelect={() => dialog.close()} />
-      <Button variant="ghost" class="ml-3 mt-5 mb-6 text-text-base self-start" onClick={manage}>
+      <Button variant="ghost" class="ms-3 mt-5 mb-6 text-text-base self-start" onClick={manage}>
         {language.t("dialog.model.manage")}
       </Button>
     </Dialog>

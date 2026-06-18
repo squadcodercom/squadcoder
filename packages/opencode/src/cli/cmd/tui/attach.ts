@@ -39,7 +39,7 @@ export const AttachCommand = cmd({
       }),
   handler: async (args) => {
     const unguard = win32InstallCtrlCGuard()
-    win32InstallTerminalRestoreGuard() // MUMINAI(#522): restore console on hard kill/crash
+    win32InstallTerminalRestoreGuard() // SQUADCODER(#522): restore console on hard kill/crash
     try {
       win32DisableProcessedInput()
 

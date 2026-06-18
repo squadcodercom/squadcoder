@@ -85,7 +85,7 @@ function rendererConfig(_config: TuiConfig.Info, plainTerminal: boolean): CliRen
     openConsoleOnError: false,
     enableMouseMovement: mouseEnabled,
     useMouse: mouseEnabled,
-    // MUMINAI(#11): MIMOCODE_TUI_MAIN_SCREEN forces main-screen mode so the native terminal
+    // SQUADCODER(#11): MIMOCODE_TUI_MAIN_SCREEN forces main-screen mode so the native terminal
     // scrollback is preserved for long output. Opt-in; the full-screen alt-screen UI stays default.
     ...(plainTerminal || Flag.MIMOCODE_TUI_MAIN_SCREEN
       ? {
@@ -139,7 +139,7 @@ export function tui(input: {
   // oxlint-disable-next-line no-async-promise-executor -- intentional: async executor used for sequential setup before resolve
   return new Promise<void>(async (resolve) => {
     const unguard = win32InstallCtrlCGuard()
-    win32InstallTerminalRestoreGuard() // MUMINAI(#522): restore console on hard kill/crash
+    win32InstallTerminalRestoreGuard() // SQUADCODER(#522): restore console on hard kill/crash
     win32DisableProcessedInput()
 
     const onExit = async () => {
@@ -398,7 +398,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         route.navigate({ type: "session", sessionID: match })
       }
     } else if (sync.status === "complete") {
-      // MUMINAI(#758): no prior session to continue -> don't hang forever on the invalid "dummy"
+      // SQUADCODER(#758): no prior session to continue -> don't hang forever on the invalid "dummy"
       // route (blank screen, no error). Fall back to home with feedback once sync is settled.
       continued = true
       route.navigate({ type: "home" })

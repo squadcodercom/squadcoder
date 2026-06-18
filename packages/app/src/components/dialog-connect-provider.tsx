@@ -123,6 +123,8 @@ export function DialogConnectProvider(props: { provider: string }) {
   const methodLabel = (value?: { type?: string; label?: string }) => {
     if (!value) return ""
     if (value.type === "api") return language.t("provider.connect.method.apiKey")
+    // SQUADCODER: localize the Claude Pro/Max subscription method (server sends a stable key).
+    if (value.label === "claude-pro-max") return language.t("provider.connect.method.claudeProMax")
     return value.label ?? ""
   }
 
@@ -297,7 +299,7 @@ export function DialogConnectProvider(props: { provider: string }) {
                   {(option) => (
                     <div class="w-full flex items-center gap-x-2">
                       <div class="w-4 h-2 rounded-[1px] bg-input-base shadow-xs-border-base flex items-center justify-center">
-                        <div class="w-2.5 h-0.5 ml-0 bg-icon-strong-base hidden" data-slot="list-item-extra-icon" />
+                        <div class="w-2.5 h-0.5 ms-0 bg-icon-strong-base hidden" data-slot="list-item-extra-icon" />
                       </div>
                       <span>{option.label}</span>
                       <span class="text-14-regular text-text-weak">{option.hint}</span>
@@ -379,7 +381,7 @@ export function DialogConnectProvider(props: { provider: string }) {
             {(i) => (
               <div class="w-full flex items-center gap-x-2">
                 <div class="w-4 h-2 rounded-[1px] bg-input-base shadow-xs-border-base flex items-center justify-center">
-                  <div class="w-2.5 h-0.5 ml-0 bg-icon-strong-base hidden" data-slot="list-item-extra-icon" />
+                  <div class="w-2.5 h-0.5 ms-0 bg-icon-strong-base hidden" data-slot="list-item-extra-icon" />
                 </div>
                 <span>{methodLabel(i)}</span>
               </div>

@@ -224,7 +224,7 @@ export const { use: useLanguage, provider: LanguageProvider } = createSimpleCont
     createEffect(() => {
       if (typeof document !== "object") return
       document.documentElement.lang = locale()
-      // MUMINAI: set text direction (RTL for Hebrew/Arabic) — upstream only set lang
+      // SQUADCODER: set text direction (RTL for Hebrew/Arabic) — upstream only set lang
       document.documentElement.dir = locale() === "he" || locale() === "ar" ? "rtl" : "ltr"
       document.cookie = cookie(locale())
     })
@@ -233,6 +233,10 @@ export const { use: useLanguage, provider: LanguageProvider } = createSimpleCont
       ready,
       locale,
       intl,
+      // SQUADCODER: reactive RTL flag for direction-aware behavior that CSS logical
+      // properties can't express (e.g. Kobalte/floating-ui tooltip placement sides,
+      // which are physical and not auto-mirrored by dir=rtl).
+      isRtl: createMemo(() => locale() === "he" || locale() === "ar"),
       locales: LOCALES,
       label,
       t,

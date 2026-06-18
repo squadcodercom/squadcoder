@@ -224,7 +224,7 @@ export function TerminalPanel() {
                   )}
                 </For>
                 <div class="flex-1" />
-                <div class="text-text-weak pr-2">
+                <div class="text-text-weak pe-2">
                   {language.t("common.loading")}
                   {language.t("common.loading.ellipsis")}
                 </div>

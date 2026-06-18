@@ -28,13 +28,13 @@ export const directories = Effect.fn("ConfigPaths.directories")(function* (direc
     Global.Path.config,
     ...(!Flag.MIMOCODE_DISABLE_PROJECT_CONFIG
       ? yield* afs.up({
-          targets: [".mimocode", ".muminai"], // MUMINAI: scan .muminai (new brand) + .mimocode (back-compat)
+          targets: [".mimocode", ".squadcoder"], // SQUADCODER: scan .squadcoder (new brand) + .mimocode (back-compat)
           start: directory,
           stop: worktree,
         })
       : []),
     ...(yield* afs.up({
-      targets: [".mimocode", ".muminai"], // MUMINAI: scan .muminai (new brand) + .mimocode (back-compat)
+      targets: [".mimocode", ".squadcoder"], // SQUADCODER: scan .squadcoder (new brand) + .mimocode (back-compat)
       start: Global.Path.home,
       stop: Global.Path.home,
     })),

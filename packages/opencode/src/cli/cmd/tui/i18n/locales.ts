@@ -11,6 +11,7 @@ export type Locale =
   | "pl"
   | "ru"
   | "ar"
+  | "he"
   | "no"
   | "br"
   | "th"
@@ -31,6 +32,7 @@ export const LOCALES: readonly Locale[] = [
   "ru",
   "bs",
   "ar",
+  "he",
   "no",
   "br",
   "th",
@@ -50,6 +52,7 @@ export const INTL: Record<Locale, string> = {
   pl: "pl",
   ru: "ru",
   ar: "ar",
+  he: "he",
   no: "nb-NO",
   br: "pt-BR",
   th: "th",
@@ -70,6 +73,7 @@ export const LABEL_KEY: Record<Locale, string> = {
   pl: "language.pl",
   ru: "language.ru",
   ar: "language.ar",
+  he: "language.he",
   no: "language.no",
   br: "language.br",
   th: "language.th",

@@ -60,7 +60,7 @@ export const Flag = {
   MIMOCODE_DISABLE_AUTOCOMPACT: truthy("MIMOCODE_DISABLE_AUTOCOMPACT"),
   MIMOCODE_DISABLE_MODELS_FETCH: truthy("MIMOCODE_DISABLE_MODELS_FETCH"),
   MIMOCODE_DISABLE_MOUSE: truthy("MIMOCODE_DISABLE_MOUSE"),
-  MIMOCODE_TUI_MAIN_SCREEN: truthy("MIMOCODE_TUI_MAIN_SCREEN"), // MUMINAI(#11): preserve native terminal scrollback
+  MIMOCODE_TUI_MAIN_SCREEN: truthy("MIMOCODE_TUI_MAIN_SCREEN"), // SQUADCODER(#11): preserve native terminal scrollback
   MIMOCODE_OUTPUT_LENGTH_CONTINUATION_LIMIT: number("MIMOCODE_OUTPUT_LENGTH_CONTINUATION_LIMIT") ?? 3,
   MIMOCODE_INVALID_OUTPUT_CONTINUATION_LIMIT: number("MIMOCODE_INVALID_OUTPUT_CONTINUATION_LIMIT") ?? 2,
 
@@ -74,9 +74,11 @@ export const Flag = {
   MIMOCODE_DISABLE_PROVIDER_ENV: MIMOCODE_MIMO_ONLY || truthy("MIMOCODE_DISABLE_PROVIDER_ENV"),
   MIMOCODE_DISABLE_CLAUDE_CODE,
   get MIMOCODE_DISABLE_CLAUDE_CODE_MCP() {
-    // MCP compatibility stays on in mimo-only mode so users can reuse Claude Code
-    // MCP servers without inheriting prompts, skills, or provider env keys.
-    return MIMOCODE_DISABLE_CLAUDE_CODE_ENV || truthy("MIMOCODE_DISABLE_CLAUDE_CODE_MCP")
+    // SQUADCODER: default to NOT inheriting the user's ~/.claude.json (+ project .claude.json)
+    // MCP servers — keeps the MCP list clean (only our curated bundle + what the user adds
+    // explicitly). The Claude API-key import is separate and unaffected. Opt back in with
+    // MIMOCODE_DISABLE_CLAUDE_CODE_MCP=false (or =0).
+    return !falsy("MIMOCODE_DISABLE_CLAUDE_CODE_MCP")
   },
   MIMOCODE_DISABLE_CLAUDE_CODE_PROMPT: MIMOCODE_DISABLE_CLAUDE_CODE || truthy("MIMOCODE_DISABLE_CLAUDE_CODE_PROMPT"),
   // Defaults to false (enabled): markdown commands under ~/.claude/commands and
