@@ -224,6 +224,10 @@ const CLAUDE_OAUTH = {
   SCOPE: "org:create_api_key user:profile user:inference",
   BETA: "oauth-2025-04-20",
 }
+// Anthropic only accepts a Pro/Max OAuth token on /v1/messages when the request "looks like Claude
+// Code": the system prompt's FIRST block must be exactly this string, else it 400s. (Verified vs
+// Claude Code's own src/constants/system.ts + the CLIProxyAPI cloaking the user runs.)
+const CLAUDE_CODE_SYSTEM = "You are Claude Code, Anthropic's official CLI for Claude."
 const CLAUDE_SUBSCRIPTION_WARNING =
   "⚠️ Community workaround — Anthropic's ToS prohibits using a Pro/Max subscription token in third-party tools and access may be revoked at any time. Prefer an API key for anything important."
 
@@ -291,11 +295,36 @@ export async function AnthropicProxyPlugin(_input: PluginInput): Promise<Hooks> 
             if (next?.access) access = next.access
           }
           if (access) {
+            const token = access
             return {
               apiKey: "",
-              headers: {
-                authorization: `Bearer ${access}`,
-                "anthropic-beta": CLAUDE_OAUTH.BETA,
+              // Pro/Max OAuth: inject Bearer + oauth beta, strip x-api-key, AND prepend the Claude Code
+              // identity as the system prompt's first block — Anthropic rejects OAuth requests without it.
+              async fetch(url: any, init: any) {
+                const headers: Record<string, string> = { ...(init?.headers as Record<string, string>) }
+                delete headers["x-api-key"]
+                delete headers["X-Api-Key"]
+                headers["authorization"] = `Bearer ${token}`
+                headers["anthropic-beta"] = CLAUDE_OAUTH.BETA
+                if (!headers["anthropic-version"]) headers["anthropic-version"] = "2023-06-01"
+                let body = init?.body
+                if (typeof body === "string") {
+                  try {
+                    const parsed = JSON.parse(body)
+                    const cc = { type: "text", text: CLAUDE_CODE_SYSTEM }
+                    if (Array.isArray(parsed.system)) {
+                      if (parsed.system[0]?.text !== CLAUDE_CODE_SYSTEM) parsed.system = [cc, ...parsed.system]
+                    } else if (typeof parsed.system === "string") {
+                      parsed.system = parsed.system.startsWith(CLAUDE_CODE_SYSTEM)
+                        ? parsed.system
+                        : [cc, { type: "text", text: parsed.system }]
+                    } else {
+                      parsed.system = [cc]
+                    }
+                    body = JSON.stringify(parsed)
+                  } catch {}
+                }
+                return fetch(url, { ...init, headers, body })
               },
             }
           }
