@@ -34,13 +34,13 @@
     "memory-graph": {
       "type": "local",
       "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
-      "enabled": false,
+      "enabled": true,
       "timeout": 20000
     },
     "github": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
-      "environment": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" },
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${GITHUB_TOKEN}" },
       "enabled": false
     },
     "higgsfield": {
@@ -50,7 +50,7 @@
     },
     "google-ads": {
       "type": "local",
-      "command": ["npx", "-y", "github:promobase/google-ads-mcp"],
+      "command": ["uvx", "--from", "git+https://github.com/googleads/google-ads-mcp", "google-ads-mcp"],
       "environment": {
         "GOOGLE_ADS_DEVELOPER_TOKEN": "${GOOGLE_ADS_DEVELOPER_TOKEN}",
         "GOOGLE_ADS_CLIENT_ID": "${GOOGLE_ADS_CLIENT_ID}",
@@ -59,6 +59,12 @@
       },
       "enabled": false,
       "timeout": 20000
+    },
+    "codebase-index": {
+      "type": "local",
+      "command": ["npx", "-y", "opencode-codebase-index-mcp@0.11.0", "--project", "."],
+      "enabled": false,
+      "timeout": 30000
     }
   }
 }
