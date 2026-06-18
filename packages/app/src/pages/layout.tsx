@@ -2360,6 +2360,16 @@ export default function Layout(props: ParentProps) {
     <div class="relative bg-background-base flex-1 min-h-0 min-w-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text">
       {autoselecting() ?? ""}
       <Titlebar />
+      <Show when={server.healthy() === false}>
+        <div
+          role="status"
+          dir="auto"
+          class="flex items-center justify-center gap-2 bg-surface-raised-base border-b border-border-weak-base px-4 py-1.5 text-12-medium text-text-base"
+        >
+          <span class="size-1.5 rounded-full bg-icon-warning-base animate-pulse shrink-0" />
+          {language.t("server.reconnecting")}
+        </div>
+      </Show>
       <div class="flex-1 min-h-0 min-w-0 flex">
         <div class="flex-1 min-h-0 relative">
           <div class="size-full relative overflow-x-hidden">

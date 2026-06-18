@@ -613,6 +613,7 @@ export const dict = {
   "session.header.open.app.powershell": "PowerShell",
   "session.header.open.app.sublimeText": "Sublime Text",
 
+  "server.reconnecting": "Can't reach the engine — reconnecting…",
   "status.popover.trigger": "Status",
   "status.popover.ariaLabel": "Server configurations",
   "status.popover.tab.servers": "Servers",

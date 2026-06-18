@@ -545,6 +545,7 @@ export const dict = {
   "session.header.open.app.androidStudio": "Android Studio",
   "session.header.open.app.powershell": "PowerShell",
   "session.header.open.app.sublimeText": "Sublime Text",
+  "server.reconnecting": "אין חיבור למנוע — מתחבר מחדש…",
   "status.popover.trigger": "סטטוס",
   "status.popover.ariaLabel": "הגדרות שרת",
   "status.popover.tab.servers": "שרתים",
