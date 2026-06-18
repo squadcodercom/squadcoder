@@ -548,11 +548,11 @@ export const dict = {
   "sidebar.help": "Aide",
   "sidebar.workspaces.enable": "Activer les espaces de travail",
   "sidebar.workspaces.disable": "Désactiver les espaces de travail",
-  "sidebar.gettingStarted.title": "Commencer",
+  "sidebar.gettingStarted.title": "Bienvenue dans SquadCoder",
   "sidebar.gettingStarted.line1":
-    "SquadCoder inclut des modèles gratuits pour que vous puissiez commencer immédiatement.",
+    "Votre assistant de codage IA pensé d'abord pour le RTL et l'hébreu.",
   "sidebar.gettingStarted.line2":
-    "Connectez n'importe quel fournisseur pour utiliser des modèles, y compris Claude, GPT, Gemini etc.",
+    "Connectez un fournisseur (Claude, GPT, Gemini, OpenRouter…) pour ajouter votre premier modèle. Vous pouvez en ajouter d'autres à tout moment avec +, ou passer pour l'instant.",
   "sidebar.project.recentSessions": "Sessions récentes",
   "sidebar.project.viewAllSessions": "Voir toutes les sessions",
   "sidebar.project.clearNotifications": "Effacer les notifications",

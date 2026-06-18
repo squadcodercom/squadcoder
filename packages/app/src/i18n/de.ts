@@ -551,10 +551,10 @@ export const dict = {
   "sidebar.help": "Hilfe",
   "sidebar.workspaces.enable": "Arbeitsbereiche aktivieren",
   "sidebar.workspaces.disable": "Arbeitsbereiche deaktivieren",
-  "sidebar.gettingStarted.title": "Erste Schritte",
-  "sidebar.gettingStarted.line1": "SquadCoder enthält kostenlose Modelle, damit Sie sofort loslegen können.",
+  "sidebar.gettingStarted.title": "Willkommen bei SquadCoder",
+  "sidebar.gettingStarted.line1": "Ihr RTL-/Hebräisch-orientierter KI-Coding-Assistent.",
   "sidebar.gettingStarted.line2":
-    "Verbinden Sie einen beliebigen Anbieter, um Modelle wie Claude, GPT, Gemini usw. zu nutzen.",
+    "Verbinden Sie einen Anbieter (Claude, GPT, Gemini, OpenRouter…), um Ihr erstes Modell hinzuzufügen. Mit + können Sie jederzeit weitere hinzufügen oder den Schritt vorerst überspringen.",
   "sidebar.project.recentSessions": "Letzte Sitzungen",
   "sidebar.project.viewAllSessions": "Alle Sitzungen anzeigen",
   "sidebar.project.clearNotifications": "Benachrichtigungen löschen",

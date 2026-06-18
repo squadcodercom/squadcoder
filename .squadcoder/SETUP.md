@@ -2,14 +2,17 @@
 
 ## Bundled MCP servers (config-driven, zero core changes)
 `.squadcoder/squadcoder.json` ships a default `mcp` block. Servers run on demand via `npx`/`uvx`:
-All **enabled** servers are npx-based and need **NO API key**:
-- **playwright** (`@playwright/mcp`) — browser automation/testing. Enabled.
-- **context7** (`@upstash/context7-mcp`) — up-to-date library/framework docs. Enabled.
-- **sequential-thinking** (`@modelcontextprotocol/server-sequential-thinking`) — structured multi-step reasoning. Enabled.
-- **memory-graph** (`@modelcontextprotocol/server-memory`) — knowledge-graph memory. Disabled by default (SquadCoder already has its own session memory; enable if you want a separate graph).
-- **github** (`@modelcontextprotocol/server-github`) — disabled until you set `GITHUB_TOKEN`.
-- **higgsfield** (remote MCP, `https://higgsfield.ai/mcp`) — image/video generation. Disabled by default; enable it and authorize with your Higgsfield account when prompted (OAuth).
-- **google-ads** (`github:promobase/google-ads-mcp`) — Google Ads campaign data/management. Disabled until you set `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN`.
+**Enabled by default — NO API key required:**
+- **playwright** (`@playwright/mcp`) — browser automation/testing.
+- **context7** (`@upstash/context7-mcp`) — up-to-date library/framework docs.
+- **sequential-thinking** (`@modelcontextprotocol/server-sequential-thinking`) — structured multi-step reasoning.
+- **memory-graph** (`@modelcontextprotocol/server-memory`) — knowledge-graph memory. **Enabled** (no key). Optional complement to the engine-native `/distill`+`/dream`+`MEMORY.md`; disable if you don't want a second store.
+
+**Disabled until you provide the prerequisite (so a fresh, keyless install never errors):**
+- **github** — official remote MCP `https://api.githubcopilot.com/mcp/` (sends `Authorization: Bearer ${GITHUB_TOKEN}`). Set `GITHUB_TOKEN`, then enable. *(Replaces the deprecated `@modelcontextprotocol/server-github`.)*
+- **higgsfield** — remote MCP `https://mcp.higgsfield.ai/mcp`, image/video generation. Needs a **paid Higgsfield account**; authorize via **OAuth** on first connect (no key stored).
+- **google-ads** — official Apache-2.0 `googleads/google-ads-mcp` run via **`uvx`**. Needs **Python 3.12+ and uv**, plus `GOOGLE_ADS_DEVELOPER_TOKEN` / `GOOGLE_ADS_CLIENT_ID` / `GOOGLE_ADS_CLIENT_SECRET` / `GOOGLE_ADS_REFRESH_TOKEN`. *(Was a broken `npx github:promobase/...` — that repo is Python, not npm.)*
+- **codebase-index** — `opencode-codebase-index`, a fully-offline semantic codebase index (Cursor-like). Needs a local **[Ollama](https://ollama.com)** + `ollama pull nomic-embed-text` (zero cloud egress, zero API cost). On Windows the native binary uses a non-SIMD scalar fallback (functional, slightly slower).
 
 > **Intentionally not bundled** (safety-vetted): `fetch` (unpatched SSRF advisory CVE-2025-65513),
 > `sqlite` & `puppeteer` (upstream **archived**, no security updates; Puppeteer is also redundant with
@@ -23,13 +26,18 @@ npx playwright install chromium
 ```
 (A future `squadcoder-plugin-bootstrap` / installer step will do this automatically on first run.)
 
-## Bundled skills (81, all MIT, no API key)
-Skills auto-load from `.squadcoder/skills/**/SKILL.md` — full list in `SKILLS_ATTRIBUTION.md`:
+## Bundled skills (93, all MIT/permissive, no API key)
+Skills auto-load from `.squadcoder/skills/**/SKILL.md` (portable — they also work if dropped into a
+`.claude/`, `.codex/`, `.opencode/`, or `.agents/` skills dir). Full list in `SKILLS_ATTRIBUTION.md`:
 - **Hebrew/Israeli (Skills-IL):** `hebrew-rtl-best-practices`, `hebrew-document-generator`
   (RTL PDF/DOCX/PPTX), `hebrew-content-writer`, `hebrew-i18n`, `israeli-tax-returns`,
   `israeli-id-validator`, `wcag-accessibility-widget`, + ~70 more dev/Israeli skills.
 - **UI/UX (ui-ux-pro-max):** `ui-ux-pro-max`, `ui-styling` (67 styles/161 palettes), `design`,
   `design-system`, `brand`, `banner-design`, `slides`.
+- **Advertising platforms (NEW):** `google-ads`, `meta-ads`, `tiktok-ads`, `linkedin-ads`,
+  `x-ads`, `snapchat-ads`, `pinterest-ads`, `amazon-ads`, `ad-measurement-tracking`,
+  `cross-platform-ad-strategy` — pro campaign playbooks with Hebrew/IL-market notes; `google-ads`
+  can drive the bundled google-ads MCP. Plus `ad-copywriting` + `image-gen-prompting`.
 
 Add more by dropping a folder with a `SKILL.md`.
 
