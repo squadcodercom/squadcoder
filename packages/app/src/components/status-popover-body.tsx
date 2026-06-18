@@ -169,6 +169,13 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
     lspLoading: false,
     mcpDone: false,
     mcpLoading: false,
+    skillsDone: false,
+    skillsLoading: false,
+  })
+
+  const [skillState, setSkillState] = createStore({
+    list: [] as Array<{ name: string; description: string; location: string; hidden?: boolean }>,
+    ready: false,
   })
 
   const fail = (err: unknown) => {
@@ -215,6 +222,23 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
           setLoad("lspLoading", false)
         })
     }
+
+    if (!skillState.ready && !load.skillsDone && !load.skillsLoading) {
+      setLoad("skillsLoading", true)
+      void sdk.client.app
+        .skills()
+        .then((result) => {
+          setSkillState("list", reconcile(result.data ?? []))
+          setSkillState("ready", true)
+        })
+        .catch((err) => {
+          setLoad("skillsDone", true)
+          fail(err)
+        })
+        .finally(() => {
+          setLoad("skillsLoading", false)
+        })
+    }
   })
 
   let dialogRun = 0
@@ -244,6 +268,19 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
   )
   const pluginCount = createMemo(() => plugins().length)
   const pluginEmpty = createMemo(() => pluginEmptyMessage(language.t("dialog.plugins.empty"), "squadcoder.json"))
+  const skillItems = createMemo(() =>
+    skillState.list.filter((skill) => !skill.hidden).slice().sort((a, b) => a.name.localeCompare(b.name)),
+  )
+  const skillCount = createMemo(() => skillItems().length)
+  const skillsDir = createMemo(() => {
+    const sample = skillState.list[0]?.location
+    const dir = sample ? sample.replace(/[\\/][^\\/]*[\\/]SKILL\.md$/i, "") : `${sdk.directory}/.squadcoder/skills`
+    return dir
+  })
+  const openSkill = (location: string) => {
+    if (!platform.openPath) return
+    void platform.openPath(location).catch(fail)
+  }
 
   return (
     <div class="flex items-center gap-1 w-[360px] rounded-xl shadow-[var(--shadow-lg-border-base)]">
@@ -271,6 +308,10 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
           <Tabs.Trigger value="plugins" data-slot="tab" class="text-12-regular">
             {pluginCount() > 0 ? `${pluginCount()} ` : ""}
             {language.t("status.popover.tab.plugins")}
+          </Tabs.Trigger>
+          <Tabs.Trigger value="skills" data-slot="tab" class="text-12-regular">
+            {skillCount() > 0 ? `${skillCount()} ` : ""}
+            {language.t("status.popover.tab.skills")}
           </Tabs.Trigger>
         </Tabs.List>
 
@@ -435,6 +476,61 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                     </div>
                   )}
                 </For>
+              </Show>
+            </div>
+          </div>
+        </Tabs.Content>
+
+        <Tabs.Content value="skills">
+          <div class="flex flex-col px-2 pb-2">
+            <div class="flex flex-col p-3 bg-background-base rounded-sm min-h-14 max-h-72 overflow-y-auto">
+              <Show
+                when={skillItems().length > 0}
+                fallback={
+                  <div class="text-14-regular text-text-base text-center my-auto px-2">
+                    {language.t("dialog.skills.empty")}
+                  </div>
+                }
+              >
+                <For each={skillItems()}>
+                  {(skill) => {
+                    const interactive = () => Boolean(platform.openPath)
+                    return (
+                      <button
+                        type="button"
+                        class="flex items-start gap-2 w-full ps-2 pe-2 py-1.5 rounded-md transition-colors text-start"
+                        classList={{
+                          "hover:bg-surface-raised-base-hover cursor-pointer": interactive(),
+                          "cursor-default": !interactive(),
+                        }}
+                        disabled={!interactive()}
+                        title={skill.location}
+                        onClick={() => openSkill(skill.location)}
+                      >
+                        <div class="size-1.5 rounded-full shrink-0 bg-icon-success-base mt-1.5" />
+                        <div class="flex flex-col min-w-0 flex-1">
+                          <span class="text-14-regular text-text-base truncate">{skill.name}</span>
+                          <span class="text-12-regular text-text-weak line-clamp-2" dir="auto">
+                            {skill.description}
+                          </span>
+                        </div>
+                      </button>
+                    )
+                  }}
+                </For>
+              </Show>
+
+              <Show when={platform.openPath}>
+                <Button
+                  variant="secondary"
+                  class="mt-3 self-start h-8 px-3 py-1.5"
+                  onClick={() => {
+                    if (!platform.openPath) return
+                    void platform.openPath(skillsDir()).catch(fail)
+                  }}
+                >
+                  {language.t("dialog.skills.action.manage")}
+                </Button>
               </Show>
             </div>
           </div>
