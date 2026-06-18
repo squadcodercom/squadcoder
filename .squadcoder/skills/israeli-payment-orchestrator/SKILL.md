@@ -1,6 +1,6 @@
 ---
 name: israeli-payment-orchestrator
-description: Orchestrate Israeli payment gateways (Cardcom, Tranzila, PayMe, Meshulam, iCredit, Pelecard) with unified routing, fallback, and installments (tashlumim). Use when user asks about multi-gateway payment integration, "slikat kartisim", "tashlumim", payment routing, Shva network, BOI payment-services regulation, gateway comparison, or building a payment abstraction layer for Israeli merchants. Provides unified API patterns, installment handling, Shva clearing rules, and regulatory compliance. Do NOT use for single gateway setup (use cardcom-payment-gateway or tranzila-payment-gateway instead).
+description: "Orchestrate Israeli payment gateways (Cardcom, Tranzila, PayMe, Meshulam, iCredit, Pelecard) with unified routing, fallback, and installments (tashlumim). Use when user asks about multi-gateway payment integration, \"slikat kartisim\", \"tashlumim\", payment routing, Shva network, BOI payment-services regulation, gateway comparison, or building a payment abstraction layer for Israeli merchants. Activate for: סליקת אשראי, סליקת כרטיסים, תשלומים, חיוב חוזר, ניתוב תשלומים, שב״א, דף סליקה, שער תשלום, אמצעי תשלום, ספק סליקה, גיבוי סליקה. Provides unified API patterns, installment handling, Shva clearing rules, and regulatory compliance. Do NOT use for single gateway setup (use cardcom-payment-gateway or tranzila-payment-gateway instead)."
 license: MIT
 version: 1.1.1
 compatibility: Works with Claude Code, Cursor, GitHub Copilot, Windsurf, SquadCoder, Codex. Python 3.8+ for helper scripts.

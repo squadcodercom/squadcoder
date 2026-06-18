@@ -1,6 +1,6 @@
 ---
 name: cardcom-payment-gateway
-description: Integrate Cardcom payment processing and Israeli invoice generation into applications, covering Low Profile payments, tokenization, recurring billing, and automatic tax invoice/receipt creation per Israeli law. Use when user asks to accept payments via Cardcom, generate Israeli invoices with payments, set up "slikat ashrai" with hashbonit, handle recurring billing (hora'ot keva), or mentions "Cardcom", "CardCom API", "Low Profile", Israeli payment with invoicing, or needs combined payment plus document generation. Targets the REST API V11. Do NOT use for Tranzila integration (use tranzila-payment-gateway), general accounting, or non-payment queries.
+description: "Integrate Cardcom payment processing and Israeli invoice generation into applications, covering Low Profile payments, tokenization, recurring billing, and automatic tax invoice/receipt creation per Israeli law. Use when user asks to accept payments via Cardcom, generate Israeli invoices with payments, set up \"slikat ashrai\" with hashbonit, handle recurring billing (hora'ot keva), or mentions \"Cardcom\", \"CardCom API\", \"Low Profile\", Israeli payment with invoicing, or needs combined payment plus document generation. Targets the REST API V11. Do NOT use for Tranzila integration (use tranzila-payment-gateway), general accounting, or non-payment queries. Activate for: קארדקום, סליקת אשראי, סליקה, חשבונית מס, קבלה, הפקת חשבונית, חיוב חוזר, הוראת קבע, טוקניזציה, אמצעי תשלום ישראלי."
 license: MIT
 ---
 

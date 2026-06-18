@@ -1,6 +1,6 @@
 ---
 name: hebrew-nlp-toolkit
-description: Guide developers in using Hebrew NLP models and tools including DictaLM, DictaBERT, AlephBERT, and ivrit.ai. Use when user asks about Hebrew text processing, Hebrew NLP, "ivrit", Hebrew tokenization, Hebrew NER, Hebrew sentiment analysis, Hebrew speech-to-text, or needs to process Hebrew language text programmatically. Covers model selection, preprocessing, and Hebrew-specific NLP challenges. Do NOT use for Arabic NLP (different tools) or general English NLP tasks.
+description: "Guide developers in using Hebrew NLP models and tools including DictaLM, DictaBERT, AlephBERT, and ivrit.ai. Use when user asks about Hebrew text processing, Hebrew NLP, \"ivrit\", Hebrew tokenization, Hebrew NER, Hebrew sentiment analysis, Hebrew speech-to-text, or needs to process Hebrew language text programmatically. Covers model selection, preprocessing, and Hebrew-specific NLP challenges. Do NOT use for Arabic NLP (different tools) or general English NLP tasks. Activate for: עיבוד שפה טבעית, עיבוד טקסט בעברית, טוקניזציה, זיהוי ישויות, ניתוח רגשות, המרת דיבור לטקסט, ניתוח מורפולוגי, מודל שפה עברי."
 license: MIT
 allowed-tools: Bash(python:*) Bash(pip:*)
 compatibility: Requires Python and transformers library for model usage. GPU recommended for large models.

@@ -1,6 +1,6 @@
 ---
 name: hebrew-i18n
-description: Implement comprehensive Hebrew internationalization (i18n) patterns for web and mobile applications. Use when user asks about Hebrew localization, "beinle'umiyut", i18n for Israeli apps, Hebrew plural forms, Hebrew date formatting, RTL CSS logical properties, bidirectional text handling, React/Vue/Angular/Next.js RTL integration, Tailwind CSS RTL, or next-intl setup. Covers Hebrew pluralization rules, date and number formatting for Israel, RTL-first CSS, Tailwind RTL utilities, and bidi text algorithms. Do NOT use for NLP or content writing (use hebrew-nlp-toolkit or hebrew-content-writer instead).
+description: "Implement comprehensive Hebrew internationalization (i18n) patterns for web and mobile applications. Use when user asks about Hebrew localization, \"beinle'umiyut\", i18n for Israeli apps, Hebrew plural forms, Hebrew date formatting, RTL CSS logical properties, bidirectional text handling, React/Vue/Angular/Next.js RTL integration, Tailwind CSS RTL, or next-intl setup. Covers Hebrew pluralization rules, date and number formatting for Israel, RTL-first CSS, Tailwind RTL utilities, and bidi text algorithms. Do NOT use for NLP or content writing (use hebrew-nlp-toolkit or hebrew-content-writer instead). Activate for: בינאום, לוקליזציה, תרגום ממשק, תמיכה בעברית, RTL, ימין לשמאל, פורמט תאריך, צורות רבים, קבצי שפה."
 license: MIT
 compatibility: Works with any JavaScript/TypeScript framework. No network required for core patterns. ICU and Intl API used for date/number formatting.
 ---

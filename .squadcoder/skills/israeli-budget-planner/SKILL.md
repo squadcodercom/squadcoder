@@ -1,6 +1,6 @@
 ---
 name: israeli-budget-planner
-description: Plan household and personal budgets with Israeli-specific costs, rates, and financial products. Use when user asks about budgeting in Israel, mortgage (mashkanta) calculations, arnona rates, cost of living, takciv, or monthly expense planning. Covers Bank of Israel prime rate, mashkanta tracks, arnona, household health costs (mas briut / health-tax), and Israeli household benchmarks.
+description: "Plan household and personal budgets with Israeli-specific costs, rates, and financial products. Use when user asks about budgeting in Israel, mortgage (mashkanta) calculations, arnona rates, cost of living, takciv, or monthly expense planning. Covers Bank of Israel prime rate, mashkanta tracks, arnona, household health costs (mas briut / health-tax), and Israeli household benchmarks. Activate for: תקציב, תכנון תקציב, משכנתא, עלות מחיה, הוצאות חודשיות, ריבית פריים, תקציב משק בית, חיסכון, ניהול כספים, מס בריאות."
 license: MIT
 compatibility: Works with Claude Code, Cursor, GitHub Copilot, Windsurf, SquadCoder, Codex.
 version: 1.3.0

@@ -1,6 +1,6 @@
 ---
 name: israeli-export-shipping-kit
-description: "Generate the full export document set for Israeli exporters: commercial invoice (HE+EN), packing list, bill of lading / AWB / CMR, proforma, and origin documents (EUR.1, invoice origin declaration, US-Israel Origin Invoice Declaration, CIFTA Form B239). Use when user asks about exporting from Israel, Incoterms (FOB, CIF, DDP, EXW), EUR.1 certificate, approved exporter status, US-Israel FTA certificate of origin, commercial invoice template, or packing list. Do NOT use for import calculations (use israeli-customs-duty-calculator) or domestic VAT bookkeeping (use il-invoice-organizer)."
+description: "Generate the full export document set for Israeli exporters: commercial invoice (HE+EN), packing list, bill of lading / AWB / CMR, proforma, and origin documents (EUR.1, invoice origin declaration, US-Israel Origin Invoice Declaration, CIFTA Form B239). Use when user asks about exporting from Israel, Incoterms (FOB, CIF, DDP, EXW), EUR.1 certificate, approved exporter status, US-Israel FTA certificate of origin, commercial invoice template, or packing list. Activate for: ייצוא מישראל, מסמכי ייצוא, חשבונית מסחרית, רשימת אריזה, תעודת מקור, תעודת EUR.1, יצואן מאושר, אינקוטרמס, שטר מטען, ייצוא סחורה לחו״ל. Do NOT use for import calculations (use israeli-customs-duty-calculator) or domestic VAT bookkeeping (use il-invoice-organizer)."
 license: MIT
 compatibility: "Works with Claude Code, Cursor, GitHub Copilot, Windsurf, SquadCoder, Codex, Antigravity, Gemini CLI. Python 3.8+ for helper scripts."
 ---

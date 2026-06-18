@@ -1,6 +1,6 @@
 ---
 name: israeli-phone-formatter
-description: Validate, format, and convert Israeli phone numbers between local and international (+972) formats. Use when user asks to validate Israeli phone number, format phone for SMS or WhatsApp, convert to +972, check phone prefix, or implement Israeli phone input validation in code. Handles mobile (050-058), landline (02-09), non-geographic / VoIP (072-079), toll-free (1-800), and star-service numbers, and emits strict E.164 output for libphonenumber and WhatsApp Business API. Do NOT use for non-Israeli phone systems or general telecom questions.
+description: "Validate, format, and convert Israeli phone numbers between local and international (+972) formats. Use when user asks to validate Israeli phone number, format phone for SMS or WhatsApp, convert to +972, check phone prefix, or implement Israeli phone input validation in code. Activate for: מספר טלפון, מספר נייד, אימות טלפון, פורמט טלפון, קידומת, המרה ל+972, מספר ישראלי, פלאפון, טלפון לוואטסאפ, קוד חיוג. Handles mobile (050-058), landline (02-09), non-geographic / VoIP (072-079), toll-free (1-800), and star-service numbers, and emits strict E.164 output for libphonenumber and WhatsApp Business API. Do NOT use for non-Israeli phone systems or general telecom questions."
 license: MIT
 allowed-tools: Bash(python:*)
 compatibility: No network required. Works with Claude Code, Claude.ai, Cursor.

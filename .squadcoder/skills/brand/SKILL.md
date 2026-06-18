@@ -1,6 +1,6 @@
 ---
 name: ckm:brand
-description: Brand voice, visual identity, messaging frameworks, asset management, brand consistency. Activate for branded content, tone of voice, marketing assets, brand compliance, style guides.
+description: "Brand voice, visual identity, messaging frameworks, asset management, brand consistency. Activate for branded content, tone of voice, marketing assets, brand compliance, style guides. Activate for: מותג, זהות מותגית, שפה מותגית, טון דיבור, מסרים שיווקיים, נכסי מותג, מדריך סגנון, עקביות מותג, ברנדינג."
 argument-hint: "[update|review|create] [args]"
 metadata:
   author: claudekit

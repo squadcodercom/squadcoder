@@ -1,6 +1,6 @@
 ---
 name: israeli-flight-finder
-description: "Compare flight prices from Ben Gurion Airport (TLV) across Google Flights, Skyscanner, KAYAK, and Israeli platforms like Issta and Lametayel. Use when a user asks about cheap flights from Israel, flight comparison, airline baggage policies, best time to book flights, or seasonal pricing from TLV. Covers El Al, Israir, Arkia, and low-cost carriers like Wizz Air. Helps users find the cheapest fares, understand Israeli airline baggage fees, and plan around peak and off-peak travel seasons. Do NOT use for domestic travel within Israel (use israeli-travel-planner), train schedules (use railil), or hotel-only bookings."
+description: "Compare flight prices from Ben Gurion Airport (TLV) across Google Flights, Skyscanner, KAYAK, and Israeli platforms like Issta and Lametayel. Use when a user asks about cheap flights from Israel, flight comparison, airline baggage policies, best time to book flights, or seasonal pricing from TLV. Covers El Al, Israir, Arkia, and low-cost carriers like Wizz Air. Helps users find the cheapest fares, understand Israeli airline baggage fees, and plan around peak and off-peak travel seasons. Activate for: טיסות זולות, השוואת מחירי טיסות, טיסה מנתב״ג, מתי כדאי להזמין טיסה, כרטיס טיסה זול, מחירי טיסות מישראל, אל על, ישראייר, ארקיע, דמי כבודה, טיסות לואו קוסט. Do NOT use for domestic travel within Israel (use israeli-travel-planner), train schedules (use railil), or hotel-only bookings."
 license: MIT
 ---
 

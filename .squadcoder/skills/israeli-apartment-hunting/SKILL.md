@@ -1,6 +1,6 @@
 ---
 name: israeli-apartment-hunting
-description: Comprehensive guide to finding rental apartments in Israel through Yad2, Madlan, Facebook groups, and real estate agents. Use when relocating to Israel, searching for a rental apartment, negotiating with landlords, or navigating broker fees and lease agreements. Covers 2026 market prices by city, Hebrew listing terminology, viewing checklists, required documents, and neighborhood evaluation criteria. Do NOT use for purchasing property or commercial real estate.
+description: "Comprehensive guide to finding rental apartments in Israel through Yad2, Madlan, Facebook groups, and real estate agents. Use when relocating to Israel, searching for a rental apartment, negotiating with landlords, or navigating broker fees and lease agreements. Covers 2026 market prices by city, Hebrew listing terminology, viewing checklists, required documents, and neighborhood evaluation criteria. Do NOT use for purchasing property or commercial real estate. Activate for: דירה להשכרה, חיפוש דירה, שכירות, יד2, מדלן, דמי תיווך, חוזה שכירות, מתווך, שכר דירה, דירות."
 license: MIT
 compatibility: Requires Claude Code or compatible AI coding agent
 ---
