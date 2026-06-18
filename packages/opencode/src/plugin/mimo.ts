@@ -96,10 +96,11 @@ export async function MimoAuthPlugin(_input: PluginInput): Promise<Hooks> {
       // free channel; moved here so it applies in every build (the free channel
       // is now an optional private overlay).
       input.disabled_providers ??= []
-      // SQUADCODER(#79): keep disabled by default (don't auto-light upstream's free tier), but
-      // let power users who explicitly authenticated their own opencode key opt back in.
+      // SQUADCODER(#79): keep disabled by default (don't auto-light upstream's free tier nor the
+      // Xiaomi-hosted MiMo provider — the fork shipped MiMo looking "connected" without real auth).
+      // Anthropic Claude is our default. Power users can opt back in with SQUADCODER_ENABLE_OPENCODE_PROVIDERS=1.
       if (process.env.SQUADCODER_ENABLE_OPENCODE_PROVIDERS !== "1") {
-        for (const id of ["opencode", "opencode-go"]) {
+        for (const id of ["opencode", "opencode-go", "xiaomi", "mimo"]) {
           if (!input.disabled_providers.includes(id)) input.disabled_providers.push(id)
         }
       }

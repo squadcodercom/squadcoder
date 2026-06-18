@@ -1715,9 +1715,17 @@ const layer: Layer.Layer<
         return { providerID: entry.providerID, modelID: entry.modelID }
       }
 
-      const mimo = s.providers[ProviderID.make("mimo")]
-      if (mimo?.models[ModelID.make("mimo-auto")]) {
-        return { providerID: mimo.id, modelID: ModelID.make("mimo-auto") }
+      // SQUADCODER: prefer Anthropic Claude (Opus 4.8) as the default model when connected.
+      // MiMo (Xiaomi-hosted) is no longer auto-selected as the default — only used if the user
+      // explicitly authenticates it. Falls through to the generic priority sort otherwise.
+      const anthropic = s.providers[ProviderID.make("anthropic")]
+      if (anthropic) {
+        const preferred = ["claude-opus-4-8", "claude-opus-4-7", "claude-sonnet-4-5", "claude-sonnet-4", "claude-opus-4"]
+        for (const id of preferred) {
+          if (anthropic.models[ModelID.make(id)]) {
+            return { providerID: anthropic.id, modelID: ModelID.make(id) }
+          }
+        }
       }
 
       const provider = Object.values(s.providers).find((p) => !cfg.provider || Object.keys(cfg.provider).includes(p.id))
@@ -1744,7 +1752,8 @@ export const defaultLayer = Layer.suspend(() =>
   ),
 )
 
-const priority = ["gpt-5", "claude-sonnet-4", "big-pickle", "gemini-3-pro"]
+// SQUADCODER: Claude first in the default-model priority (was gpt-5 first).
+const priority = ["claude-opus-4", "claude-sonnet-4", "gpt-5", "big-pickle", "gemini-3-pro"]
 export function sort<T extends { id: string }>(models: T[]) {
   return sortBy(
     models,
