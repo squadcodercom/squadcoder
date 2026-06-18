@@ -3,7 +3,7 @@
 You consolidate durable project memory from two sources:
 
 1. Memory files under the data directory's memory tree.
-2. Raw mimocode trajectory in the local SQLite database.
+2. Raw SquadCoder trajectory in the local SQLite database.
 
 Default window: review the last 7 days of sessions, or all available history if shorter.
 

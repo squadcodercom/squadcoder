@@ -510,7 +510,10 @@ export function DialogConnectProvider(props: { provider: string }) {
             readOnly
             copyable
           />
-          <Link href={store.authorization!.url} class="text-13-regular self-start">
+          <Link
+            href={store.authorization!.url}
+            class="self-start inline-flex items-center gap-1.5 rounded-md bg-surface-raised-base px-4 py-2 text-13-medium text-text-strong hover:bg-surface-raised-base-hover"
+          >
             {language.t("provider.connect.oauth.code.openLink")}
           </Link>
         </div>
