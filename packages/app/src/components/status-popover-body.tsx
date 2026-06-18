@@ -155,6 +155,41 @@ const useMcpToggleMutation = () => {
   }))
 }
 
+const skillPermissionMap = (config: { permission?: unknown }): Record<string, string> => {
+  const perm = config.permission as { skill?: unknown } | string | undefined
+  if (perm && typeof perm === "object" && perm.skill && typeof perm.skill === "object") {
+    return perm.skill as Record<string, string>
+  }
+  return {}
+}
+
+const useSkillToggleMutation = () => {
+  const sync = useSync()
+  const sdk = useSDK()
+  const language = useLanguage()
+
+  return useMutation(() => ({
+    // Disable/enable a skill via the engine's existing `permission.skill` rule
+    // (Skill.available() drops a skill whose evaluated action is "deny"). Explicit
+    // "allow" re-enables (overrides a prior "deny" through the engine's mergeDeep).
+    mutationFn: async (name: string) => {
+      const current = skillPermissionMap(sync.data.config)
+      const next = { ...current, [name]: current[name] === "deny" ? "allow" : "deny" }
+      await sdk.client.config.update({ config: { permission: { skill: next } } })
+      const perm = sync.data.config.permission
+      const base = perm && typeof perm === "object" ? (perm as Record<string, unknown>) : {}
+      sync.set("config", "permission", { ...base, skill: next } as never)
+    },
+    onError: (err) => {
+      showToast({
+        variant: "error",
+        title: language.t("common.requestFailed"),
+        description: err instanceof Error ? err.message : String(err),
+      })
+    },
+  }))
+}
+
 export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
   const sync = useSync()
   const server = useServer()
@@ -281,6 +316,8 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
     if (!platform.openPath) return
     void platform.openPath(location).catch(fail)
   }
+  const toggleSkill = useSkillToggleMutation()
+  const skillEnabled = (name: string) => skillPermissionMap(sync.data.config)[name] !== "deny"
 
   return (
     <div class="flex items-center gap-1 w-[360px] rounded-xl shadow-[var(--shadow-lg-border-base)]">
@@ -495,26 +532,48 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                 <For each={skillItems()}>
                   {(skill) => {
                     const interactive = () => Boolean(platform.openPath)
+                    const enabled = () => skillEnabled(skill.name)
+                    const busy = () => toggleSkill.isPending && toggleSkill.variables === skill.name
                     return (
-                      <button
-                        type="button"
-                        class="flex items-start gap-2 w-full ps-2 pe-2 py-1.5 rounded-md transition-colors text-start"
-                        classList={{
-                          "hover:bg-surface-raised-base-hover cursor-pointer": interactive(),
-                          "cursor-default": !interactive(),
-                        }}
-                        disabled={!interactive()}
-                        title={skill.location}
-                        onClick={() => openSkill(skill.location)}
-                      >
-                        <div class="size-1.5 rounded-full shrink-0 bg-icon-success-base mt-1.5" />
-                        <div class="flex flex-col min-w-0 flex-1">
-                          <span class="text-14-regular text-text-base truncate">{skill.name}</span>
-                          <span class="text-12-regular text-text-weak line-clamp-2" dir="auto">
-                            {skill.description}
-                          </span>
+                      <div class="flex items-start gap-2 w-full ps-2 pe-1.5 py-1.5 rounded-md hover:bg-surface-raised-base-hover transition-colors">
+                        <button
+                          type="button"
+                          class="flex items-start gap-2 min-w-0 flex-1 text-start"
+                          classList={{ "cursor-pointer": interactive(), "cursor-default": !interactive() }}
+                          disabled={!interactive()}
+                          title={skill.location}
+                          onClick={() => openSkill(skill.location)}
+                        >
+                          <div
+                            classList={{
+                              "size-1.5 rounded-full shrink-0 mt-1.5": true,
+                              "bg-icon-success-base": enabled(),
+                              "bg-border-weak-base": !enabled(),
+                            }}
+                          />
+                          <div class="flex flex-col min-w-0 flex-1">
+                            <span
+                              class="text-14-regular truncate"
+                              classList={{ "text-text-base": enabled(), "text-text-weak": !enabled() }}
+                            >
+                              {skill.name}
+                            </span>
+                            <span class="text-12-regular text-text-weak line-clamp-2" dir="auto">
+                              {skill.description}
+                            </span>
+                          </div>
+                        </button>
+                        <div onClick={(event) => event.stopPropagation()} class="mt-0.5">
+                          <Switch
+                            checked={enabled()}
+                            disabled={busy()}
+                            onChange={() => {
+                              if (toggleSkill.isPending) return
+                              toggleSkill.mutate(skill.name)
+                            }}
+                          />
                         </div>
-                      </button>
+                      </div>
                     )
                   }}
                 </For>
