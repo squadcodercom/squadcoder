@@ -150,6 +150,9 @@ export const dict = {
   "provider.connect.opencodeZen.visit.suffix": " to collect your API key.",
   "provider.connect.oauth.code.visit.prefix": "Visit ",
   "provider.connect.oauth.code.visit.link": "this link",
+  "provider.connect.oauth.code.instructions": "Open the link below to authorize, then paste the {{provider}} authorization code here.",
+  "provider.connect.oauth.code.linkLabel": "Authorization link",
+  "provider.connect.oauth.code.openLink": "Open in browser",
   "provider.connect.oauth.code.visit.suffix":
     " to collect your authorization code to connect your account and use {{provider}} models in SquadCoder.",
   "provider.connect.oauth.code.label": "{{method}} authorization code",

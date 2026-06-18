@@ -499,10 +499,20 @@ export function DialogConnectProvider(props: { provider: string }) {
 
     return (
       <div class="flex flex-col gap-6">
-        <div class="text-14-regular text-text-base">
-          {language.t("provider.connect.oauth.code.visit.prefix")}
-          <Link href={store.authorization!.url}>{language.t("provider.connect.oauth.code.visit.link")}</Link>
-          {language.t("provider.connect.oauth.code.visit.suffix", { provider: provider().name })}
+        <div class="flex flex-col gap-3">
+          <div class="text-14-regular text-text-base">
+            {language.t("provider.connect.oauth.code.instructions", { provider: provider().name })}
+          </div>
+          <TextField
+            class="font-mono"
+            label={language.t("provider.connect.oauth.code.linkLabel")}
+            value={store.authorization!.url}
+            readOnly
+            copyable
+          />
+          <Link href={store.authorization!.url} class="text-13-regular self-start">
+            {language.t("provider.connect.oauth.code.openLink")}
+          </Link>
         </div>
         <form onSubmit={handleSubmit} class="flex flex-col items-start gap-4">
           <TextField
