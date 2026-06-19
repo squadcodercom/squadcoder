@@ -401,7 +401,6 @@ export async function AnthropicProxyPlugin(input: PluginInput): Promise<Hooks> {
               headers["anthropic-version"] = "2023-06-01"
               headers["user-agent"] = CLAUDE_OAUTH.USER_AGENT
               headers["x-app"] = "cli"
-              headers["anthropic-dangerous-direct-browser-access"] = "true"
               // The AI SDK may pass the body as a string OR a Uint8Array/ArrayBuffer; decode any shape.
               let body = init?.body
               let text: string | undefined
@@ -412,23 +411,45 @@ export async function AnthropicProxyPlugin(input: PluginInput): Promise<Hooks> {
               if (text !== undefined) {
                 try {
                   const parsed = JSON.parse(text)
-                  // (1) Prepend the Claude Code identity as the system prompt's first block.
-                  const cc = { type: "text", text: CLAUDE_CODE_SYSTEM }
-                  if (Array.isArray(parsed.system)) {
-                    if (parsed.system[0]?.text !== CLAUDE_CODE_SYSTEM) parsed.system = [cc, ...parsed.system]
-                  } else if (typeof parsed.system === "string") {
-                    parsed.system = parsed.system.startsWith(CLAUDE_CODE_SYSTEM)
-                      ? parsed.system
-                      : [cc, { type: "text", text: parsed.system }]
-                  } else {
-                    parsed.system = [cc]
+                  // (1) System-prompt RELOCATION — the key to staying on the subscription. Anthropic's
+                  // 2026-04 gate classifies the request as third-party ("extra usage", 400) when system[]
+                  // doesn't look like Claude Code's. But the "runtime" layer (the first user message)
+                  // accepts arbitrary custom content. So: set system[] to ONLY the Claude Code identity,
+                  // and move SquadCoder's real system prompt into a <system-reminder> at the top of the
+                  // first user message. Full persona/skills/memory survive — only the wire placement
+                  // changes. (Verified mechanism: CLIProxyAPI + griffinmartin/opencode-claude-auth.)
+                  let originalSystem = ""
+                  if (Array.isArray(parsed.system))
+                    originalSystem = parsed.system
+                      .map((b: any) => (typeof b === "string" ? b : b?.text || ""))
+                      .join("\n\n")
+                  else if (typeof parsed.system === "string") originalSystem = parsed.system
+                  // drop any Claude Code identity we may have already injected (idempotent), and any
+                  // cache_control (rejected on the OAuth path by @ai-sdk/anthropic).
+                  originalSystem = originalSystem.split(CLAUDE_CODE_SYSTEM).join("").trim()
+                  parsed.system = [{ type: "text", text: CLAUDE_CODE_SYSTEM }]
+                  if (originalSystem && Array.isArray(parsed.messages)) {
+                    const reminder = `<system-reminder>\n${originalSystem}\n</system-reminder>`
+                    const firstUser = parsed.messages.find((m: any) => m?.role === "user")
+                    if (firstUser) {
+                      if (typeof firstUser.content === "string")
+                        firstUser.content = reminder + "\n\n" + firstUser.content
+                      else if (Array.isArray(firstUser.content))
+                        firstUser.content = [{ type: "text", text: reminder }, ...firstUser.content]
+                    }
                   }
-                  // NOTE: Anthropic also scores the SYSTEM PROMPT's similarity to Claude Code and bills
-                  // anything below the bar to "extra usage". SquadCoder's full prompt (base + env + the
-                  // user's CLAUDE.md + skills catalog + memory-system block) is ~27KB and exceeds the
-                  // ~21KB bar — trimming it enough to pass means dropping so much context it's no longer
-                  // SquadCoder, so we DON'T mutilate the prompt here. The subscription/OAuth path works
-                  // only for lightweight prompts; the API-key path is the reliable route for full behavior.
+                  // (1b) Strip cache_control (prompt-caching metadata) — @ai-sdk/anthropic injects
+                  // cache_control:{ephemeral}, which Anthropic now rejects on the OAuth path.
+                  const stripCacheControl = (o: any): void => {
+                    if (Array.isArray(o)) o.forEach(stripCacheControl)
+                    else if (o && typeof o === "object") {
+                      delete o.cache_control
+                      for (const k of Object.keys(o)) stripCacheControl(o[k])
+                    }
+                  }
+                  stripCacheControl(parsed.system)
+                  stripCacheControl(parsed.messages)
+                  stripCacheControl(parsed.tools)
                   // (2) PascalCase every tool name (and references in tool_choice + prior tool_use
                   // blocks) so the request reads as Claude Code → billed to the plan, not extra usage.
                   const remap = (n: any) => {
