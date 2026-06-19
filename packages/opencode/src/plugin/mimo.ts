@@ -293,7 +293,7 @@ async function refreshClaudeToken(refresh: string): Promise<ClaudeTokens | null>
   return next
 }
 
-export async function AnthropicProxyPlugin(_input: PluginInput): Promise<Hooks> {
+export async function AnthropicProxyPlugin(input: PluginInput): Promise<Hooks> {
   return {
     auth: {
       provider: "anthropic",
@@ -305,44 +305,66 @@ export async function AnthropicProxyPlugin(_input: PluginInput): Promise<Hooks> 
           | { type?: string; access?: string; refresh?: string; expires?: number }
           | undefined
         if (stored?.type === "oauth") {
-          let access = stored.access
-          if (stored.expires && stored.expires < Date.now() + 60_000 && stored.refresh) {
-            const next = await refreshClaudeToken(stored.refresh).catch(() => null)
-            if (next?.access) access = next.access
-          }
-          if (access) {
-            const token = access
-            return {
-              apiKey: "",
-              // Pro/Max OAuth: inject Bearer + oauth beta, strip x-api-key, AND prepend the Claude Code
-              // identity as the system prompt's first block — Anthropic rejects OAuth requests without it.
-              async fetch(url: any, init: any) {
-                const headers: Record<string, string> = { ...(init?.headers as Record<string, string>) }
-                delete headers["x-api-key"]
-                delete headers["X-Api-Key"]
-                headers["authorization"] = `Bearer ${token}`
-                headers["anthropic-beta"] = CLAUDE_OAUTH.BETA
-                if (!headers["anthropic-version"]) headers["anthropic-version"] = "2023-06-01"
-                let body = init?.body
-                if (typeof body === "string") {
-                  try {
-                    const parsed = JSON.parse(body)
-                    const cc = { type: "text", text: CLAUDE_CODE_SYSTEM }
-                    if (Array.isArray(parsed.system)) {
-                      if (parsed.system[0]?.text !== CLAUDE_CODE_SYSTEM) parsed.system = [cc, ...parsed.system]
-                    } else if (typeof parsed.system === "string") {
-                      parsed.system = parsed.system.startsWith(CLAUDE_CODE_SYSTEM)
-                        ? parsed.system
-                        : [cc, { type: "text", text: parsed.system }]
-                    } else {
-                      parsed.system = [cc]
-                    }
-                    body = JSON.stringify(parsed)
-                  } catch {}
-                }
-                return fetch(ensureAnthropicV1(url), { ...init, headers, body })
-              },
+          // Return a currently-valid access token, refreshing on expiry AND PERSISTING the rotated
+          // tokens back to the auth store. Anthropic rotates the refresh token on every refresh, so a
+          // refresh whose result isn't saved permanently invalidates the stored credential — the next
+          // request (or process restart) would try the now-dead refresh token and 401. Done inside the
+          // fetch wrapper so long-lived SDK instances refresh mid-session, mirroring plugin/codex.ts.
+          const validAccess = async (): Promise<string | undefined> => {
+            const cur = (await getAuth?.().catch(() => undefined)) as
+              | { type?: string; access?: string; refresh?: string; expires?: number }
+              | undefined
+            if (cur?.type !== "oauth") return cur?.access
+            if (cur.expires && cur.expires < Date.now() + 60_000 && cur.refresh) {
+              const next = await refreshClaudeToken(cur.refresh).catch(() => null)
+              if (next?.access) {
+                await input.client.auth
+                  .set({
+                    path: { id: "anthropic" },
+                    body: {
+                      type: "oauth",
+                      access: next.access,
+                      refresh: next.refresh || cur.refresh,
+                      expires: next.expires,
+                    },
+                  })
+                  .catch(() => {})
+                return next.access
+              }
             }
+            return cur.access
+          }
+          return {
+            apiKey: "",
+            // Pro/Max OAuth: inject Bearer + oauth beta, strip x-api-key, AND prepend the Claude Code
+            // identity as the system prompt's first block — Anthropic rejects OAuth requests without it.
+            async fetch(url: any, init: any) {
+              const token = await validAccess()
+              const headers: Record<string, string> = { ...(init?.headers as Record<string, string>) }
+              delete headers["x-api-key"]
+              delete headers["X-Api-Key"]
+              if (token) headers["authorization"] = `Bearer ${token}`
+              headers["anthropic-beta"] = CLAUDE_OAUTH.BETA
+              if (!headers["anthropic-version"]) headers["anthropic-version"] = "2023-06-01"
+              let body = init?.body
+              if (typeof body === "string") {
+                try {
+                  const parsed = JSON.parse(body)
+                  const cc = { type: "text", text: CLAUDE_CODE_SYSTEM }
+                  if (Array.isArray(parsed.system)) {
+                    if (parsed.system[0]?.text !== CLAUDE_CODE_SYSTEM) parsed.system = [cc, ...parsed.system]
+                  } else if (typeof parsed.system === "string") {
+                    parsed.system = parsed.system.startsWith(CLAUDE_CODE_SYSTEM)
+                      ? parsed.system
+                      : [cc, { type: "text", text: parsed.system }]
+                  } else {
+                    parsed.system = [cc]
+                  }
+                  body = JSON.stringify(parsed)
+                } catch {}
+              }
+              return fetch(ensureAnthropicV1(url), { ...init, headers, body })
+            },
           }
         }
         // Plain API-key path with no custom baseURL: still repair a stray ANTHROPIC_BASE_URL that omits
