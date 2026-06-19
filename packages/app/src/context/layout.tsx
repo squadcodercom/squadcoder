@@ -235,6 +235,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
           width: DEFAULT_SIDEBAR_WIDTH,
           workspaces: {} as Record<string, boolean>,
           workspacesDefault: false,
+          groupSessions: false,
         },
         terminal: {
           height: DEFAULT_TERMINAL_HEIGHT,
@@ -622,6 +623,13 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         toggleWorkspaces(directory: string) {
           const current = store.sidebar.workspaces[directory] ?? store.sidebar.workspacesDefault ?? false
           setStore("sidebar", "workspaces", directory, !current)
+        },
+        groupSessions: createMemo(() => store.sidebar.groupSessions ?? false),
+        setGroupSessions(value: boolean) {
+          setStore("sidebar", "groupSessions", value)
+        },
+        toggleGroupSessions() {
+          setStore("sidebar", "groupSessions", (x) => !(x ?? false))
         },
       },
       terminal: {

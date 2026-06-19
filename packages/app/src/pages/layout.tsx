@@ -1142,6 +1142,15 @@ export default function Layout(props: ParentProps) {
         },
       },
       {
+        id: "workspace.groupSessions",
+        title: layout.sidebar.groupSessions()
+          ? language.t("sidebar.sessions.ungroup")
+          : language.t("sidebar.sessions.group"),
+        description: language.t("command.workspace.groupSessions.description"),
+        category: language.t("command.category.workspace"),
+        onSelect: () => layout.sidebar.toggleGroupSessions(),
+      },
+      {
         id: "theme.cycle",
         title: language.t("command.theme.cycle"),
         category: language.t("command.category.theme"),
@@ -2191,6 +2200,17 @@ export default function Layout(props: ParentProps) {
                             {workspacesEnabled()
                               ? language.t("sidebar.workspaces.disable")
                               : language.t("sidebar.workspaces.enable")}
+                          </DropdownMenu.ItemLabel>
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          data-action="project-group-sessions-toggle"
+                          data-project={slug()}
+                          onSelect={() => layout.sidebar.toggleGroupSessions()}
+                        >
+                          <DropdownMenu.ItemLabel>
+                            {layout.sidebar.groupSessions()
+                              ? language.t("sidebar.sessions.ungroup")
+                              : language.t("sidebar.sessions.group")}
                           </DropdownMenu.ItemLabel>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item

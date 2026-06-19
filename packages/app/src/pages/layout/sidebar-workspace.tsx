@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "@solidjs/router"
-import { createEffect, createMemo, For, Show, type Accessor, type JSX } from "solid-js"
+import { createEffect, createMemo, createSignal, For, Show, type Accessor, type JSX } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createSortable } from "@thisbeyond/solid-dnd"
 import { createMediaQuery } from "@solid-primitives/media"
@@ -13,11 +13,11 @@ import { IconButton } from "@mimo-ai/ui/icon-button"
 import { Spinner } from "@mimo-ai/ui/spinner"
 import { Tooltip } from "@mimo-ai/ui/tooltip"
 import { type Session } from "@mimo-ai/sdk/v2/client"
-import { type LocalProject } from "@/context/layout"
+import { type LocalProject, useLayout } from "@/context/layout"
 import { loadSessionsQuery, useGlobalSync } from "@/context/global-sync"
 import { useLanguage } from "@/context/language"
 import { NewSessionItem, SessionItem, SessionSkeleton } from "./sidebar-items"
-import { sortedRootSessions, workspaceKey } from "./helpers"
+import { groupSessionsByTime, sortedRootSessions, workspaceKey, type SessionGroup, type SessionGroupKey } from "./helpers"
 import { useQuery } from "@tanstack/solid-query"
 
 type InlineEditorComponent = (props: {
@@ -232,6 +232,81 @@ const WorkspaceActions = (props: {
   </div>
 )
 
+const groupLabel = (language: ReturnType<typeof useLanguage>, key: SessionGroupKey): string => {
+  switch (key) {
+    case "today":
+      return language.t("sidebar.sessionGroup.today")
+    case "yesterday":
+      return language.t("sidebar.sessionGroup.yesterday")
+    case "week":
+      return language.t("sidebar.sessionGroup.week")
+    case "month":
+      return language.t("sidebar.sessionGroup.month")
+    case "older":
+      return language.t("sidebar.sessionGroup.older")
+  }
+}
+
+const SessionRow = (props: {
+  session: Session
+  list: Session[]
+  slug: string
+  mobile?: boolean
+  ctx: WorkspaceSidebarContext
+}): JSX.Element => (
+  <SessionItem
+    session={props.session}
+    list={props.list}
+    navList={props.ctx.navList}
+    slug={props.slug}
+    mobile={props.mobile}
+    showChild
+    sidebarExpanded={props.ctx.sidebarExpanded}
+    clearHoverProjectSoon={props.ctx.clearHoverProjectSoon}
+    prefetchSession={props.ctx.prefetchSession}
+    archiveSession={props.ctx.archiveSession}
+  />
+)
+
+const SessionGroupSection = (props: {
+  group: SessionGroup
+  list: Session[]
+  slug: string
+  mobile?: boolean
+  ctx: WorkspaceSidebarContext
+  language: ReturnType<typeof useLanguage>
+}): JSX.Element => {
+  const [open, setOpen] = createSignal(true)
+  return (
+    <Collapsible variant="ghost" open={open()} onOpenChange={setOpen}>
+      <Collapsible.Trigger
+        class="flex items-center gap-1 w-full ps-2 pe-2 py-1 rounded-md hover:bg-surface-raised-base-hover"
+        data-action="session-group-toggle"
+        data-group={props.group.key}
+      >
+        <Icon name={open() ? "chevron-down" : "chevron-right"} size="small" class="text-icon-base shrink-0" />
+        <span class="text-12-medium text-text-weak truncate">{groupLabel(props.language, props.group.key)}</span>
+        <span class="text-12-regular text-text-weakest ms-auto">{props.group.sessions.length}</span>
+      </Collapsible.Trigger>
+      <Collapsible.Content>
+        <div class="flex flex-col gap-1 pt-1">
+          <For each={props.group.sessions}>
+            {(session) => (
+              <SessionRow
+                session={session}
+                list={props.list}
+                slug={props.slug}
+                mobile={props.mobile}
+                ctx={props.ctx}
+              />
+            )}
+          </For>
+        </div>
+      </Collapsible.Content>
+    </Collapsible>
+  )
+}
+
 const WorkspaceSessionList = (props: {
   slug: Accessor<string>
   mobile?: boolean
@@ -242,52 +317,71 @@ const WorkspaceSessionList = (props: {
   hasMore: Accessor<boolean>
   loadMore: () => Promise<void>
   language: ReturnType<typeof useLanguage>
-}): JSX.Element => (
-  <nav class="flex flex-col gap-1">
-    <Show when={props.showNew()}>
-      <NewSessionItem
-        slug={props.slug()}
-        mobile={props.mobile}
-        sidebarExpanded={props.ctx.sidebarExpanded}
-        clearHoverProjectSoon={props.ctx.clearHoverProjectSoon}
-      />
-    </Show>
-    <Show when={props.loading()}>
-      <SessionSkeleton />
-    </Show>
-    <For each={props.sessions()}>
-      {(session) => (
-        <SessionItem
-          session={session}
-          list={props.sessions()}
-          navList={props.ctx.navList}
+  grouped?: Accessor<boolean>
+  now?: Accessor<number>
+}): JSX.Element => {
+  const grouped = createMemo(() => (props.grouped?.() ?? false) && props.sessions().length > 0)
+  const groups = createMemo(() => (grouped() ? groupSessionsByTime(props.sessions(), props.now?.() ?? Date.now()) : []))
+  return (
+    <nav class="flex flex-col gap-1">
+      <Show when={props.showNew()}>
+        <NewSessionItem
           slug={props.slug()}
           mobile={props.mobile}
-          showChild
           sidebarExpanded={props.ctx.sidebarExpanded}
           clearHoverProjectSoon={props.ctx.clearHoverProjectSoon}
-          prefetchSession={props.ctx.prefetchSession}
-          archiveSession={props.ctx.archiveSession}
         />
-      )}
-    </For>
-    <Show when={props.hasMore()}>
-      <div class="relative w-full py-1">
-        <Button
-          variant="ghost"
-          class="flex w-full text-start justify-start text-14-regular text-text-weak ps-2 pe-10"
-          size="large"
-          onClick={(e: MouseEvent) => {
-            void props.loadMore()
-            ;(e.currentTarget as HTMLButtonElement).blur()
-          }}
-        >
-          {props.language.t("common.loadMore")}
-        </Button>
-      </div>
-    </Show>
-  </nav>
-)
+      </Show>
+      <Show when={props.loading()}>
+        <SessionSkeleton />
+      </Show>
+      <Show
+        when={grouped()}
+        fallback={
+          <For each={props.sessions()}>
+            {(session) => (
+              <SessionRow
+                session={session}
+                list={props.sessions()}
+                slug={props.slug()}
+                mobile={props.mobile}
+                ctx={props.ctx}
+              />
+            )}
+          </For>
+        }
+      >
+        <For each={groups()}>
+          {(group) => (
+            <SessionGroupSection
+              group={group}
+              list={props.sessions()}
+              slug={props.slug()}
+              mobile={props.mobile}
+              ctx={props.ctx}
+              language={props.language}
+            />
+          )}
+        </For>
+      </Show>
+      <Show when={props.hasMore()}>
+        <div class="relative w-full py-1">
+          <Button
+            variant="ghost"
+            class="flex w-full text-start justify-start text-14-regular text-text-weak ps-2 pe-10"
+            size="large"
+            onClick={(e: MouseEvent) => {
+              void props.loadMore()
+              ;(e.currentTarget as HTMLButtonElement).blur()
+            }}
+          >
+            {props.language.t("common.loadMore")}
+          </Button>
+        </div>
+      </Show>
+    </nav>
+  )
+}
 
 export const SortableWorkspace = (props: {
   ctx: WorkspaceSidebarContext
@@ -300,6 +394,7 @@ export const SortableWorkspace = (props: {
   const params = useParams()
   const globalSync = useGlobalSync()
   const language = useLanguage()
+  const layout = useLayout()
   const sortable = createSortable(props.directory)
   const [workspaceStore, setWorkspaceStore] = globalSync.child(props.directory, { bootstrap: false })
   const [menu, setMenu] = createStore({
@@ -431,6 +526,8 @@ export const SortableWorkspace = (props: {
             hasMore={hasMore}
             loadMore={loadMore}
             language={language}
+            grouped={layout.sidebar.groupSessions}
+            now={props.sortNow}
           />
         </Collapsible.Content>
       </Collapsible>
@@ -446,6 +543,7 @@ export const LocalWorkspace = (props: {
 }): JSX.Element => {
   const globalSync = useGlobalSync()
   const language = useLanguage()
+  const layout = useLayout()
   const workspace = createMemo(() => {
     const [store, setStore] = globalSync.child(props.project.worktree)
     return { store, setStore }
@@ -476,6 +574,8 @@ export const LocalWorkspace = (props: {
         hasMore={hasMore}
         loadMore={loadMore}
         language={language}
+        grouped={layout.sidebar.groupSessions}
+        now={props.sortNow}
       />
     </div>
   )

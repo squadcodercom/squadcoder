@@ -36,6 +36,41 @@ export const roots = (store: SessionStore) =>
 
 export const sortedRootSessions = (store: SessionStore, now: number) => roots(store).sort(sortSessions(now))
 
+export type SessionGroupKey = "today" | "yesterday" | "week" | "month" | "older"
+export type SessionGroup = { key: SessionGroupKey; sessions: Session[] }
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+// Bucket an already-sorted session list into date groups (Today / Yesterday / Last 7 days /
+// Last 30 days / Older) for the optional collapsible sidebar grouping. Order within each bucket
+// is preserved, so callers should pass a list already sorted by recency.
+export const groupSessionsByTime = (sessions: Session[], now: number): SessionGroup[] => {
+  const startOfToday = new Date(now).setHours(0, 0, 0, 0)
+  const startOfYesterday = startOfToday - DAY_MS
+  const startOfWeek = startOfToday - 7 * DAY_MS
+  const startOfMonth = startOfToday - 30 * DAY_MS
+
+  const groups: Record<SessionGroupKey, Session[]> = {
+    today: [],
+    yesterday: [],
+    week: [],
+    month: [],
+    older: [],
+  }
+
+  for (const session of sessions) {
+    const updated = session.time.updated ?? session.time.created
+    if (updated >= startOfToday) groups.today.push(session)
+    else if (updated >= startOfYesterday) groups.yesterday.push(session)
+    else if (updated >= startOfWeek) groups.week.push(session)
+    else if (updated >= startOfMonth) groups.month.push(session)
+    else groups.older.push(session)
+  }
+
+  const order: SessionGroupKey[] = ["today", "yesterday", "week", "month", "older"]
+  return order.map((key) => ({ key, sessions: groups[key] })).filter((group) => group.sessions.length > 0)
+}
+
 export const latestRootSession = (stores: SessionStore[], now: number) =>
   stores.flatMap(roots).sort(sortSessions(now))[0]
 
