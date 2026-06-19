@@ -231,6 +231,22 @@ const CLAUDE_CODE_SYSTEM = "You are Claude Code, Anthropic's official CLI for Cl
 const CLAUDE_SUBSCRIPTION_WARNING =
   "⚠️ Community workaround — Anthropic's ToS prohibits using a Pro/Max subscription token in third-party tools and access may be revoked at any time. Prefer an API key for anything important."
 
+// SQUADCODER: some environments export ANTHROPIC_BASE_URL=https://api.anthropic.com (WITHOUT the
+// /v1 segment the API requires — a common Claude Code / CLIProxy convention). @ai-sdk/anthropic reads
+// that env var as its default baseURL and builds `${base}/messages`, producing
+// https://api.anthropic.com/messages → 404 Not Found on every request. For the REAL Anthropic host we
+// repair the path so /v1 is present; custom proxy hosts (localhost, gateways, …) are left untouched.
+function ensureAnthropicV1(url: any): any {
+  try {
+    const u = new URL(String(url))
+    if (u.hostname === "api.anthropic.com" && u.pathname !== "/v1" && !u.pathname.startsWith("/v1/")) {
+      u.pathname = "/v1" + u.pathname
+      return u.toString()
+    }
+  } catch {}
+  return url
+}
+
 function claudePkce() {
   const verifier = crypto.randomBytes(32).toString("base64url")
   const challenge = crypto.createHash("sha256").update(verifier).digest("base64url")
@@ -324,18 +340,25 @@ export async function AnthropicProxyPlugin(_input: PluginInput): Promise<Hooks> 
                     body = JSON.stringify(parsed)
                   } catch {}
                 }
-                return fetch(url, { ...init, headers, body })
+                return fetch(ensureAnthropicV1(url), { ...init, headers, body })
               },
             }
           }
         }
-        if (!provider?.options?.baseURL) return {}
+        // Plain API-key path with no custom baseURL: still repair a stray ANTHROPIC_BASE_URL that omits
+        // /v1 (otherwise @ai-sdk/anthropic 404s exactly like the OAuth path did).
+        if (!provider?.options?.baseURL)
+          return {
+            async fetch(url: any, init: any) {
+              return fetch(ensureAnthropicV1(url), init)
+            },
+          }
         return {
           async fetch(url: any, init: any) {
             if (init?.headers && typeof init.headers === "object" && !Array.isArray(init.headers)) {
               delete init.headers["anthropic-beta"]
             }
-            const res = await fetch(url, init)
+            const res = await fetch(ensureAnthropicV1(url), init)
             if (!res.body || !res.headers.get("content-type")?.includes("text/event-stream")) return res
             const reader = res.body.getReader()
             const decoder = new TextDecoder()
