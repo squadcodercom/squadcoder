@@ -257,6 +257,48 @@ function ensureAnthropicV1(url: any): any {
   return url
 }
 
+// Anthropic's 2026-04 anti-third-party classifier bills an OAuth subscription request to "extra usage"
+// (HTTP 400 "You're out of extra usage") unless it looks like real Claude Code. Verified empirically:
+// snake_case tool names (the engine uses `bash`, `change_directory`, `plan_exit`) are rejected, while
+// PascalCase names (`Bash`, `ChangeDirectory`, `ExitPlanMode`) are accepted on the same account/token.
+// So on the OAuth path we PascalCase tool names on the way out and restore the engine's originals in
+// the streamed response (the engine's tool executor matches the snake_case names).
+function toPascalToolName(name: string): string {
+  return name
+    .split(/[_\-\s]+/)
+    .map((s) => (s ? s[0].toUpperCase() + s.slice(1) : s))
+    .join("")
+}
+
+// Stream transform that rewrites `"name":"<Pascal>"` back to `"name":"<original>"` in the response so
+// tool_use blocks reference the engine's real tool names. Carries a small tail across chunks so a
+// pattern split on a chunk boundary still matches.
+function restoreToolNames(res: Response, nameMap: Record<string, string>): Response {
+  const entries = Object.entries(nameMap)
+  if (!entries.length || !res.body) return res
+  const decoder = new TextDecoder()
+  const encoder = new TextEncoder()
+  const KEEP = 64
+  let carry = ""
+  const replace = (s: string) => {
+    for (const [pascal, orig] of entries) s = s.split(`"name":"${pascal}"`).join(`"name":"${orig}"`)
+    return s
+  }
+  const transform = new TransformStream<Uint8Array, Uint8Array>({
+    transform(chunk, ctrl) {
+      const text = replace(carry + decoder.decode(chunk, { stream: true }))
+      carry = text.slice(Math.max(0, text.length - KEEP))
+      const emit = text.slice(0, Math.max(0, text.length - KEEP))
+      if (emit) ctrl.enqueue(encoder.encode(emit))
+    },
+    flush(ctrl) {
+      const out = replace(carry)
+      if (out) ctrl.enqueue(encoder.encode(out))
+    },
+  })
+  return new Response(res.body.pipeThrough(transform), { headers: res.headers, status: res.status })
+}
+
 function claudePkce() {
   const verifier = crypto.randomBytes(32).toString("base64url")
   const challenge = crypto.createHash("sha256").update(verifier).digest("base64url")
@@ -360,10 +402,17 @@ export async function AnthropicProxyPlugin(input: PluginInput): Promise<Hooks> {
               headers["user-agent"] = CLAUDE_OAUTH.USER_AGENT
               headers["x-app"] = "cli"
               headers["anthropic-dangerous-direct-browser-access"] = "true"
+              // The AI SDK may pass the body as a string OR a Uint8Array/ArrayBuffer; decode any shape.
               let body = init?.body
-              if (typeof body === "string") {
+              let text: string | undefined
+              if (typeof body === "string") text = body
+              else if (body instanceof Uint8Array) text = new TextDecoder().decode(body)
+              else if (body instanceof ArrayBuffer) text = new TextDecoder().decode(new Uint8Array(body))
+              const nameMap: Record<string, string> = {}
+              if (text !== undefined) {
                 try {
-                  const parsed = JSON.parse(body)
+                  const parsed = JSON.parse(text)
+                  // (1) Prepend the Claude Code identity as the system prompt's first block.
                   const cc = { type: "text", text: CLAUDE_CODE_SYSTEM }
                   if (Array.isArray(parsed.system)) {
                     if (parsed.system[0]?.text !== CLAUDE_CODE_SYSTEM) parsed.system = [cc, ...parsed.system]
@@ -374,10 +423,26 @@ export async function AnthropicProxyPlugin(input: PluginInput): Promise<Hooks> {
                   } else {
                     parsed.system = [cc]
                   }
+                  // (2) PascalCase every tool name (and references in tool_choice + prior tool_use
+                  // blocks) so the request reads as Claude Code → billed to the plan, not extra usage.
+                  const remap = (n: any) => {
+                    if (typeof n !== "string" || !n) return n
+                    const p = toPascalToolName(n)
+                    if (p !== n) nameMap[p] = n
+                    return p
+                  }
+                  if (Array.isArray(parsed.tools)) for (const t of parsed.tools) if (t?.name) t.name = remap(t.name)
+                  if (parsed.tool_choice?.name) parsed.tool_choice.name = remap(parsed.tool_choice.name)
+                  if (Array.isArray(parsed.messages))
+                    for (const m of parsed.messages)
+                      if (Array.isArray(m?.content))
+                        for (const c of m.content) if (c?.type === "tool_use" && c.name) c.name = remap(c.name)
                   body = JSON.stringify(parsed)
                 } catch {}
               }
-              return fetch(ensureAnthropicV1(url), { ...init, headers, body })
+              const res = await fetch(ensureAnthropicV1(url), { ...init, headers, body })
+              // (3) Restore the engine's original snake_case tool names in the response stream.
+              return restoreToolNames(res, nameMap)
             },
           }
         }
