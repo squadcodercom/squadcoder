@@ -227,7 +227,12 @@ const CLAUDE_OAUTH = {
   TOKEN: "https://api.anthropic.com/v1/oauth/token",
   REDIRECT: "https://console.anthropic.com/oauth/code/callback",
   SCOPE: "user:profile user:inference user:sessions:claude_code user:mcp_servers user:file_upload",
-  BETA: "oauth-2025-04-20",
+  // Since Anthropic's 2026-04 change, a subscription OAuth request is only billed to the PLAN (not
+  // "extra usage") when it looks like real Claude Code. The `claude-code-20250219` beta is the key
+  // signal — WITHOUT it the request is treated as a third-party app and rejected with
+  // 400 "You're out of extra usage". Verified against CLIProxyAPI + promptfoo/hermes/zeroclaw/sub2api.
+  BETA: "claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14,fine-grained-tool-streaming-2025-05-14",
+  USER_AGENT: "claude-cli/1.0.128 (external, cli)",
 }
 // Anthropic only accepts a Pro/Max OAuth token on /v1/messages when the request "looks like Claude
 // Code": the system prompt's FIRST block must be exactly this string, else it 400s. (Verified vs
@@ -349,8 +354,12 @@ export async function AnthropicProxyPlugin(input: PluginInput): Promise<Hooks> {
               delete headers["x-api-key"]
               delete headers["X-Api-Key"]
               if (token) headers["authorization"] = `Bearer ${token}`
+              // Full Claude Code request identity so Anthropic bills the subscription, not "extra usage".
               headers["anthropic-beta"] = CLAUDE_OAUTH.BETA
-              if (!headers["anthropic-version"]) headers["anthropic-version"] = "2023-06-01"
+              headers["anthropic-version"] = "2023-06-01"
+              headers["user-agent"] = CLAUDE_OAUTH.USER_AGENT
+              headers["x-app"] = "cli"
+              headers["anthropic-dangerous-direct-browser-access"] = "true"
               let body = init?.body
               if (typeof body === "string") {
                 try {
