@@ -741,6 +741,9 @@ export const dict = {
   "settings.general.section.sounds": "Sound effects",
   "settings.general.section.feed": "Feed",
   "settings.general.section.display": "Display",
+  "settings.general.section.agents": "Agents",
+  "settings.general.row.subagents.title": "Subagents & parallel agents",
+  "settings.general.row.subagents.description": "Let the agent spawn parallel sub-agents for complex tasks. Turn off to keep all work in a single agent.",
 
   "settings.general.row.language.title": "Language",
   "settings.general.row.language.description": "Change the display language for SquadCoder",

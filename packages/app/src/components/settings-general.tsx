@@ -9,6 +9,7 @@ import { Tooltip } from "@mimo-ai/ui/tooltip"
 import { useTheme, type ColorScheme } from "@mimo-ai/ui/theme/context"
 import { showToast } from "@mimo-ai/ui/toast"
 import { useParams } from "@solidjs/router"
+import { useGlobalSync } from "@/context/global-sync"
 import { useLanguage } from "@/context/language"
 import { usePermission } from "@/context/permission"
 import { usePlatform } from "@/context/platform"
@@ -74,6 +75,7 @@ export const SettingsGeneral: Component = () => {
   const platform = usePlatform()
   const params = useParams()
   const settings = useSettings()
+  const globalSync = useGlobalSync()
 
   onMount(() => {
     void theme.loadThemes()
@@ -81,7 +83,30 @@ export const SettingsGeneral: Component = () => {
 
   const [store, setStore] = createStore({
     checking: false,
+    subagentsBusy: false,
   })
+
+  // Engine-config toggle via the app-wide global sync (safe in the settings dialog, unlike the
+  // per-directory useSDK). Subagents/parallel = the `actor` tool; config.tools.actor===false removes
+  // it from the model's toolset (session/llm.ts). updateConfig writes the global config + reloads.
+  const subagentsEnabled = () =>
+    (globalSync.data.config.tools as Record<string, boolean> | undefined)?.actor !== false
+  const toggleSubagents = async (checked: boolean) => {
+    if (store.subagentsBusy) return
+    setStore("subagentsBusy", true)
+    const tools = { ...((globalSync.data.config.tools as Record<string, boolean> | undefined) ?? {}), actor: checked }
+    try {
+      await globalSync.updateConfig({ ...globalSync.data.config, tools } as never)
+    } catch (err) {
+      showToast({
+        variant: "error",
+        title: language.t("common.requestFailed"),
+        description: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setStore("subagentsBusy", false)
+    }
+  }
 
   const linux = createMemo(() => platform.platform === "desktop" && platform.os === "linux")
   const dir = createMemo(() => decode64(params.dir))
@@ -277,6 +302,27 @@ export const SettingsGeneral: Component = () => {
             <Switch
               checked={settings.general.editToolPartsExpanded()}
               onChange={(checked) => settings.general.setEditToolPartsExpanded(checked)}
+            />
+          </div>
+        </SettingsRow>
+      </SettingsList>
+    </div>
+  )
+
+  const AgentsSection = () => (
+    <div class="flex flex-col gap-1">
+      <h3 class="text-14-medium text-text-strong pb-2">{language.t("settings.general.section.agents")}</h3>
+
+      <SettingsList>
+        <SettingsRow
+          title={language.t("settings.general.row.subagents.title")}
+          description={language.t("settings.general.row.subagents.description")}
+        >
+          <div data-action="settings-subagents">
+            <Switch
+              checked={subagentsEnabled()}
+              disabled={store.subagentsBusy}
+              onChange={(checked) => void toggleSubagents(checked)}
             />
           </div>
         </SettingsRow>
@@ -634,6 +680,8 @@ export const SettingsGeneral: Component = () => {
 
       <div class="flex flex-col gap-8 w-full">
         <GeneralSection />
+
+        <AgentsSection />
 
         <AppearanceSection />
 
