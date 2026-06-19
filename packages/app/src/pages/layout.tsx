@@ -1062,6 +1062,12 @@ export default function Layout(props: ParentProps) {
         onSelect: () => openSettings(),
       },
       {
+        id: "workspace.docs",
+        title: language.t("command.workspace.docs"),
+        category: language.t("command.category.workspace"),
+        onSelect: () => openWorkspaceDocs(),
+      },
+      {
         id: "session.previous",
         title: language.t("command.session.previous"),
         category: language.t("command.category.session"),
@@ -1218,6 +1224,14 @@ export default function Layout(props: ParentProps) {
     void import("@/components/dialog-settings").then((x) => {
       if (dialogDead || dialogRun !== run) return
       dialog.show(() => <x.DialogSettings />)
+    })
+  }
+
+  function openWorkspaceDocs() {
+    const run = ++dialogRun
+    void import("@/components/dialog-workspace-docs").then((x) => {
+      if (dialogDead || dialogRun !== run) return
+      dialog.show(() => <x.DialogWorkspaceDocs />)
     })
   }
 
