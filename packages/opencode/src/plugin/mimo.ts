@@ -219,9 +219,14 @@ export async function MimoAuthPlugin(_input: PluginInput): Promise<Hooks> {
 const CLAUDE_OAUTH = {
   CLIENT_ID: "9d1c250a-e61b-44d9-88ed-5944d1962f5e",
   AUTHORIZE: "https://claude.ai/oauth/authorize",
-  TOKEN: "https://console.anthropic.com/v1/oauth/token",
+  // Matches the proven CLIProxyAPI / Claude Code SUBSCRIPTION flow. The previous config requested the
+  // CONSOLE scope `org:create_api_key`, which mints an API-management token Anthropic REJECTS on
+  // /v1/messages ("Invalid authentication credentials", 401) — that was the real auth bug. The
+  // claude.ai subscription scopes below produce a token valid for direct inference. Token exchange +
+  // refresh go to api.anthropic.com (CLIProxy's endpoint), not the old console.anthropic.com.
+  TOKEN: "https://api.anthropic.com/v1/oauth/token",
   REDIRECT: "https://console.anthropic.com/oauth/code/callback",
-  SCOPE: "org:create_api_key user:profile user:inference",
+  SCOPE: "user:profile user:inference user:sessions:claude_code user:mcp_servers user:file_upload",
   BETA: "oauth-2025-04-20",
 }
 // Anthropic only accepts a Pro/Max OAuth token on /v1/messages when the request "looks like Claude
