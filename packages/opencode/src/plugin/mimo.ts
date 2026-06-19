@@ -423,6 +423,12 @@ export async function AnthropicProxyPlugin(input: PluginInput): Promise<Hooks> {
                   } else {
                     parsed.system = [cc]
                   }
+                  // NOTE: Anthropic also scores the SYSTEM PROMPT's similarity to Claude Code and bills
+                  // anything below the bar to "extra usage". SquadCoder's full prompt (base + env + the
+                  // user's CLAUDE.md + skills catalog + memory-system block) is ~27KB and exceeds the
+                  // ~21KB bar — trimming it enough to pass means dropping so much context it's no longer
+                  // SquadCoder, so we DON'T mutilate the prompt here. The subscription/OAuth path works
+                  // only for lightweight prompts; the API-key path is the reliable route for full behavior.
                   // (2) PascalCase every tool name (and references in tool_choice + prior tool_use
                   // blocks) so the request reads as Claude Code → billed to the plan, not extra usage.
                   const remap = (n: any) => {
