@@ -353,6 +353,10 @@ export const dict = {
   "dialog.server.add.usernamePlaceholder": "username",
   "dialog.server.add.password": "Password (optional)",
   "dialog.server.add.passwordPlaceholder": "password",
+  "dialog.server.add.help.title": "Connecting to a remote machine?",
+  "dialog.server.add.help.step1": "On the remote host, run",
+  "dialog.server.add.help.step2": "Tunnel it to your machine over SSH (or Tailscale / Cloudflare):",
+  "dialog.server.add.help.step3": "Enter the resulting URL above — e.g. http://localhost:4096",
   "dialog.server.edit.title": "Edit server",
   "dialog.server.default.title": "Default server",
   "dialog.server.default.description":
@@ -716,7 +720,8 @@ export const dict = {
   "sidebar.project.viewAllSessions": "View all sessions",
   "sidebar.project.clearNotifications": "Clear notifications",
   "sidebar.empty.title": "No projects open",
-  "sidebar.empty.description": "Open a project to get started",
+  "sidebar.empty.description": "Open a local folder, or connect to a remote machine over SSH/Tailscale to get started",
+  "sidebar.empty.remote": "Connect to remote",
 
   "debugBar.ariaLabel": "Development performance diagnostics",
   "debugBar.na": "n/a",

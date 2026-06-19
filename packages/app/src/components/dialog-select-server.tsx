@@ -166,6 +166,24 @@ function ServerForm(props: ServerFormProps) {
             onKeyDown={keyDown}
           />
         </div>
+        <div dir="auto" class="mt-1 rounded-md bg-background-base/60 px-3 py-2.5 flex flex-col gap-1.5">
+          <div class="text-12-medium text-text-base">{language.t("dialog.server.add.help.title")}</div>
+          <ol class="text-12-regular text-text-weak ps-4 list-decimal flex flex-col gap-1">
+            <li>
+              {language.t("dialog.server.add.help.step1")}{" "}
+              <code class="text-text-base bg-surface-raised-base rounded px-1 py-0.5">
+                squadcoder serve --port 4096
+              </code>
+            </li>
+            <li>
+              {language.t("dialog.server.add.help.step2")}{" "}
+              <code class="text-text-base bg-surface-raised-base rounded px-1 py-0.5">
+                ssh -L 4096:localhost:4096 user@host
+              </code>
+            </li>
+            <li>{language.t("dialog.server.add.help.step3")}</li>
+          </ol>
+        </div>
       </div>
     </div>
   )

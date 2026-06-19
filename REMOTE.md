@@ -3,6 +3,20 @@
 SquadCoder reuses MiMoCode/opencode's existing client–server split — **no new core code** — so you
 can run the agent on a remote dev box and drive it locally. This doc is the `mumin remote` story.
 
+## GUI flow (desktop/web) — reuse, don't rebuild
+The app already speaks to any `squadcoder serve` over HTTP, so "Remote SSH" in the GUI is the
+existing **remote-server connect**, made discoverable + guided (tasks #56/#57):
+1. Empty sidebar → **"Connect to remote"** (next to "Open project"), or the **Server ▸ switch**
+   command → **Add server**.
+2. The Add-server form now shows inline setup steps: run `squadcoder serve --port 4096` on the
+   host, tunnel it (`ssh -L 4096:localhost:4096 user@host`, Tailscale, or Cloudflare), then paste
+   the resulting URL (+ optional username/password). Health is checked before it's saved.
+3. Once connected, open folders **on the remote** through the same picker; sessions run there.
+
+This is the v1 reuse path (no new transport, works today on Win/macOS/Linux). A future **in-app
+SSH auto-tunnel** (app spawns the remote `serve` + port-forward via `ssh2`, VS Code-Remote-style)
+is the planned v2 convenience on top — it needs a live host to verify and adds no new capability.
+
 ## What core already gives us
 - **`mumin serve`** — headless HTTP/WebSocket server (`packages/opencode/src/cli/cmd/serve.ts`).
   Bind it on the remote host: `mumin serve --hostname 127.0.0.1 --port 4096`

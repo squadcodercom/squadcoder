@@ -2118,9 +2118,14 @@ export default function Layout(props: ParentProps) {
                       {language.t("sidebar.empty.description")}
                     </div>
                   </div>
-                  <Button size="large" icon="folder-add-left" onClick={chooseProject}>
-                    {language.t("command.project.open")}
-                  </Button>
+                  <div class="flex flex-col items-stretch gap-2 w-full">
+                    <Button size="large" icon="folder-add-left" onClick={chooseProject}>
+                      {language.t("command.project.open")}
+                    </Button>
+                    <Button size="large" variant="ghost" icon="server" onClick={openServer}>
+                      {language.t("sidebar.empty.remote")}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Show>
