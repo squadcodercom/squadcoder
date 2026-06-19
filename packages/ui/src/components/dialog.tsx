@@ -59,6 +59,18 @@ export function Dialog(props: DialogProps) {
               </Switch>
             </div>
           </Show>
+          {/* Title-less dialogs (e.g. Settings) had no header and therefore no close affordance.
+              Render a floating close button so every modal can be dismissed with a visible X. */}
+          <Show when={!props.title && !props.action}>
+            <Kobalte.CloseButton
+              data-slot="dialog-close-button-floating"
+              as={IconButton}
+              icon="close"
+              variant="ghost"
+              aria-label={i18n.t("ui.common.close")}
+              class="absolute end-3 top-3 z-20"
+            />
+          </Show>
           <Show when={props.description}>
             <Kobalte.Description data-slot="dialog-description" style={{ "margin-inline-start": "-4px" }}>
               {props.description}
