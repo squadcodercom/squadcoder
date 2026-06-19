@@ -83,20 +83,21 @@ export const SettingsGeneral: Component = () => {
 
   const [store, setStore] = createStore({
     checking: false,
-    subagentsBusy: false,
+    agentsBusy: false,
   })
 
-  // Engine-config toggle via the app-wide global sync (safe in the settings dialog, unlike the
-  // per-directory useSDK). Subagents/parallel = the `actor` tool; config.tools.actor===false removes
-  // it from the model's toolset (session/llm.ts). updateConfig writes the global config + reloads.
-  const subagentsEnabled = () =>
-    (globalSync.data.config.tools as Record<string, boolean> | undefined)?.actor !== false
-  const toggleSubagents = async (checked: boolean) => {
-    if (store.subagentsBusy) return
-    setStore("subagentsBusy", true)
-    const tools = { ...((globalSync.data.config.tools as Record<string, boolean> | undefined) ?? {}), actor: checked }
+  // Engine-config toggles via the app-wide global sync (safe in the settings dialog, unlike the
+  // per-directory useSDK). updateConfig writes the global config + reloads.
+  const cfgObj = (key: string) =>
+    ((globalSync.data.config as Record<string, unknown>)[key] as Record<string, unknown> | undefined) ?? {}
+  const subagentsEnabled = () => (cfgObj("tools") as Record<string, boolean>).actor !== false
+  const dreamEnabled = () => (cfgObj("dream") as Record<string, boolean>).auto !== false
+  const distillEnabled = () => (cfgObj("distill") as Record<string, boolean>).auto !== false
+  const applyGlobalConfig = async (patch: Record<string, unknown>) => {
+    if (store.agentsBusy) return
+    setStore("agentsBusy", true)
     try {
-      await globalSync.updateConfig({ ...globalSync.data.config, tools } as never)
+      await globalSync.updateConfig({ ...globalSync.data.config, ...patch } as never)
     } catch (err) {
       showToast({
         variant: "error",
@@ -104,9 +105,12 @@ export const SettingsGeneral: Component = () => {
         description: err instanceof Error ? err.message : String(err),
       })
     } finally {
-      setStore("subagentsBusy", false)
+      setStore("agentsBusy", false)
     }
   }
+  const toggleSubagents = (checked: boolean) => applyGlobalConfig({ tools: { ...cfgObj("tools"), actor: checked } })
+  const toggleDream = (checked: boolean) => applyGlobalConfig({ dream: { ...cfgObj("dream"), auto: checked } })
+  const toggleDistill = (checked: boolean) => applyGlobalConfig({ distill: { ...cfgObj("distill"), auto: checked } })
 
   const linux = createMemo(() => platform.platform === "desktop" && platform.os === "linux")
   const dir = createMemo(() => decode64(params.dir))
@@ -321,8 +325,34 @@ export const SettingsGeneral: Component = () => {
           <div data-action="settings-subagents">
             <Switch
               checked={subagentsEnabled()}
-              disabled={store.subagentsBusy}
+              disabled={store.agentsBusy}
               onChange={(checked) => void toggleSubagents(checked)}
+            />
+          </div>
+        </SettingsRow>
+
+        <SettingsRow
+          title={language.t("settings.general.row.autoDream.title")}
+          description={language.t("settings.general.row.autoDream.description")}
+        >
+          <div data-action="settings-auto-dream">
+            <Switch
+              checked={dreamEnabled()}
+              disabled={store.agentsBusy}
+              onChange={(checked) => void toggleDream(checked)}
+            />
+          </div>
+        </SettingsRow>
+
+        <SettingsRow
+          title={language.t("settings.general.row.autoDistill.title")}
+          description={language.t("settings.general.row.autoDistill.description")}
+        >
+          <div data-action="settings-auto-distill">
+            <Switch
+              checked={distillEnabled()}
+              disabled={store.agentsBusy}
+              onChange={(checked) => void toggleDistill(checked)}
             />
           </div>
         </SettingsRow>

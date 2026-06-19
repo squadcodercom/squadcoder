@@ -744,6 +744,10 @@ export const dict = {
   "settings.general.section.agents": "Agents",
   "settings.general.row.subagents.title": "Subagents & parallel agents",
   "settings.general.row.subagents.description": "Let the agent spawn parallel sub-agents for complex tasks. Turn off to keep all work in a single agent.",
+  "settings.general.row.autoDream.title": "Auto-improve memory (Dream)",
+  "settings.general.row.autoDream.description": "Automatically consolidate durable knowledge into project memory between sessions. Off-runs appear as an 'Auto Dream' session.",
+  "settings.general.row.autoDistill.title": "Auto-package skills (Distill)",
+  "settings.general.row.autoDistill.description": "Automatically package repeated workflows into reusable skills between sessions.",
 
   "settings.general.row.language.title": "Language",
   "settings.general.row.language.description": "Change the display language for SquadCoder",
