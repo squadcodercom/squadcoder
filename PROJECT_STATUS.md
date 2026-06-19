@@ -3,7 +3,7 @@
 > **Read this first, every session, alongside `CLAUDE.md` + the memory store.**
 > This is the single human-readable source of truth for *what we're building, what's done, what's
 > pending, and the user's standing requests*. Update it whenever scope or status changes.
-> Last updated: **2026-06-18** (session 4).
+> Last updated: **2026-06-19** (session 5).
 
 ---
 
@@ -104,19 +104,27 @@ clean ultramode MCPs, GlobalSDK crash investigation, agent-mode dropdown hoverca
   **#35** default → Claude. **#36** strip MiMo default. **#38** Skills tab (view+open-folder, RTL+LTR verified, commit `d562767`).
   **#39** "Server" headline + new strings translated. **#44** Higgsfield + Google Ads MCPs. **#47** research pass.
 
-### 🟡 IN PROGRESS
-- **#45** Curate more dev/UI-UX/image-gen/ad-copy skills + MCPs (2 authored: `sc:ad-copywriting`, `sc:image-gen-prompting`).
-- **Reuse-before-build AUDIT** (workflow `wf_d67eb78e-61e`, 13 agents) — running now.
+### ✅ DONE this session (session 5, 2026-06-19) — all typecheck-clean & committed
+- **#42** Workspace `.md` viewer dialog (`dialog-workspace-docs.tsx`, command + i18n) — commit `17bbb82`.
+- **#59** Collapsible date-grouped sessions sidebar (Today/Yesterday/7d/30d/Older), opt-in toggle in
+  project menu + command palette, persisted — commit `b0d0fc0`.
+- **#57** Open-project picker root-cause fix: empty filter now shallow-lists the home dir (was empty
+  `find.files` → "No folders found"); footer hint + clearer copy — commit `8ff5626`.
+- **#56/#57b** Guided remote (SSH/Tailscale) connect: empty-state "Connect to remote" + setup steps in
+  the add-server form; reuses existing remote-engine connect — commit `92653a7`, `REMOTE.md` updated.
+- **#46** Loop/until-done = reuse core `/goal` (judge-gated) + curated safe extensions w/ security
+  review → `EXTENSIONS.md`; **#40/#60** indexing plan → `INDEXING.md` — commit `60be8fc`.
+- **#32** Portable `sc:design-sync` skill vendored (design→code, no hosted connector) — commit `6bd89e6`.
+- **#45** Dev skills vendored: `sc:mcp-builder`, `sc:webapp-testing`, `sc:code-review` — commit `d6f861b`.
 
-### ⏳ PENDING
-- **#32** design-sync skill (BLOCKED). **#33** upstream selective sync.
-- **#37** per-agent model mapping GUI+CLI. **#40** auto-index + progress UI.
-- **#41** self-improving skills/memory (build only the gap vs /distill+/dream).
-- **#42** workspace .md viewer tab. **#43** subagents/parallel settings toggle.
-- **#46** loop/until-done + curate safe extensions. **#48** phone/Telegram remote control.
-- **#49** skill enable/disable toggle (engine config + GUI Switch — CAUTION: `Config.update` mergeDeep+dispose).
-- **#50** ad-platform skill set (Google/Meta/TikTok/+). **#51** skill auto-fire. **#52** universal/portable skills.
-- **#53** Ralph loop in core.
+### ⏳ PENDING (need a user decision or careful live verification — not blind-buildable)
+- **#40 / #60** Built-in semantic indexing. Plan written (`INDEXING.md`): self-contained **fastembed**
+  (no Ollama) engine IndexService + auto-sync + progress UI. **Blocked on ONE decision:** embedder
+  packaging — (A) bundle the model in the installer vs (B) first-run download. Interim offline MCP is
+  bundled `enabled:false`. Recommend (A) for offline/IL focus.
+- **#33** Upstream selective sync — 25 commits behind `upstream/main`; per-commit take/skip in
+  `UPSTREAM_SYNC.md`. Not merged: conflict risk (build.ts, header-injection vs our Bearer plugin,
+  mimocode-rename) + can't fully verify a build blind. Do interactively.
 
 ---
 
