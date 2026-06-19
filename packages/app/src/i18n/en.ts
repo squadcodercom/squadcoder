@@ -621,6 +621,8 @@ export const dict = {
   "status.popover.tab.lsp": "LSP",
   "status.popover.tab.plugins": "Plugins",
   "status.popover.tab.skills": "Skills",
+  "status.popover.tab.agents": "Agents",
+  "dialog.agents.empty": "No agents available",
   "status.popover.action.manageServers": "Manage servers",
 
   "session.share.popover.title": "Publish on web",

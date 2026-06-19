@@ -1,6 +1,7 @@
 import { Button } from "@mimo-ai/ui/button"
 import { useDialog } from "@mimo-ai/ui/context/dialog"
 import { Icon } from "@mimo-ai/ui/icon"
+import { Select } from "@mimo-ai/ui/select"
 import { Switch } from "@mimo-ai/ui/switch"
 import { Tabs } from "@mimo-ai/ui/tabs"
 import { useMutation } from "@tanstack/solid-query"
@@ -10,6 +11,7 @@ import { type Accessor, createEffect, createMemo, For, type JSXElement, onCleanu
 import { createStore, reconcile } from "solid-js/store"
 import { ServerHealthIndicator, ServerRow } from "@/components/server/server-row"
 import { useLanguage } from "@/context/language"
+import { useModels } from "@/context/models"
 import { usePlatform } from "@/context/platform"
 import { useSDK } from "@/context/sdk"
 import { normalizeServerUrl, ServerConnection, useServer } from "@/context/server"
@@ -319,6 +321,25 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
   const toggleSkill = useSkillToggleMutation()
   const skillEnabled = (name: string) => skillPermissionMap(sync.data.config)[name] !== "deny"
 
+  // #37 per-agent model: list non-hidden agents (incl. Team roles) + a model picker each.
+  // Writing config.agent[name].model persists via the per-directory config.update (#55 fix).
+  const models = useModels()
+  const agentItems = createMemo(() =>
+    (sync.data.agent ?? []).filter((a) => !a.hidden).slice().sort((a, b) => a.name.localeCompare(b.name)),
+  )
+  const agentCount = createMemo(() => agentItems().length)
+  const agentCurrentModel = (agent: { model?: { modelID: string; providerID: string } }) =>
+    agent.model
+      ? models.list().find((m) => m.id === agent.model!.modelID && m.provider.id === agent.model!.providerID)
+      : undefined
+  const setAgentModel = async (agent: string, providerID: string, modelID: string) => {
+    try {
+      await sdk.client.config.update({ config: { agent: { [agent]: { model: `${providerID}/${modelID}` } } } })
+    } catch (err) {
+      fail(err)
+    }
+  }
+
   return (
     <div class="flex items-center gap-1 w-[360px] rounded-xl shadow-[var(--shadow-lg-border-base)]">
       <Tabs
@@ -349,6 +370,10 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
           <Tabs.Trigger value="skills" data-slot="tab" class="text-12-regular">
             {skillCount() > 0 ? `${skillCount()} ` : ""}
             {language.t("status.popover.tab.skills")}
+          </Tabs.Trigger>
+          <Tabs.Trigger value="agents" data-slot="tab" class="text-12-regular">
+            {agentCount() > 0 ? `${agentCount()} ` : ""}
+            {language.t("status.popover.tab.agents")}
           </Tabs.Trigger>
         </Tabs.List>
 
@@ -590,6 +615,39 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                 >
                   {language.t("dialog.skills.action.manage")}
                 </Button>
+              </Show>
+            </div>
+          </div>
+        </Tabs.Content>
+
+        <Tabs.Content value="agents">
+          <div class="flex flex-col px-2 pb-2">
+            <div class="flex flex-col p-3 bg-background-base rounded-sm min-h-14 max-h-72 overflow-y-auto gap-0.5">
+              <Show
+                when={agentItems().length > 0}
+                fallback={
+                  <div class="text-14-regular text-text-base text-center my-auto">
+                    {language.t("dialog.agents.empty")}
+                  </div>
+                }
+              >
+                <For each={agentItems()}>
+                  {(agent) => (
+                    <div class="flex items-center gap-2 w-full ps-2 pe-1 py-1">
+                      <span class="text-13-regular text-text-base truncate flex-1 capitalize">{agent.name}</span>
+                      <Select
+                        options={models.list()}
+                        current={agentCurrentModel(agent)}
+                        value={(m) => `${m.provider.id}/${m.id}`}
+                        label={(m) => m.name}
+                        onSelect={(m) => m && void setAgentModel(agent.name, m.provider.id, m.id)}
+                        variant="secondary"
+                        size="small"
+                        triggerStyle={{ "max-width": "150px" }}
+                      />
+                    </div>
+                  )}
+                </For>
               </Show>
             </div>
           </div>

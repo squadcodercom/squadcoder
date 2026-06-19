@@ -553,6 +553,8 @@ export const dict = {
   "status.popover.tab.lsp": "LSP",
   "status.popover.tab.plugins": "תוספים",
   "status.popover.tab.skills": "כישורים",
+  "status.popover.tab.agents": "סוכנים",
+  "dialog.agents.empty": "אין סוכנים זמינים",
   "status.popover.action.manageServers": "נהל שרתים",
   "session.share.popover.title": "פרסם באינטרנט",
   "session.share.popover.description.shared": "הסשן הזה ציבורי באינטרנט. הוא נגיש לכל מי שיש לו את הקישור.",
