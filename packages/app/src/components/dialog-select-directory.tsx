@@ -187,6 +187,16 @@ function useDirectorySearch(args: {
     const scopedInput = scoped(value)
     if (!scopedInput) return [] as string[]
 
+    // No input yet: do a direct shallow listing of the start directory (home) so the picker
+    // always opens onto browsable folders instead of a confusing empty "No folders found".
+    // find.files (ripgrep cache) can come back empty for a non-project home dir; file.list is
+    // a reliable shallow read. The user drills in with Tab and opens with Enter.
+    if (!value) {
+      const items = await match(scopedInput.directory, "", 50)
+      if (!active()) return []
+      return items
+    }
+
     const raw = normalizeDriveRoot(value)
     const isPath = raw.startsWith("~") || !!rootOf(raw) || raw.includes("/")
     const query = normalizeDriveRoot(scopedInput.path)
@@ -387,6 +397,15 @@ export function DialogSelectDirectory(props: DialogSelectDirectoryProps) {
           )
         }}
       </List>
+      <div
+        dir="auto"
+        class="shrink-0 px-3 py-2 border-t border-border-weak-base text-12-regular text-text-weak flex items-center gap-1.5"
+      >
+        <span class="rounded bg-surface-raised-base px-1.5 py-0.5 text-11-medium text-text-base">Tab</span>
+        <span>{language.t("dialog.directory.hint.enter")}</span>
+        <span class="rounded bg-surface-raised-base px-1.5 py-0.5 text-11-medium text-text-base ms-2">↵</span>
+        <span>{language.t("dialog.directory.hint.open")}</span>
+      </div>
     </Dialog>
   )
 }

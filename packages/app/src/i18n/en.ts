@@ -328,8 +328,10 @@ export const dict = {
 
   "dialog.fork.empty": "No messages to fork from",
 
-  "dialog.directory.search.placeholder": "Search folders",
-  "dialog.directory.empty": "No folders found",
+  "dialog.directory.search.placeholder": "Browse folders, or type a path (C:\\ , ~/projects…)",
+  "dialog.directory.empty": "No matching folders. Type a path like C:\\ or ~/ to browse from there.",
+  "dialog.directory.hint.enter": "enter folder",
+  "dialog.directory.hint.open": "open project",
 
   "app.server.unreachable": "Could not reach {{server}}",
   "app.server.retrying": "Retrying automatically...",
