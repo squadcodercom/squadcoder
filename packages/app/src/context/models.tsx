@@ -113,13 +113,18 @@ export const { use: useModels, provider: ModelsProvider } = createSimpleContext(
 
     const visible = (model: ModelKey) => {
       const key = modelKey(model)
+      // SquadCoder: hide Claude Fable 5 — not generally available yet.
+      if (model.providerID === "anthropic" && model.modelID === "claude-fable-5") return false
       const state = visibility().get(key)
       if (state === "hide") return false
       if (state === "show") return true
       if (latestSet().has(key)) return true
       const date = release().get(key)
       if (!date?.isValid) return true
-      return false
+      // SquadCoder: also show recent CANONICAL models (e.g. Opus 4.6/4.7, Sonnet 4.5, Haiku 4.5) — not
+      // just the single newest per family — while keeping date-suffixed duplicates (…-20251101) hidden.
+      if (/\d{6,}$/.test(model.modelID)) return false
+      return Math.abs(date.diffNow().as("months")) < 12
     }
 
     const setVisibility = (model: ModelKey, state: boolean) => {
