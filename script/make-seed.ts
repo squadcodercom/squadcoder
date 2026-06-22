@@ -14,6 +14,8 @@
  *   seed/AGENTS.md      <- .squadcoder/instructions.md   (auto-loaded as global instructions)
  *   seed/skills/**      <- .squadcoder/skills/**          (auto-discovered)
  *   seed/agent/**       <- .squadcoder/agent/**           (auto-discovered)
+ *   seed/plugin/**      <- .squadcoder/plugin/**          (auto-discovered: anthropic auth + opt-in
+ *                          Claude Pro/Max OAuth ships as a plugin file, NOT compiled into the engine)
  *   seed/optional/**    <- .squadcoder/optional/**        (stored, not auto-scanned)
  *   seed/SETUP.md, seed/TEAM_MODE.md                    (discoverability)
  *   seed/.squadcoder-seed  <- seed version stamp
@@ -59,6 +61,46 @@ if (fs.existsSync(instructions)) {
 // 3) Auto-discovered + stored dirs.
 copyDir(path.join(squadcoderDir, "skills"), path.join(seedDir, "skills"))
 copyDir(path.join(squadcoderDir, "agent"), path.join(seedDir, "agent"))
+// SQUADCODER: a developer's local .squadcoder/agent may pin worker roles to a personal provider
+// (e.g. zai/GLM-5.2 for a Z.ai plan). The SHIPPED seed must default to Anthropic so fresh installs
+// work without that provider — reset any worker model back to the Anthropic default in the seed copy.
+{
+  const seedAgentDir = path.join(seedDir, "agent")
+  const resetModels: Record<string, string> = {
+    "team-dev.md": "anthropic/claude-sonnet-4-6",
+    "team-frontend.md": "anthropic/claude-opus-4-8",
+  }
+  for (const [file, model] of Object.entries(resetModels)) {
+    const p = path.join(seedAgentDir, file)
+    if (fs.existsSync(p)) {
+      fs.writeFileSync(p, fs.readFileSync(p, "utf8").replace(/^model:.*$/m, `model: ${model}`))
+    }
+  }
+}
+// SQUADCODER: ship the slash-command launchers (/ads, /build) so the flows are one-tap discoverable.
+copyDir(path.join(squadcoderDir, "command"), path.join(seedDir, "command"))
+// `plugin/` auto-discovers from the global config dir scan (ConfigPlugin.load → {plugin,plugins}/*.{ts,js}).
+// The Anthropic auth plugin (incl. opt-in Claude Pro/Max OAuth) ships PRE-COMPILED to .js: the packaged
+// engine runs on Electron's NODE runtime, which can't transpile a .ts plugin at import time (it throws
+// "Bun is not defined") — so we Bun.build the editable .squadcoder/plugin-src/*.ts into seed/plugin/*.js.
+// The compiled file is self-contained (only node:crypto), so no @mimo-ai/plugin runtime dep is needed.
+const pluginSrcDir = path.join(squadcoderDir, "plugin-src")
+if (fs.existsSync(pluginSrcDir)) {
+  const outDir = path.join(seedDir, "plugin")
+  fs.mkdirSync(outDir, { recursive: true })
+  for (const entry of fs.readdirSync(pluginSrcDir).filter((f) => f.endsWith(".ts") && !f.endsWith(".d.ts"))) {
+    const result = await Bun.build({
+      entrypoints: [path.join(pluginSrcDir, entry)],
+      target: "node",
+      format: "esm",
+    })
+    if (!result.success) throw new AggregateError(result.logs, `failed to compile plugin ${entry}`)
+    const js = await result.outputs[0].text()
+    fs.writeFileSync(path.join(outDir, entry.replace(/\.ts$/, ".js")), js)
+  }
+}
+// Any pre-built .js plugins committed directly under .squadcoder/plugin/ are copied as-is too.
+copyDir(path.join(squadcoderDir, "plugin"), path.join(seedDir, "plugin"))
 copyDir(path.join(squadcoderDir, "optional"), path.join(seedDir, "optional"))
 
 // 4) Docs for discoverability.

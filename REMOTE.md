@@ -3,19 +3,38 @@
 SquadCoder reuses MiMoCode/opencode's existing client–server split — **no new core code** — so you
 can run the agent on a remote dev box and drive it locally. This doc is the `mumin remote` story.
 
-## GUI flow (desktop/web) — reuse, don't rebuild
-The app already speaks to any `squadcoder serve` over HTTP, so "Remote SSH" in the GUI is the
-existing **remote-server connect**, made discoverable + guided (tasks #56/#57):
-1. Empty sidebar → **"Connect to remote"** (next to "Open project"), or the **Server ▸ switch**
-   command → **Add server**.
-2. The Add-server form now shows inline setup steps: run `squadcoder serve --port 4096` on the
-   host, tunnel it (`ssh -L 4096:localhost:4096 user@host`, Tailscale, or Cloudflare), then paste
-   the resulting URL (+ optional username/password). Health is checked before it's saved.
-3. Once connected, open folders **on the remote** through the same picker; sessions run there.
+## GUI flow (desktop) — automated SSH, VS Code-Remote-style ✅ (key-auth)
+The desktop app now **opens the SSH tunnel and starts the engine on the remote for you** — no manual
+`serve`/`ssh -L`. In **Server ▸ switch → Add server**, pick the **SSH** tab and enter:
+- **Host**, **User**, **Port** (default 22)
+- **Login**: **ssh-agent** (default) or a **key file** (native picker) — *key-based login is the
+  recommended/primary path*. (Password-only hosts are a deferred, second-class fallback — Windows
+  OpenSSH can't do non-interactive passwords.)
+- optional **Remote engine port** (default 4096)
 
-This is the v1 reuse path (no new transport, works today on Win/macOS/Linux). A future **in-app
-SSH auto-tunnel** (app spawns the remote `serve` + port-forward via `ssh2`, VS Code-Remote-style)
-is the planned v2 convenience on top — it needs a live host to verify and adds no new capability.
+Click **Connect** and the app (Electron main, `packages/desktop/src/main/ssh-tunnel.ts`):
+1. bootstraps the remote engine over a short `ssh exec` — reuses a healthy one, or starts
+   `squadcoder serve --hostname 127.0.0.1 --port <P>` (password sent over **stdin**, never argv);
+2. opens a supervised `ssh -N -L 127.0.0.1:<local>:127.0.0.1:<P> user@host` tunnel;
+3. probes it (process-alive → local TCP → HTTP 200) and attaches via the existing
+   `ServerConnection.Ssh` path — every downstream consumer (SDK, health, picker) is reused unchanged.
+
+The remote engine binds **loopback-only**; the SSH tunnel is the sole ingress + the transport
+encryption. Host keys use **accept-new (TOFU)** into an app-managed `known_hosts`; a changed key is
+hard-rejected. No SSH password is ever stored.
+
+**Architecture:** the engine is touched **zero** — the tunnel lives entirely in the desktop app
+(Electron main owns `child_process`; web has no SSH and the SSH tab is hidden there). This keeps the
+core fully upstream-updatable. Engine-username over the tunnel is pinned to `squadcoder`
+(`MIMOCODE_SERVER_USERNAME`) to match `createSdkForServer` — see `UPSTREAM_SYNC.md` if upstream
+changes that default.
+
+**MVP scope / deferred to increment 2:** reconnect-on-drop + persistence across app restarts
+(SSH connections are session-ephemeral today), an interactive trust-host-key fingerprint dialog,
+multi-remote disconnect from the list menu, and the password-only interactive-terminal fallback.
+
+The manual reuse path below (paste a URL to an already-running `serve` + your own tunnel) still works
+on web and as a fallback.
 
 ## What core already gives us
 - **`mumin serve`** — headless HTTP/WebSocket server (`packages/opencode/src/cli/cmd/serve.ts`).

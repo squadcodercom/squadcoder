@@ -15,6 +15,7 @@ import { Log } from "../../util"
 import { lazy } from "../../util/lazy"
 import { Config } from "../../config"
 import { ExternalImport } from "../../session/external-import"
+import { Ssh } from "../ssh"
 import { errors } from "../error"
 
 const log = Log.create({ service: "server" })
@@ -102,6 +103,47 @@ export const GlobalRoutes = lazy(() =>
       }),
       async (c) => {
         return c.json({ healthy: true, version: InstallationVersion })
+      },
+    )
+    // SQUADCODER: engine-side Remote-SSH so the WEB app (not just desktop) can open SSH tunnels — the
+    // engine has shell access; a browser doesn't. Co-located case: the browser reaches the returned
+    // loopback URL directly. See server/ssh.ts.
+    .get("/ssh/detect", async (c) => c.json(await Ssh.detectSsh()))
+    .post(
+      "/ssh/connect",
+      validator(
+        "json",
+        z.object({
+          host: z.string(),
+          user: z.string(),
+          port: z.number().optional(),
+          keyFile: z.string().optional(),
+          remotePort: z.number().optional(),
+        }),
+      ),
+      async (c) => {
+        const b = c.req.valid("json")
+        try {
+          const result = await Ssh.connect({
+            host: b.host,
+            user: b.user,
+            port: b.port,
+            remotePort: b.remotePort,
+            auth: b.keyFile ? { kind: "key", keyFile: b.keyFile } : { kind: "agent" },
+          })
+          return c.json({ ok: true as const, result })
+        } catch (e) {
+          if (e instanceof Ssh.SshError) return c.json({ ok: false as const, code: e.code, message: e.message })
+          return c.json({ ok: false as const, code: "unknown" as const, message: e instanceof Error ? e.message : String(e) })
+        }
+      },
+    )
+    .post(
+      "/ssh/disconnect",
+      validator("json", z.object({ host: z.string() })),
+      async (c) => {
+        await Ssh.disconnect(c.req.valid("json").host)
+        return c.json({ ok: true as const })
       },
     )
     .get(

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, Show, untrack } from "solid-js"
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show, untrack } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useLocation, useNavigate, useParams } from "@solidjs/router"
 import { IconButton } from "@mimo-ai/ui/icon-button"
@@ -50,6 +50,16 @@ export function Titlebar() {
   const mac = createMemo(() => platform.platform === "desktop" && platform.os === "macos")
   const windows = createMemo(() => platform.platform === "desktop" && platform.os === "windows")
   const web = createMemo(() => platform.platform === "web")
+
+  // SQUADCODER: custom Windows window controls (RTL-aware). Track maximized state so the maximize
+  // button toggles its glyph (maximize <-> restore).
+  const [maximized, setMaximized] = createSignal(false)
+  onMount(() => {
+    if (platform.platform !== "desktop") return
+    void platform.windowIsMaximized?.().then((v) => setMaximized(!!v))
+    const off = platform.onWindowMaximizeChange?.((v) => setMaximized(v))
+    onCleanup(() => off?.())
+  })
   const zoom = () => platform.webviewZoom?.() ?? 1
   const minHeight = () => (mac() ? `${40 / zoom()}px` : undefined)
 
@@ -154,7 +164,14 @@ export function Titlebar() {
   const maximize = (e: MouseEvent) => {
     if (platform.platform !== "desktop") return
     if (interactive(e.target)) return
-    if (e.target instanceof Element && e.target.closest("[data-tauri-decorum-tb]")) return
+
+    // SQUADCODER: double-click the drag region to toggle maximize via our custom-controls IPC
+    // (the legacy Tauri window API doesn't exist under Electron).
+    if (platform.windowToggleMaximize) {
+      e.preventDefault()
+      platform.windowToggleMaximize()
+      return
+    }
 
     const win = getWin()
     if (!win?.toggleMaximize) return
@@ -314,9 +331,52 @@ export function Titlebar() {
         onMouseDown={drag}
       >
         <div id="opencode-titlebar-right" class="flex items-center gap-1 shrink-0 justify-end" />
+        {/* SQUADCODER: custom Windows window controls. They sit in the titlebar's logical-end column,
+            so they render physical-right in LTR and physical-LEFT in RTL (Hebrew) — fixing the clip
+            where the native top-right overlay overlapped the RTL sidebar. */}
         <Show when={windows()}>
-          {!tauriApi() && <div class="w-36 shrink-0" />}
-          <div data-tauri-decorum-tb class="flex flex-row" />
+          <div class="flex items-stretch h-10 shrink-0 ms-1">
+            <button
+              type="button"
+              class="flex items-center justify-center w-[44px] h-10 text-icon-base hover:bg-surface-raised-base-hover transition-colors"
+              onClick={() => platform.windowMinimize?.()}
+              aria-label={language.t("window.control.minimize")}
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                <path d="M0 5 H10" stroke="currentColor" stroke-width="1" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="flex items-center justify-center w-[44px] h-10 text-icon-base hover:bg-surface-raised-base-hover transition-colors"
+              onClick={() => platform.windowToggleMaximize?.()}
+              aria-label={language.t(maximized() ? "window.control.restore" : "window.control.maximize")}
+            >
+              <Show
+                when={maximized()}
+                fallback={
+                  <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                    <rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1" />
+                  </svg>
+                }
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                  <rect x="0.5" y="2.5" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1" />
+                  <path d="M2.5 2.5 V0.5 H9.5 V7.5 H7.5" fill="none" stroke="currentColor" stroke-width="1" />
+                </svg>
+              </Show>
+            </button>
+            <button
+              type="button"
+              class="flex items-center justify-center w-[44px] h-10 text-icon-base hover:bg-[#E81123] hover:text-white transition-colors"
+              onClick={() => platform.windowClose?.()}
+              aria-label={language.t("window.control.close")}
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+                <path d="M0 0 L10 10 M10 0 L0 10" stroke="currentColor" stroke-width="1" />
+              </svg>
+            </button>
+          </div>
         </Show>
       </div>
     </header>

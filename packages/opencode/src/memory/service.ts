@@ -114,7 +114,7 @@ export const layer: Layer.Layer<Service, never, Config.Service> = Layer.effect(
       // Over-fetch (3x, capped) so the relative floor can trim common-word
       // noise without starving the list when there ARE enough real hits.
       const fetchLimit = Math.min(limit * 3, 50)
-      const rows = Database.Client().$client.query(sql).all(ftsQuery, ...params, fetchLimit) as SearchRow[]
+      const rows = Database.statement(sql).all(ftsQuery, ...params, fetchLimit) as SearchRow[]
 
       // FTS5 bm25() returns lower = better; convert to higher = better for caller
       const mapped = rows.map((r) => ({

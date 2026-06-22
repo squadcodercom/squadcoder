@@ -1,5 +1,5 @@
 import { createSimpleContext } from "@mimo-ai/ui/context"
-import { type Accessor, batch, createEffect, createMemo, onCleanup } from "solid-js"
+import { type Accessor, batch, createEffect, createMemo, createSignal, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
 import { Persist, persisted } from "@/utils/persist"
 import { useCheckServerHealth } from "@/utils/server-health"
@@ -18,6 +18,9 @@ export function normalizeServerUrl(input: string) {
 export function serverName(conn?: ServerConnection.Any, ignoreDisplayName = false) {
   if (!conn) return ""
   if (conn.displayName && !ignoreDisplayName) return conn.displayName
+  // SQUADCODER: SSH servers are reached over an ephemeral loopback tunnel — show the remote host, not
+  // the local tunnel port (e.g. "example.com" instead of "127.0.0.1:54321").
+  if (conn.type === "ssh") return conn.host
   return conn.http.url.replace(/^https?:\/\//, "").replace(/\/+$/, "")
 }
 
@@ -112,6 +115,11 @@ export const { use: useServer, provider: ServerProvider } = createSimpleContext(
 
     const url = (x: StoredServer) => (typeof x === "string" ? x : "type" in x ? x.http.url : x.url)
 
+    // SQUADCODER: SSH connections are EPHEMERAL — they carry a per-session loopback tunnel port that
+    // would be stale after a restart, so they live in memory (not persisted) and reuse the whole
+    // downstream attach/health stack. Reconnect-on-launch (re-opening the tunnel) is a later increment.
+    const [ephemeral, setEphemeral] = createSignal<Array<ServerConnection.Any>>([])
+
     const allServers = createMemo((): Array<ServerConnection.Any> => {
       const servers = [
         ...(props.servers ?? []),
@@ -123,6 +131,7 @@ export const { use: useServer, provider: ServerProvider } = createSimpleContext(
               }
             : value,
         ),
+        ...ephemeral(),
       ]
 
       const deduped = new Map(
@@ -171,7 +180,17 @@ export const { use: useServer, provider: ServerProvider } = createSimpleContext(
       if (state.active !== input) setState("active", input)
     }
 
-    function add(input: ServerConnection.Http) {
+    function add(input: ServerConnection.Http | ServerConnection.Ssh) {
+      // SQUADCODER: SSH connections go to the in-memory ephemeral list, keyed by `ssh:<host>` — never
+      // persisted (the tunnel port is per-session). HTTP keeps the original persisted behavior.
+      if (input.type === "ssh") {
+        const k = ServerConnection.key(input)
+        return batch(() => {
+          setEphemeral((list) => [...list.filter((c) => ServerConnection.key(c) !== k), input])
+          setState("active", k)
+          return input
+        })
+      }
       const url_ = normalizeServerUrl(input.http.url)
       if (!url_) return
       const conn = { ...input, http: { ...input.http, url: url_ } }
@@ -189,11 +208,13 @@ export const { use: useServer, provider: ServerProvider } = createSimpleContext(
 
     function remove(key: ServerConnection.Key) {
       const list = store.list.filter((x) => url(x) !== key)
+      const nextEphemeral = ephemeral().filter((c) => ServerConnection.key(c) !== key)
       batch(() => {
         setStore("list", list)
+        setEphemeral(nextEphemeral)
         if (state.active === key) {
-          const next = list[0]
-          setState("active", next ? ServerConnection.Key.make(url(next)) : props.defaultServer)
+          const next = allServers().find((c) => ServerConnection.key(c) !== key)
+          setState("active", next ? ServerConnection.key(next) : props.defaultServer)
         }
       })
     }

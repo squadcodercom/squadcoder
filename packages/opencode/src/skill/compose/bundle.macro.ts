@@ -1,3 +1,6 @@
+// SQUADCODER cache-bust 2026-06-22: this is a Bun build MACRO whose result is cached by the macro
+// module's source, NOT by the .md files it reads via fs — so edits to .bundle/**/*.md won't re-inline
+// unless this file also changes. Touch this comment whenever .bundle content changes.
 import fs from "fs"
 import path from "path"
 

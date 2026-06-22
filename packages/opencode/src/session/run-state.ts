@@ -88,14 +88,18 @@ export const layer = Layer.effect(
     })
 
     const cancel = Effect.fn("SessionRunState.cancel")(function* (sessionID: SessionID) {
-      const key = runnerKey(sessionID, "main")
       const data = yield* InstanceState.get(state)
-      const existing = data.runners.get(key)
-      if (!existing || !existing.busy) {
+      // SQUADCODER (#68/#70): Stop-all must abort the WHOLE Team run, not just the orchestrator.
+      // Every runner for a session — the `main` orchestrator AND each background-spawned actor —
+      // is keyed `${sessionID}:${agentID}`, so cancel all busy runners under this session's prefix.
+      // (Session IDs contain no ":", so the prefix matches this session's runners only.)
+      const prefix = `${sessionID}:`
+      const busy = [...data.runners.entries()].filter(([key, runner]) => key.startsWith(prefix) && runner.busy)
+      if (busy.length === 0) {
         yield* status.set(sessionID, { type: "idle" })
         return
       }
-      yield* existing.cancel
+      yield* Effect.forEach(busy, ([, runner]) => runner.cancel, { concurrency: "unbounded", discard: true })
     })
 
     const cancelActor = Effect.fn("SessionRunState.cancelActor")(function* (

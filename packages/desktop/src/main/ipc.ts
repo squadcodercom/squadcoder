@@ -6,6 +6,11 @@ import type {
   InitStep,
   ServerReadyData,
   SqliteMigrationProgress,
+  SshConfigHost,
+  SshDetectResult,
+  SshTunnelOptions,
+  SshTunnelOutcome,
+  SshTunnelStatus,
   TitlebarTheme,
   WindowConfig,
   WslConfig,
@@ -38,9 +43,26 @@ type Deps = {
   checkUpdate: () => Promise<{ updateAvailable: boolean; version?: string }>
   installUpdate: () => Promise<void> | void
   setBackgroundColor: (color: string) => void
+  // SQUADCODER: Remote-SSH
+  detectSsh: () => Promise<SshDetectResult>
+  startSshTunnel: (opts: SshTunnelOptions) => Promise<SshTunnelOutcome>
+  stopSshTunnel: (host: string) => Promise<void>
+  readSshConfig: () => SshConfigHost[] | Promise<SshConfigHost[]>
 }
 
 export function registerIpcHandlers(deps: Deps) {
+  // SQUADCODER: custom Windows window controls (frameless + RTL-aware) — act on the calling window.
+  const senderWindow = (event: IpcMainEvent | IpcMainInvokeEvent) => BrowserWindow.fromWebContents(event.sender)
+  ipcMain.on("window-minimize", (event: IpcMainEvent) => senderWindow(event)?.minimize())
+  ipcMain.on("window-toggle-maximize", (event: IpcMainEvent) => {
+    const win = senderWindow(event)
+    if (!win) return
+    if (win.isMaximized()) win.unmaximize()
+    else win.maximize()
+  })
+  ipcMain.on("window-close", (event: IpcMainEvent) => senderWindow(event)?.close())
+  ipcMain.handle("window-is-maximized", (event: IpcMainInvokeEvent) => senderWindow(event)?.isMaximized() ?? false)
+
   ipcMain.handle("kill-sidecar", () => deps.killSidecar())
   ipcMain.handle("await-initialization", (event: IpcMainInvokeEvent) => {
     const send = (step: InitStep) => event.sender.send("init-step", step)
@@ -69,6 +91,12 @@ export function registerIpcHandlers(deps: Deps) {
   ipcMain.handle("check-update", () => deps.checkUpdate())
   ipcMain.handle("install-update", () => deps.installUpdate())
   ipcMain.handle("set-background-color", (_event: IpcMainInvokeEvent, color: string) => deps.setBackgroundColor(color))
+
+  // SQUADCODER: Remote-SSH
+  ipcMain.handle("detect-ssh", () => deps.detectSsh())
+  ipcMain.handle("start-ssh-tunnel", (_event: IpcMainInvokeEvent, opts: SshTunnelOptions) => deps.startSshTunnel(opts))
+  ipcMain.handle("stop-ssh-tunnel", (_event: IpcMainInvokeEvent, host: string) => deps.stopSshTunnel(host))
+  ipcMain.handle("read-ssh-config", () => deps.readSshConfig())
   ipcMain.handle("store-get", (_event: IpcMainInvokeEvent, name: string, key: string) => {
     const store = getStore(name)
     const value = store.get(key)
@@ -201,4 +229,8 @@ export function sendMenuCommand(win: BrowserWindow, id: string) {
 
 export function sendDeepLinks(win: BrowserWindow, urls: string[]) {
   win.webContents.send("deep-link", urls)
+}
+
+export function sendSshTunnelStatus(win: BrowserWindow, status: SshTunnelStatus) {
+  win.webContents.send("ssh-tunnel-status", status)
 }

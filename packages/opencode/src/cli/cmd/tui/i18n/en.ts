@@ -117,7 +117,7 @@ export const dict: Record<string, string> = {
   "tui.tips.custom_formatter": "Define custom formatter commands with file extensions in config",
   "tui.tips.lsp": "MiMoCode uses LSP servers for intelligent code analysis",
   "tui.tips.custom_tool":
-    "Create {highlight}.ts{/highlight} files in {highlight}.mimocode/tools/{/highlight} to define new LLM tools",
+    "Create {highlight}.ts{/highlight} files in {highlight}.squadcoder/tools/{/highlight} to define new LLM tools",
   "tui.tips.tool_scripts": "Tool definitions can invoke scripts written in Python, Go, etc",
   "tui.tips.plugins":
     "Add {highlight}.ts{/highlight} files to {highlight}.mimocode/plugin/{/highlight} for event hooks",

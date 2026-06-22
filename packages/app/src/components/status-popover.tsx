@@ -58,7 +58,7 @@ export function StatusPopover() {
             <div class="w-[420px] h-14 rounded-xl bg-background-strong shadow-[var(--shadow-lg-border-base)]" />
           }
         >
-          <Body shown={shown} />
+          <Body shown={shown} onClose={() => setShown(false)} />
         </Suspense>
       </Show>
     </Popover>

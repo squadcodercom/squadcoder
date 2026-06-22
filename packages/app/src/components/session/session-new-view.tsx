@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/language"
 import { Icon } from "@mimo-ai/ui/icon"
 import { Mark } from "@mimo-ai/ui/logo"
 import { getDirectory, getFilename } from "@mimo-ai/shared/util/path"
+import { WorkspaceOnboarding } from "./workspace-onboarding"
 
 const MAIN_WORKTREE = "main"
 const CREATE_WORKTREE = "create"
@@ -84,6 +85,7 @@ export function NewSessionView(props: NewSessionViewProps) {
               )}
             </Show>
           </div>
+          <WorkspaceOnboarding projectRoot={projectRoot()} />
         </div>
       </div>
     </div>

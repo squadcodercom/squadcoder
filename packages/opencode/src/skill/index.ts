@@ -97,13 +97,10 @@ const add = Effect.fnUntraced(function* (state: State, match: string, bus: Bus.I
   const parsed = Info.pick({ name: true, description: true, hidden: true }).safeParse(md.data)
   if (!parsed.success) return
 
-  if (state.skills[parsed.data.name]) {
-    log.warn("duplicate skill name", {
-      name: parsed.data.name,
-      existing: state.skills[parsed.data.name].location,
-      duplicate: match,
-    })
-  }
+  // Same skill name from a second dir (e.g. the global seed copy AND the project's own
+  // .squadcoder/skills when the SquadCoder repo is the workspace): keep the first, skip the rest.
+  // Avoids ~800 redundant parses + a flood of warnings on every config reload. No overwrite.
+  if (state.skills[parsed.data.name]) return
 
   state.dirs.add(path.dirname(match))
   state.skills[parsed.data.name] = {
@@ -269,7 +266,18 @@ export const layer = Layer.effect(
 
       list = list.toSorted((a, b) => a.name.localeCompare(b.name))
       if (!agent) return list
-      return list.filter((skill) => Permission.evaluate("skill", skill.name, agent.permission).action !== "deny")
+      // The user's GLOBAL skill toggles (GUI enable/disable → config `permission.skill`)
+      // gate EVERY agent FIRST — including Team subagents whose frontmatter `skill: allow`
+      // is merged LAST in agent.permission and would otherwise re-enable a skill the user
+      // turned off (evaluate() is findLast). An agent's own permission can further restrict,
+      // but can never re-enable a globally-disabled skill. No `permission.skill` config →
+      // empty ruleset → evaluates to "ask" (not "deny") → behaviour unchanged.
+      const globalSkillRules = Permission.fromConfig((yield* config.get()).permission ?? {})
+      return list.filter(
+        (skill) =>
+          Permission.evaluate("skill", skill.name, globalSkillRules).action !== "deny" &&
+          Permission.evaluate("skill", skill.name, agent.permission).action !== "deny",
+      )
     })
 
     const reload = Effect.fn("Skill.reload")(function* () {

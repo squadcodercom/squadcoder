@@ -52,3 +52,11 @@ release/
 
 # SQUADCODER: machine-written config override (GUI Config.update writes here; per-machine, not shared)
 /config.json
+/embed/
+/.embed-probe/
+
+# SQUADCODER Remote-SSH engine bundle (build artifact, assembled by make-remote-engine.ts)
+remote-engine/cache/
+remote-engine/squadcoder-remote-engine.tgz
+remote-engine/relay-e2e.sh
+remote-engine/pty-cache/

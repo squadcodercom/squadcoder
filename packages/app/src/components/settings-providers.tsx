@@ -103,11 +103,9 @@ export const SettingsProviders: Component = () => {
       })
   }
 
-  // Optimistically drop the provider from the connected list so the UI updates immediately — the
-  // engine state (auth.remove + dispose) catches up async, and previously the cached
-  // provider.connected was never refreshed, leaving the row stuck on "Disconnect".
-  const markDisconnected = (providerID: string) =>
-    globalSync.set("provider", "connected", (list) => (list as string[]).filter((id) => id !== providerID))
+  // Optimistically drop the provider from the connected list (across global + project stores) so the
+  // UI updates immediately — the engine state (auth.remove + dispose) catches up async.
+  const markDisconnected = (providerID: string) => globalSync.setProviderConnected(providerID, false)
 
   const disconnect = async (providerID: string, name: string) => {
     if (isConfigCustom(providerID)) {

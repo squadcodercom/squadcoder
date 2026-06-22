@@ -37,7 +37,15 @@ const { autoUpdater } = pkg
 import type { InitStep, ServerReadyData, SqliteMigrationProgress, WslConfig } from "../preload/types"
 import { checkAppExists, resolveAppPath, wslPath } from "./apps"
 import { CHANNEL, UPDATER_ENABLED } from "./constants"
-import { registerIpcHandlers, sendDeepLinks, sendMenuCommand, sendSqliteMigrationProgress } from "./ipc"
+import {
+  registerIpcHandlers,
+  sendDeepLinks,
+  sendMenuCommand,
+  sendSqliteMigrationProgress,
+  sendSshTunnelStatus,
+} from "./ipc"
+import { detectSsh, onTunnelStatus, startTunnel, stopAllTunnels, stopTunnel, SshError } from "./ssh-tunnel"
+import { readSshConfig } from "./ssh-config"
 import { initLogging } from "./logging"
 import { parseMarkdown } from "./markdown"
 import { createMenu } from "./menu"
@@ -96,15 +104,18 @@ function setupApp() {
   })
 
   app.on("before-quit", () => {
+    stopAllTunnels()
     killSidecar()
   })
 
   app.on("will-quit", () => {
+    stopAllTunnels()
     killSidecar()
   })
 
   for (const signal of ["SIGINT", "SIGTERM"] as const) {
     process.on(signal, () => {
+      stopAllTunnels()
       killSidecar()
       app.exit(0)
     })
@@ -264,6 +275,23 @@ registerIpcHandlers({
   checkUpdate: async () => checkUpdate(),
   installUpdate: async () => installUpdate(),
   setBackgroundColor: (color) => setBackgroundColor(color),
+  // SQUADCODER: Remote-SSH — the tunnel + remote-engine bootstrap live in main (see ssh-tunnel.ts).
+  detectSsh: () => detectSsh(),
+  startSshTunnel: async (opts) => {
+    try {
+      return { ok: true as const, result: await startTunnel(opts) }
+    } catch (error) {
+      if (error instanceof SshError) return { ok: false as const, code: error.code, message: error.message }
+      return { ok: false as const, code: "unknown" as const, message: error instanceof Error ? error.message : String(error) }
+    }
+  },
+  stopSshTunnel: (host) => stopTunnel(host),
+  readSshConfig: () => readSshConfig(),
+})
+
+// Forward tunnel status events (connecting / bootstrapping / attached / disconnected) to the renderer.
+onTunnelStatus((status) => {
+  if (mainWindow) sendSshTunnelStatus(mainWindow, status)
 })
 
 function killSidecar() {

@@ -269,9 +269,11 @@
 
   &[data-variant="alt"] {
     [data-slot="tabs-list"] {
-      padding-left: 24px;
-      padding-right: 24px;
-      gap: 12px;
+      /* SQUADCODER: logical padding (RTL-correct) + tighter gap so all tabs (incl. the trailing
+         Agents tab) fit the 420px popover; base overflow-x:auto scrolls if they still don't. */
+      padding-inline: 16px;
+      gap: 8px;
+      overflow-x: auto;
       border-bottom: 1px solid var(--border-weak-base);
       background-color: transparent;
 

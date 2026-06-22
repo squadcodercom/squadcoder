@@ -85,6 +85,11 @@ export const Flag = {
   // {project}/.claude/commands load as slash commands. Independent of the
   // mimo-only master switch. Set MIMOCODE_DISABLE_CLAUDE_CODE_COMMANDS=true to disable.
   MIMOCODE_DISABLE_CLAUDE_CODE_COMMANDS: truthy("MIMOCODE_DISABLE_CLAUDE_CODE_COMMANDS"),
+  // SQUADCODER: a user's GLOBAL ~/.claude commands (e.g. their gsd / superpowers / searchfit Claude
+  // Code plugins) are EXCLUDED by default so they don't clutter SquadCoder's palette. Project-scoped
+  // .claude commands AND all skills still load (universal compatibility kept). Set this truthy to
+  // re-include the global ones.
+  MIMOCODE_INCLUDE_GLOBAL_CLAUDE_COMMANDS: truthy("MIMOCODE_INCLUDE_GLOBAL_CLAUDE_COMMANDS"),
   MIMOCODE_DISABLE_CLAUDE_CODE_SKILLS,
   MIMOCODE_DISABLE_EXTERNAL_SKILLS,
   MIMOCODE_DISABLE_CODEX_SKILLS: MIMOCODE_DISABLE_EXTERNAL_SKILLS || truthy("MIMOCODE_DISABLE_CODEX_SKILLS"),

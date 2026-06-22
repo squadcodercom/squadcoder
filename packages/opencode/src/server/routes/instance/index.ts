@@ -1,6 +1,9 @@
 import { describeRoute, resolver, validator } from "hono-openapi"
 import { Hono } from "hono"
 import type { UpgradeWebSocket } from "hono/ws"
+import os from "node:os"
+import fs from "node:fs"
+import path from "node:path"
 import { Context, Effect } from "effect"
 import z from "zod"
 import { Format } from "@/format"
@@ -22,6 +25,8 @@ import { ProjectRoutes } from "./project"
 import { SessionRoutes } from "./session"
 import { PtyRoutes } from "./pty"
 import { McpRoutes } from "./mcp"
+import { RoutineRoutes } from "./routine"
+import { CodeIndexRoutes } from "./codeindex"
 import { FileRoutes } from "./file"
 import { ConfigRoutes } from "./config"
 import { ExperimentalRoutes } from "./experimental"
@@ -66,6 +71,8 @@ export const InstanceRoutes = (upgrade: UpgradeWebSocket): Hono => {
     .route("/", FileRoutes())
     .route("/", EventRoutes())
     .route("/mcp", McpRoutes())
+    .route("/routine", RoutineRoutes())
+    .route("/index", CodeIndexRoutes())
     .route("/tui", TuiRoutes())
     .post(
       "/instance/dispose",
@@ -297,5 +304,50 @@ export const InstanceRoutes = (upgrade: UpgradeWebSocket): Hono => {
           const svc = yield* Format.Service
           return yield* svc.status()
         }),
+    )
+    .get(
+      "/usage/anthropic",
+      describeRoute({
+        summary: "Get Anthropic usage",
+        description:
+          "Latest Anthropic Pro/Max subscription-window usage snapshot (5h rolling + 7d weekly utilization), captured from response headers by the auth plugin. Returns an empty object when unavailable (API-key auth, or no request made yet).",
+        operationId: "usage.anthropic",
+        responses: {
+          200: {
+            description: "Anthropic usage snapshot",
+            content: {
+              "application/json": {
+                schema: resolver(
+                  z
+                    .object({
+                      status: z.string().nullable(),
+                      fiveHour: z.object({
+                        utilization: z.number().nullable(),
+                        resetsAt: z.number().nullable(),
+                      }),
+                      sevenDay: z.object({
+                        utilization: z.number().nullable(),
+                        resetsAt: z.number().nullable(),
+                      }),
+                      capturedAt: z.number(),
+                    })
+                    .partial()
+                    .meta({ ref: "AnthropicUsage" }),
+                ),
+              },
+            },
+          },
+        },
+      }),
+      // SQUADCODER: dumb reader — serves the snapshot the auth plugin stashes in the OS temp dir.
+      // Deliberately contains NO subscription-OAuth logic (that stays in the plugin, off the engine).
+      async (c) => {
+        const file = path.join(os.tmpdir(), "squadcoder-anthropic-usage.json")
+        try {
+          return c.json(JSON.parse(fs.readFileSync(file, "utf8")))
+        } catch {
+          return c.json({})
+        }
+      },
     )
 }

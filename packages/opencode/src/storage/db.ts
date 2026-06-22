@@ -119,6 +119,22 @@ export function close() {
   Client.reset()
 }
 
+// Cross-runtime prepared statement for raw FTS queries. bun:sqlite exposes `.query(sql)`, node:sqlite
+// (the packaged Electron/Node engine) exposes `.prepare(sql)` — both return a statement with
+// `.all(...params)`/`.get(...params)`. Calling `$client.query(...)` directly throws
+// "$client.query is not a function" under Node (the memory/history FTS bug). Use this instead.
+export function statement(sql: string) {
+  const client = Client().$client as {
+    query?: (sql: string) => unknown
+    prepare?: (sql: string) => unknown
+  }
+  const stmt = typeof client.query === "function" ? client.query(sql) : client.prepare!(sql)
+  return stmt as {
+    all: (...params: unknown[]) => unknown[]
+    get: (...params: unknown[]) => unknown
+  }
+}
+
 export type TxOrDb = Transaction | Client
 
 const ctx = LocalContext.create<{

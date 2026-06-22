@@ -758,7 +758,9 @@ export function MessageTimeline(props: {
                         class="shrink-0 flex items-center justify-center overflow-hidden transition-[width,margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                         style={{
                           width: working() ? "16px" : "0px",
-                          "margin-right": working() ? "8px" : "0px",
+                          // SquadCoder: logical margin so the gap sits between spinner and title in
+                          // both LTR (right) and RTL (left); physical margin-right broke RTL spacing.
+                          "margin-inline-end": working() ? "8px" : "0px",
                         }}
                         aria-hidden="true"
                       >

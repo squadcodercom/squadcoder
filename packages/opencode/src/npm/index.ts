@@ -49,7 +49,10 @@ export function sanitize(pkg: string) {
 const resolveEntryPoint = (name: string, dir: string): EntryPoint => {
   let entrypoint: Option.Option<string>
   try {
-    const resolved = typeof Bun !== "undefined" ? import.meta.resolve(name, dir) : import.meta.resolve(dir)
+    // Detect the REAL Bun runtime via process.versions.bun (NOT `typeof Bun`, which our Node shim
+    // defines — see runtime-bun-shim.ts). Under Node we keep the single-arg import.meta.resolve path.
+    const isRealBun = !!(globalThis as { process?: { versions?: { bun?: string } } }).process?.versions?.bun
+    const resolved = isRealBun ? import.meta.resolve(name, dir) : import.meta.resolve(dir)
     entrypoint = Option.some(resolved)
   } catch {
     entrypoint = Option.none()

@@ -392,6 +392,27 @@ function createGlobalSync() {
     },
   }
 
+  // SQUADCODER: optimistically toggle a provider's connected state across the GLOBAL store AND every
+  // open project/child store. Provider auth is global, but useProviders() reads the per-directory
+  // child store when inside a project — so updating only the global store left the Providers list
+  // stuck on "Connect"/"Disconnect" until reload. This keeps both in sync for instant UI feedback.
+  const setProviderConnected = (providerID: string, connected: boolean) => {
+    const update = (list: string[] | undefined) => {
+      const arr = list ?? []
+      const has = arr.includes(providerID)
+      if (connected) return has ? arr : [...arr, providerID]
+      return arr.filter((id) => id !== providerID)
+    }
+    setGlobalStore("provider", "connected", (list) => update(list as string[]))
+    for (const directory of Object.keys(children.children)) {
+      const child = children.children[directory]
+      if (!child) continue
+      const [store, setStore] = child
+      if (!store.provider) continue
+      setStore("provider", "connected", (list: string[]) => update(list))
+    }
+  }
+
   const updateConfig = async (config: Config) => {
     setGlobalStore("reload", "pending")
     return globalSDK.client.global.config
@@ -421,6 +442,7 @@ function createGlobalSync() {
     peek: children.peek,
     bootstrap,
     updateConfig,
+    setProviderConnected,
     project: projectApi,
     todo: {
       set: setSessionTodo,

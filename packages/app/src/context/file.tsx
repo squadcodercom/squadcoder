@@ -176,9 +176,15 @@ export const { use: useFile, provider: FileProvider } = createSimpleContext({
         .then((x) => {
           if (scope() !== directory) return
           const content = x.data
+          // SQUADCODER: a missing/empty read used to be marked `loaded:true` with no content, so the
+          // viewer's `<Match when={loaded}>` passed and rendered "" → a silent blank pane (no error).
+          // Surface it as a load error instead so the user sees what happened (and can retry) rather
+          // than an inexplicable empty editor.
+          if (!content) {
+            setLoadError(file, language.t("error.file.empty"))
+            return
+          }
           setLoaded(file, content)
-
-          if (!content) return
           touchFileContent(file, approxBytes(content))
           evictContent(new Set([file]))
         })

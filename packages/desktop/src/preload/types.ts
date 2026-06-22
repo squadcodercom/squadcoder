@@ -19,6 +19,70 @@ export type WindowConfig = {
   updaterEnabled: boolean
 }
 
+// SQUADCODER: Remote-SSH wire contract (renderer ⇄ main). The Electron main process owns the
+// `ssh -N -L` tunnel + remote-engine bootstrap; the renderer drives it over IPC and attaches to the
+// tunneled loopback URL via the existing ServerConnection.Ssh path. See main/ssh-tunnel.ts.
+export type SshAuth = { kind: "agent" } | { kind: "key"; keyFile: string }
+
+export type SshTunnelOptions = {
+  host: string
+  user: string
+  /** SSH port, default 22 */
+  port?: number
+  auth: SshAuth
+  /** Remote engine port (default 4096). The tunnel forwards a local loopback port to this. */
+  remotePort?: number
+}
+
+export type SshTunnelResult = {
+  host: string
+  /** Tunneled loopback URL the app attaches to, e.g. http://127.0.0.1:54321 */
+  url: string
+  username: string
+  password: string
+  remotePort: number
+}
+
+export type SshDetectResult = { available: boolean; version?: string }
+
+/** One importable host parsed from ~/.ssh/config. */
+export type SshConfigHost = {
+  host: string
+  hostName?: string
+  user?: string
+  port?: number
+  identityFile?: string
+}
+
+export type SshTunnelPhase =
+  | "connecting"
+  | "bootstrapping"
+  | "installing"
+  | "opening-tunnel"
+  | "attached"
+  | "reconnecting"
+  | "disconnected"
+  | "error"
+
+export type SshTunnelStatus = { host: string; phase: SshTunnelPhase; message?: string }
+
+/** Stable error codes surfaced to the UI for localized messages. */
+export type SshErrorCode =
+  | "client-missing"
+  | "auth-failed"
+  | "host-key-changed"
+  | "forward-failed"
+  | "engine-not-installed"
+  | "engine-failed"
+  | "timed-out"
+  | "unknown"
+
+// Electron's ipcMain.handle drops custom Error props across the boundary, so the tunnel result is a
+// discriminated union rather than a thrown SshError — the renderer maps `code` to a localized message.
+export type SshTunnelOutcome =
+  | { ok: true; result: SshTunnelResult }
+  | { ok: false; code: SshErrorCode; message: string }
+
 export type ElectronAPI = {
   killSidecar: () => Promise<void>
   installCli: () => Promise<string>
@@ -46,6 +110,14 @@ export type ElectronAPI = {
   onSqliteMigrationProgress: (cb: (progress: SqliteMigrationProgress) => void) => () => void
   onMenuCommand: (cb: (id: string) => void) => () => void
   onDeepLink: (cb: (urls: string[]) => void) => () => void
+
+  // SQUADCODER: Remote-SSH (desktop only)
+  detectSsh: () => Promise<SshDetectResult>
+  startSshTunnel: (opts: SshTunnelOptions) => Promise<SshTunnelOutcome>
+  stopSshTunnel: (host: string) => Promise<void>
+  onSshTunnelStatus: (cb: (status: SshTunnelStatus) => void) => () => void
+  /** Parse ~/.ssh/config so the user can import an existing host instead of retyping it. */
+  readSshConfig: () => Promise<SshConfigHost[]>
 
   openDirectoryPicker: (opts?: {
     multiple?: boolean
@@ -76,4 +148,11 @@ export type ElectronAPI = {
   checkUpdate: () => Promise<{ updateAvailable: boolean; version?: string }>
   installUpdate: () => Promise<void>
   setBackgroundColor: (color: string) => Promise<void>
+
+  // SQUADCODER: custom Windows window controls (frameless, RTL-aware).
+  windowMinimize: () => void
+  windowToggleMaximize: () => void
+  windowClose: () => void
+  windowIsMaximized: () => Promise<boolean>
+  onWindowMaximizeChange: (cb: (max: boolean) => void) => () => void
 }

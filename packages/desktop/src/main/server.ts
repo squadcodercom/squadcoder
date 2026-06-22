@@ -1,4 +1,5 @@
 import path from "path"
+import { existsSync } from "fs"
 import { app } from "electron"
 import { DEFAULT_SERVER_URL_KEY, WSL_ENABLED_KEY } from "./constants"
 import { getUserShell, loadShellEnv } from "./shell-env"
@@ -67,6 +68,12 @@ function prepareServerEnv(password: string) {
   // the seeder no-ops. Set before the engine module is imported so its boot-time seed
   // sees it.
   const seedDir = process.resourcesPath ? path.join(process.resourcesPath, "seed") : undefined
+  // SQUADCODER offline codebase-index embedder (#40/#60): point the engine at the bundled embed
+  // worker + model (extraResources → resources/embed). Only set when actually present (packaged),
+  // so dev falls back to the in-source worker + cache download.
+  const embedDir = process.resourcesPath ? path.join(process.resourcesPath, "embed") : undefined
+  const embedWorker = embedDir ? path.join(embedDir, "embed-worker.mjs") : undefined
+  const embedReady = !!embedWorker && existsSync(embedWorker)
   const env = {
     ...process.env,
     ...shellEnv,
@@ -77,6 +84,9 @@ function prepareServerEnv(password: string) {
     OPENCODE_SERVER_PASSWORD: password,
     XDG_STATE_HOME: app.getPath("userData"),
     ...(seedDir ? { SQUADCODER_SEED_DIR: seedDir } : {}),
+    ...(embedReady
+      ? { SQUADCODER_EMBED_WORKER: embedWorker!, SQUADCODER_MODEL_DIR: path.join(embedDir!, "models") }
+      : {}),
   }
   Object.assign(process.env, env)
 }

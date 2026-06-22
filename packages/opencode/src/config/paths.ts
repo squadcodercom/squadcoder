@@ -49,7 +49,10 @@ export const claudeCommandDirectories = Effect.fn("ConfigPaths.claudeCommandDire
   if (Flag.MIMOCODE_DISABLE_CLAUDE_CODE_COMMANDS) return []
   const afs = yield* AppFileSystem.Service
   return unique([
-    path.join(Global.Path.home, ".claude"),
+    // SQUADCODER: the GLOBAL ~/.claude commands (a user's Claude Code plugins like gsd) are excluded
+    // by default to keep the palette clean — opt back in with MIMOCODE_INCLUDE_GLOBAL_CLAUDE_COMMANDS.
+    // Project-scoped .claude commands below always load; skills are loaded separately and untouched.
+    ...(Flag.MIMOCODE_INCLUDE_GLOBAL_CLAUDE_COMMANDS ? [path.join(Global.Path.home, ".claude")] : []),
     ...(!Flag.MIMOCODE_DISABLE_PROJECT_CONFIG
       ? yield* afs.up({
           targets: [".claude"],

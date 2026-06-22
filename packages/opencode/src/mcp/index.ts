@@ -34,6 +34,10 @@ import * as CrossSpawnSpawner from "@/effect/cross-spawn-spawner"
 const log = Log.create({ service: "mcp" })
 const DEFAULT_TIMEOUT = 30_000
 
+// npm-ecosystem launchers that ship as `.cmd` shims on Windows. Node's spawn can't resolve them
+// without a shell, so local MCP servers using these must be run via `cmd /c` (see connectLocal).
+const WINDOWS_CMD_SHIMS = new Set(["npx", "npm", "pnpm", "pnpx", "yarn", "bunx", "corepack", "deno"])
+
 export const Resource = z
   .object({
     name: z.string(),
@@ -396,7 +400,16 @@ export const layer = Layer.effect(
       key: string,
       mcp: ConfigMCP.Info & { type: "local" },
     ) {
-      const [cmd, ...args] = mcp.command
+      let [cmd, ...args] = mcp.command
+      // Windows: the packaged engine runs under Node, whose child_process.spawn does NOT apply
+      // PATHEXT — so npm-ecosystem launchers that ship as `.cmd` shims (npx, npm, pnpm, yarn,
+      // bunx…) fail with ENOENT, surfaced here as a 20s startup timeout (the stdio handshake never
+      // arrives). The dev engine runs under Bun, which DOES resolve `.cmd`, so it only breaks in the
+      // installed app. Run such shims through `cmd /c`. Real executables (e.g. uvx.exe) are untouched.
+      if (process.platform === "win32" && WINDOWS_CMD_SHIMS.has(cmd.toLowerCase())) {
+        args = ["/c", cmd, ...args]
+        cmd = process.env.COMSPEC || "cmd.exe"
+      }
       const cwd = yield* InstanceState.directory
       const transport = new StdioClientTransport({
         stderr: "pipe",

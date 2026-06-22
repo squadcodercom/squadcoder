@@ -9,15 +9,33 @@ import { TextField } from "@mimo-ai/ui/text-field"
 import { useMutation } from "@tanstack/solid-query"
 import { showToast } from "@mimo-ai/ui/toast"
 import { useNavigate } from "@solidjs/router"
-import { createEffect, createMemo, createResource, onCleanup, Show } from "solid-js"
+import { createEffect, createMemo, createResource, For, onCleanup, Show } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
 import { ServerHealthIndicator, ServerRow } from "@/components/server/server-row"
 import { useLanguage } from "@/context/language"
-import { usePlatform } from "@/context/platform"
+import { usePlatform, type SshConfigEntry } from "@/context/platform"
 import { normalizeServerUrl, ServerConnection, useServer } from "@/context/server"
 import { type ServerHealth, useCheckServerHealth } from "@/utils/server-health"
 
 const DEFAULT_USERNAME = "squadcoder"
+
+// SQUADCODER: map stable SSH error codes (from the desktop tunnel manager) → localized message keys.
+const SSH_ERROR_KEY: Record<string, string> = {
+  "client-missing": "server.ssh.error.clientMissing",
+  "auth-failed": "server.ssh.error.authFailed",
+  "host-key-changed": "server.ssh.error.hostKeyChanged",
+  "forward-failed": "server.ssh.error.forwardFailed",
+  "engine-not-installed": "server.ssh.error.engineNotInstalled",
+  "engine-failed": "server.ssh.error.engineFailed",
+  "timed-out": "server.ssh.error.timedOut",
+}
+
+const SSH_PHASE_KEY: Record<string, string> = {
+  connecting: "server.ssh.phase.connecting",
+  bootstrapping: "server.ssh.phase.bootstrapping",
+  "opening-tunnel": "server.ssh.phase.openingTunnel",
+  attached: "server.ssh.phase.attached",
+}
 
 interface ServerFormProps {
   value: string
@@ -189,6 +207,205 @@ function ServerForm(props: ServerFormProps) {
   )
 }
 
+interface SshFormProps {
+  host: string
+  user: string
+  port: string
+  keyFile: string
+  useAgent: boolean
+  remotePort: string
+  name: string
+  busy: boolean
+  error: string
+  phase: string
+  onHostChange: (value: string) => void
+  onUserChange: (value: string) => void
+  onPortChange: (value: string) => void
+  onRemotePortChange: (value: string) => void
+  onNameChange: (value: string) => void
+  onUseAgentChange: (value: boolean) => void
+  onKeyFileChange: (value: string) => void
+  onPickKey: () => void
+  canBrowse: boolean
+  onSubmit: () => void
+  onBack: () => void
+  onImport: (entry: SshConfigEntry) => void
+}
+
+function SshForm(props: SshFormProps) {
+  const language = useLanguage()
+  const sshPlatform = usePlatform()
+  // SQUADCODER (#72): offer the user's existing ~/.ssh/config hosts (e.g. "Relay") to import
+  // instead of retyping host/user/key/port. Desktop-only; web has no readSshConfig.
+  const [configHosts] = createResource(
+    () => sshPlatform.readSshConfig?.() ?? Promise.resolve([] as SshConfigEntry[]),
+  )
+  const keyDown = (event: KeyboardEvent) => {
+    event.stopPropagation()
+    if (event.key === "Escape") {
+      event.preventDefault()
+      props.onBack()
+      return
+    }
+    if (event.key !== "Enter" || event.isComposing) return
+    event.preventDefault()
+    props.onSubmit()
+  }
+
+  const phaseLabel = () => {
+    const key = SSH_PHASE_KEY[props.phase]
+    return key ? language.t(key as Parameters<typeof language.t>[0]) : ""
+  }
+
+  return (
+    <div class="px-5">
+      <div class="bg-surface-base rounded-md p-5 flex flex-col gap-3">
+        <Show when={(configHosts()?.length ?? 0) > 0}>
+          <div class="flex flex-col gap-1">
+            <label class="text-12-medium text-text-weak text-start">{language.t("server.ssh.import.label")}</label>
+            <select
+              class="h-9 rounded-md bg-surface-strong border border-border-weak px-2 text-13-regular text-text-strong"
+              disabled={props.busy}
+              onChange={(e) => {
+                const entry = configHosts()?.find((h) => h.host === e.currentTarget.value)
+                e.currentTarget.value = ""
+                if (entry) props.onImport(entry)
+              }}
+            >
+              <option value="">{language.t("server.ssh.import.placeholder")}</option>
+              <For each={configHosts()}>
+                {(h) => (
+                  <option value={h.host}>
+                    {h.host}
+                    {h.hostName ? ` — ${h.hostName}` : ""}
+                  </option>
+                )}
+              </For>
+            </select>
+          </div>
+        </Show>
+        <div class="grid grid-cols-[1fr_auto] gap-2 min-w-0">
+          <TextField
+            type="text"
+            label={language.t("server.ssh.field.host")}
+            placeholder={language.t("server.ssh.field.hostPlaceholder")}
+            value={props.host}
+            autofocus
+            disabled={props.busy}
+            onChange={props.onHostChange}
+            onKeyDown={keyDown}
+          />
+          <div class="w-24">
+            <TextField
+              type="text"
+              label={language.t("server.ssh.field.port")}
+              placeholder="22"
+              value={props.port}
+              disabled={props.busy}
+              onChange={props.onPortChange}
+              onKeyDown={keyDown}
+            />
+          </div>
+        </div>
+        <TextField
+          type="text"
+          label={language.t("server.ssh.field.user")}
+          placeholder={language.t("server.ssh.field.userPlaceholder")}
+          value={props.user}
+          disabled={props.busy}
+          onChange={props.onUserChange}
+          onKeyDown={keyDown}
+        />
+
+        {/* Auth: ssh-agent vs key file (key-based login is the recommended path). */}
+        <div class="flex flex-col gap-2">
+          <span class="text-12-medium text-text-base">{language.t("server.ssh.auth.label")}</span>
+          <div class="inline-flex rounded-md bg-background-base/60 p-0.5 self-start">
+            <button
+              type="button"
+              disabled={props.busy}
+              onClick={() => props.onUseAgentChange(true)}
+              class={`text-12-medium px-3 py-1.5 rounded-[5px] transition-colors ${
+                props.useAgent ? "bg-surface-raised-base text-text-base" : "text-text-weak hover:text-text-base"
+              }`}
+            >
+              {language.t("server.ssh.auth.agent")}
+            </button>
+            <button
+              type="button"
+              disabled={props.busy}
+              onClick={() => props.onUseAgentChange(false)}
+              class={`text-12-medium px-3 py-1.5 rounded-[5px] transition-colors ${
+                !props.useAgent ? "bg-surface-raised-base text-text-base" : "text-text-weak hover:text-text-base"
+              }`}
+            >
+              {language.t("server.ssh.auth.key")}
+            </button>
+          </div>
+          <Show when={!props.useAgent}>
+            <div class="flex items-end gap-2 min-w-0">
+              <div class="flex-1 min-w-0">
+                <TextField
+                  type="text"
+                  label={language.t("server.ssh.field.keyFile")}
+                  placeholder={language.t("server.ssh.field.keyFilePlaceholder")}
+                  value={props.keyFile}
+                  disabled={props.busy}
+                  onChange={props.onKeyFileChange}
+                  onKeyDown={keyDown}
+                />
+              </div>
+              <Show when={props.canBrowse}>
+                <Button variant="secondary" size="large" onClick={props.onPickKey} disabled={props.busy} class="px-3 py-1.5">
+                  {language.t("server.ssh.field.keyFileBrowse")}
+                </Button>
+              </Show>
+            </div>
+          </Show>
+        </div>
+
+        <TextField
+          type="text"
+          label={language.t("dialog.server.add.name")}
+          placeholder={language.t("dialog.server.add.namePlaceholder")}
+          value={props.name}
+          disabled={props.busy}
+          onChange={props.onNameChange}
+          onKeyDown={keyDown}
+        />
+        <div class="w-40">
+          <TextField
+            type="text"
+            label={language.t("server.ssh.field.remotePort")}
+            placeholder="4096"
+            value={props.remotePort}
+            disabled={props.busy}
+            onChange={props.onRemotePortChange}
+            onKeyDown={keyDown}
+          />
+        </div>
+
+        <div dir="auto" class="mt-1 rounded-md bg-background-base/60 px-3 py-2.5 text-12-regular text-text-weak">
+          {language.t("server.ssh.help")}
+        </div>
+
+        <Show when={props.busy && phaseLabel()}>
+          <div class="flex items-center gap-2 text-12-regular text-text-base animate-pulse">
+            <span class="inline-block size-2 rounded-full bg-text-base" />
+            <span>{phaseLabel()}</span>
+          </div>
+        </Show>
+
+        <Show when={!props.busy && props.error}>
+          <div dir="auto" class="text-12-regular text-text-on-critical-base">
+            {props.error}
+          </div>
+        </Show>
+      </div>
+    </div>
+  )
+}
+
 export function DialogSelectServer() {
   const navigate = useNavigate()
   const dialog = useDialog()
@@ -208,6 +425,15 @@ export function DialogSelectServer() {
       error: "",
       showForm: false,
       status: undefined as boolean | undefined,
+      // SQUADCODER: SSH connection mode (desktop only)
+      connType: "http" as "http" | "ssh",
+      sshHost: "",
+      sshUser: "",
+      sshPort: "",
+      sshKeyFile: "",
+      sshUseAgent: true,
+      sshRemotePort: "",
+      sshPhase: "",
     },
     editServer: {
       id: undefined as string | undefined,
@@ -229,6 +455,14 @@ export function DialogSelectServer() {
       error: "",
       showForm: false,
       status: undefined,
+      connType: "http",
+      sshHost: "",
+      sshUser: "",
+      sshPort: "",
+      sshKeyFile: "",
+      sshUseAgent: true,
+      sshRemotePort: "",
+      sshPhase: "",
     })
   }
   const resetEdit = () => {
@@ -268,6 +502,122 @@ export function DialogSelectServer() {
       await select(conn, true)
     },
   }))
+
+  // SQUADCODER: Remote-SSH connect. Desktop opens the tunnel in the Electron main process; WEB asks the
+  // connected ENGINE to open it (the engine has shell access, the browser doesn't) and — for the
+  // co-located case — reaches the returned loopback URL directly. Either way it attaches via the
+  // existing ServerConnection.Ssh path.
+  const sshAvailable = createMemo(() => typeof platform.openSshTunnel === "function" || !!server.current)
+
+  // Web path: call the engine's /ssh routes on the active server.
+  const engineHttp = () => server.current?.http
+  const engineHeaders = () => {
+    const h = engineHttp()
+    const headers: Record<string, string> = { "content-type": "application/json" }
+    if (h?.password) headers.authorization = `Basic ${btoa(`${h.username ?? DEFAULT_USERNAME}:${h.password}`)}`
+    return headers
+  }
+  const sshConnectViaEngine = async (opts: {
+    host: string
+    user: string
+    port?: number
+    keyFile?: string
+    remotePort?: number
+  }) => {
+    const h = engineHttp()
+    if (!h?.url) throw new Error("No active server to run SSH on")
+    const res = await fetch(`${h.url.replace(/\/+$/, "")}/global/ssh/connect`, {
+      method: "POST",
+      headers: engineHeaders(),
+      body: JSON.stringify(opts),
+    })
+    const outcome = (await res.json().catch(() => ({ ok: false, code: "unknown", message: "Bad engine response" }))) as
+      | { ok: true; result: { host: string; url: string; username: string; password: string } }
+      | { ok: false; code?: string; message?: string }
+    if (!outcome.ok) {
+      const e = new Error(outcome.message || "SSH failed") as Error & { code?: string }
+      e.code = outcome.code
+      throw e
+    }
+    return outcome.result
+  }
+  const doSshConnect = (opts: { host: string; user: string; port?: number; keyFile?: string; remotePort?: number }) =>
+    platform.openSshTunnel ? platform.openSshTunnel(opts) : sshConnectViaEngine(opts)
+  const doSshDisconnect = (host: string) => {
+    if (platform.closeSshTunnel) return void platform.closeSshTunnel(host)
+    const h = engineHttp()
+    if (!h?.url) return
+    void fetch(`${h.url.replace(/\/+$/, "")}/global/ssh/disconnect`, {
+      method: "POST",
+      headers: engineHeaders(),
+      body: JSON.stringify({ host }),
+    }).catch(() => {})
+  }
+
+  const localizeSshError = (err: unknown) => {
+    const code = (err as { code?: string } | undefined)?.code
+    const key = code ? SSH_ERROR_KEY[code] : undefined
+    if (key) return language.t(key as Parameters<typeof language.t>[0])
+    return err instanceof Error ? err.message : String(err)
+  }
+
+  const sshMutation = useMutation(() => ({
+    mutationFn: async () => {
+      const host = store.addServer.sshHost.trim()
+      const user = store.addServer.sshUser.trim()
+      if (!host || !user) {
+        setStore("addServer", { error: language.t("server.ssh.error.missingFields") })
+        return
+      }
+      if (!sshAvailable()) return
+      setStore("addServer", { error: "", sshPhase: "connecting" })
+      try {
+        const portNum = Number(store.addServer.sshPort)
+        const remoteNum = Number(store.addServer.sshRemotePort)
+        const res = await doSshConnect({
+          host,
+          user,
+          port: Number.isFinite(portNum) && portNum > 0 ? portNum : undefined,
+          keyFile: store.addServer.sshUseAgent ? undefined : store.addServer.sshKeyFile.trim() || undefined,
+          remotePort: Number.isFinite(remoteNum) && remoteNum > 0 ? remoteNum : undefined,
+        })
+        const conn: ServerConnection.Ssh = {
+          type: "ssh",
+          host: res.host,
+          http: { url: res.url, username: res.username, password: res.password },
+        }
+        if (store.addServer.name.trim()) conn.displayName = store.addServer.name.trim()
+        // Remember the server (no secrets) so it reconnects on next launch.
+        void platform.persistSshServer?.({
+          host,
+          user,
+          port: Number.isFinite(portNum) && portNum > 0 ? portNum : undefined,
+          keyFile: store.addServer.sshUseAgent ? undefined : store.addServer.sshKeyFile.trim() || undefined,
+          remotePort: Number.isFinite(remoteNum) && remoteNum > 0 ? remoteNum : undefined,
+          displayName: store.addServer.name.trim() || undefined,
+        })
+        resetAdd()
+        dialog.close()
+        server.add(conn)
+        navigate("/")
+      } catch (err) {
+        setStore("addServer", { error: localizeSshError(err), sshPhase: "" })
+      }
+    },
+  }))
+
+  // Live tunnel-phase updates while the SSH form is open.
+  createEffect(() => {
+    if (!store.addServer.showForm || store.addServer.connType !== "ssh") return
+    const unsub = platform.onSshTunnelStatus?.((status) => setStore("addServer", "sshPhase", status.phase))
+    onCleanup(() => unsub?.())
+  })
+
+  const pickSshKey = async () => {
+    const picked = await platform.openFilePickerDialog?.({ title: language.t("server.ssh.field.keyFile") })
+    const path = Array.isArray(picked) ? picked[0] : picked
+    if (path) setStore("addServer", { sshKeyFile: path, sshUseAgent: false, error: "" })
+  }
 
   const editMutation = useMutation(() => ({
     mutationFn: async (input: { original: ServerConnection.Any; value: string }) => {
@@ -463,6 +813,14 @@ export function DialogSelectServer() {
       password: "",
       error: "",
       status: undefined,
+      connType: "http",
+      sshHost: "",
+      sshUser: "",
+      sshPort: "",
+      sshKeyFile: "",
+      sshUseAgent: true,
+      sshRemotePort: "",
+      sshPhase: "",
     })
   }
 
@@ -481,6 +839,12 @@ export function DialogSelectServer() {
 
   const submitForm = () => {
     if (mode() === "add") {
+      if (store.addServer.connType === "ssh") {
+        if (sshMutation.isPending) return
+        setStore("addServer", { error: "" })
+        sshMutation.mutate()
+        return
+      }
       if (addMutation.isPending) return
       setStore("addServer", { error: "" })
       addMutation.mutate(store.addServer.url)
@@ -495,7 +859,10 @@ export function DialogSelectServer() {
 
   const isFormMode = createMemo(() => mode() !== "list")
   const isAddMode = createMemo(() => mode() === "add")
-  const formBusy = createMemo(() => (isAddMode() ? addMutation.isPending : editMutation.isPending))
+  const isSshAdd = createMemo(() => isAddMode() && store.addServer.connType === "ssh")
+  const formBusy = createMemo(() =>
+    isAddMode() ? (isSshAdd() ? sshMutation.isPending : addMutation.isPending) : editMutation.isPending,
+  )
 
   const formTitle = createMemo(() => {
     if (!isFormMode()) return language.t("dialog.server.title")
@@ -520,28 +887,110 @@ export function DialogSelectServer() {
     }
   }
 
+  // SQUADCODER: tear down an SSH server — close the tunnel (+ best-effort stop the remote engine) then
+  // drop it from the list.
+  const handleDisconnectSsh = (conn: ServerConnection.Any) => {
+    if (conn.type !== "ssh") return
+    doSshDisconnect(conn.host)
+    void platform.forgetSshServer?.(conn.host)
+    server.remove(ServerConnection.key(conn))
+  }
+
   return (
     <Dialog title={formTitle()}>
       <div class="flex flex-1 min-h-0 flex-col gap-2">
         <Show
           when={!isFormMode()}
           fallback={
-            <ServerForm
-              value={isAddMode() ? store.addServer.url : store.editServer.value}
-              name={isAddMode() ? store.addServer.name : store.editServer.name}
-              username={isAddMode() ? store.addServer.username : store.editServer.username}
-              password={isAddMode() ? store.addServer.password : store.editServer.password}
-              placeholder={language.t("dialog.server.add.placeholder")}
-              busy={formBusy()}
-              error={isAddMode() ? store.addServer.error : store.editServer.error}
-              status={isAddMode() ? store.addServer.status : store.editServer.status}
-              onChange={isAddMode() ? handleAddChange : handleEditChange}
-              onNameChange={isAddMode() ? handleAddNameChange : handleEditNameChange}
-              onUsernameChange={isAddMode() ? handleAddUsernameChange : handleEditUsernameChange}
-              onPasswordChange={isAddMode() ? handleAddPasswordChange : handleEditPasswordChange}
-              onSubmit={submitForm}
-              onBack={resetForm}
-            />
+            <div class="flex flex-col gap-3 flex-1 min-h-0 overflow-y-auto">
+              <Show when={isAddMode() && sshAvailable()}>
+                <div class="px-5">
+                  <div class="inline-flex rounded-md bg-surface-base p-0.5">
+                    <button
+                      type="button"
+                      disabled={formBusy()}
+                      onClick={() => setStore("addServer", { connType: "http", error: "" })}
+                      class={`text-12-medium px-3 py-1.5 rounded-[5px] transition-colors ${
+                        store.addServer.connType === "http"
+                          ? "bg-surface-raised-base text-text-base"
+                          : "text-text-weak hover:text-text-base"
+                      }`}
+                    >
+                      {language.t("server.ssh.type.http")}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={formBusy()}
+                      onClick={() => setStore("addServer", { connType: "ssh", error: "" })}
+                      class={`text-12-medium px-3 py-1.5 rounded-[5px] transition-colors ${
+                        store.addServer.connType === "ssh"
+                          ? "bg-surface-raised-base text-text-base"
+                          : "text-text-weak hover:text-text-base"
+                      }`}
+                    >
+                      {language.t("server.ssh.type.ssh")}
+                    </button>
+                  </div>
+                </div>
+              </Show>
+              <Show
+                when={isSshAdd()}
+                fallback={
+                  <ServerForm
+                    value={isAddMode() ? store.addServer.url : store.editServer.value}
+                    name={isAddMode() ? store.addServer.name : store.editServer.name}
+                    username={isAddMode() ? store.addServer.username : store.editServer.username}
+                    password={isAddMode() ? store.addServer.password : store.editServer.password}
+                    placeholder={language.t("dialog.server.add.placeholder")}
+                    busy={formBusy()}
+                    error={isAddMode() ? store.addServer.error : store.editServer.error}
+                    status={isAddMode() ? store.addServer.status : store.editServer.status}
+                    onChange={isAddMode() ? handleAddChange : handleEditChange}
+                    onNameChange={isAddMode() ? handleAddNameChange : handleEditNameChange}
+                    onUsernameChange={isAddMode() ? handleAddUsernameChange : handleEditUsernameChange}
+                    onPasswordChange={isAddMode() ? handleAddPasswordChange : handleEditPasswordChange}
+                    onSubmit={submitForm}
+                    onBack={resetForm}
+                  />
+                }
+              >
+                <SshForm
+                  host={store.addServer.sshHost}
+                  user={store.addServer.sshUser}
+                  port={store.addServer.sshPort}
+                  keyFile={store.addServer.sshKeyFile}
+                  useAgent={store.addServer.sshUseAgent}
+                  remotePort={store.addServer.sshRemotePort}
+                  name={store.addServer.name}
+                  busy={formBusy()}
+                  error={store.addServer.error}
+                  phase={store.addServer.sshPhase}
+                  onHostChange={(v) => setStore("addServer", { sshHost: v, error: "" })}
+                  onUserChange={(v) => setStore("addServer", { sshUser: v, error: "" })}
+                  onPortChange={(v) => setStore("addServer", { sshPort: v, error: "" })}
+                  onRemotePortChange={(v) => setStore("addServer", { sshRemotePort: v, error: "" })}
+                  onNameChange={(v) => setStore("addServer", { name: v, error: "" })}
+                  onUseAgentChange={(v) => setStore("addServer", { sshUseAgent: v, error: "" })}
+                  onKeyFileChange={(v) => setStore("addServer", { sshKeyFile: v, error: "" })}
+                  onPickKey={pickSshKey}
+                  canBrowse={typeof platform.openFilePickerDialog === "function"}
+                  onSubmit={submitForm}
+                  onBack={resetForm}
+                  onImport={(entry) =>
+                    setStore("addServer", {
+                      // connect to the real address; ssh aliases aren't resolved by our own arg builder
+                      sshHost: entry.hostName || entry.host,
+                      sshUser: entry.user ?? store.addServer.sshUser,
+                      sshPort: entry.port ? String(entry.port) : store.addServer.sshPort,
+                      sshKeyFile: entry.identityFile ?? store.addServer.sshKeyFile,
+                      sshUseAgent: entry.identityFile ? false : store.addServer.sshUseAgent,
+                      name: store.addServer.name || entry.host,
+                      error: "",
+                    })
+                  }
+                />
+              </Show>
+            </div>
           }
         >
           <List
@@ -630,6 +1079,29 @@ export function DialogSelectServer() {
                         </DropdownMenu.Portal>
                       </DropdownMenu>
                     </Show>
+
+                    <Show when={i.type === "ssh"}>
+                      <DropdownMenu>
+                        <DropdownMenu.Trigger
+                          as={IconButton}
+                          icon="dot-grid"
+                          variant="ghost"
+                          class="shrink-0 size-8 hover:bg-surface-base-hover data-[expanded]:bg-surface-base-active"
+                          onClick={(e: MouseEvent) => e.stopPropagation()}
+                          onPointerDown={(e: PointerEvent) => e.stopPropagation()}
+                        />
+                        <DropdownMenu.Portal>
+                          <DropdownMenu.Content class="mt-1">
+                            <DropdownMenu.Item
+                              onSelect={() => handleDisconnectSsh(i)}
+                              class="text-text-on-critical-base hover:bg-surface-critical-weak"
+                            >
+                              <DropdownMenu.ItemLabel>{language.t("server.ssh.disconnect")}</DropdownMenu.ItemLabel>
+                            </DropdownMenu.Item>
+                          </DropdownMenu.Content>
+                        </DropdownMenu.Portal>
+                      </DropdownMenu>
+                    </Show>
                   </div>
                 </div>
               )
@@ -654,10 +1126,14 @@ export function DialogSelectServer() {
           >
             <Button variant="primary" size="large" onClick={submitForm} disabled={formBusy()} class="px-3 py-1.5">
               {formBusy()
-                ? language.t("dialog.server.add.checking")
-                : isAddMode()
-                  ? language.t("dialog.server.add.button")
-                  : language.t("common.save")}
+                ? isSshAdd()
+                  ? language.t("server.ssh.connecting")
+                  : language.t("dialog.server.add.checking")
+                : isSshAdd()
+                  ? language.t("server.ssh.connect")
+                  : isAddMode()
+                    ? language.t("dialog.server.add.button")
+                    : language.t("common.save")}
             </Button>
           </Show>
         </div>

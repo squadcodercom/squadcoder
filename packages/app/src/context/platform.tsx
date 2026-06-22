@@ -9,6 +9,35 @@ type OpenFilePickerOptions = { title?: string; multiple?: boolean; accept?: stri
 type SaveFilePickerOptions = { title?: string; defaultPath?: string }
 type UpdateInfo = { updateAvailable: boolean; version?: string }
 
+// SQUADCODER: Remote-SSH (desktop only). The Electron main process owns the ssh tunnel + remote-engine
+// bootstrap; these optional Platform methods are the renderer's bridge to it. Undefined on web.
+export type SshConnectOptions = {
+  host: string
+  user: string
+  /** SSH port, default 22 */
+  port?: number
+  /** Explicit private-key file. Omit to use ssh-agent / default identities. */
+  keyFile?: string
+  /** Remote engine port (default 4096). */
+  remotePort?: number
+}
+export type SshConnectResult = { host: string; url: string; username: string; password: string }
+export type SshDetect = { available: boolean; version?: string }
+/** One host parsed from the user's ~/.ssh/config, offered for one-click import. */
+export type SshConfigEntry = { host: string; hostName?: string; user?: string; port?: number; identityFile?: string }
+/** Persisted SSH server params (no secrets) so a saved host can reconnect across app restarts. */
+export type SshSavedServer = {
+  host: string
+  user: string
+  port?: number
+  keyFile?: string
+  remotePort?: number
+  displayName?: string
+}
+export type SshStatus = { host: string; phase: string; message?: string }
+/** Error thrown by openSshTunnel; `code` is a stable key for localized messages. */
+export type SshConnectError = Error & { code?: string }
+
 export type Platform = {
   /** Platform discriminator */
   platform: "web" | "desktop"
@@ -87,6 +116,39 @@ export type Platform = {
 
   /** Read image from clipboard (desktop only) */
   readClipboardImage?(): Promise<File | null>
+
+  /** Detect a usable SSH client (desktop only) */
+  detectSsh?(): Promise<SshDetect>
+
+  /** Parse ~/.ssh/config to offer the user's configured hosts for one-click import (desktop only) */
+  readSshConfig?(): Promise<SshConfigEntry[]>
+
+  /**
+   * Open an SSH tunnel to a remote host, bootstrap the remote engine, and resolve the tunneled
+   * loopback connection. Rejects with an {@link SshConnectError} carrying a stable `code`.
+   * Desktop only.
+   */
+  openSshTunnel?(opts: SshConnectOptions): Promise<SshConnectResult>
+
+  /** Tear down a remote SSH tunnel (and best-effort stop the remote engine). Desktop only. */
+  closeSshTunnel?(host: string): Promise<void>
+
+  /** Subscribe to live tunnel status events. Returns an unsubscribe fn. Desktop only. */
+  onSshTunnelStatus?(cb: (status: SshStatus) => void): () => void
+
+  /** Remember a saved SSH server so it reconnects on next launch (no secrets stored). Desktop only. */
+  persistSshServer?(config: SshSavedServer): Promise<void>
+
+  /** Forget a saved SSH server + drop any live reconnected entry. Desktop only. */
+  forgetSshServer?(host: string): Promise<void>
+
+  /** Custom window controls (desktop only; the renderer draws min/max/close, RTL-aware on Windows). */
+  windowMinimize?(): void
+  windowToggleMaximize?(): void
+  windowClose?(): void
+  windowIsMaximized?(): Promise<boolean>
+  /** Subscribe to maximize-state changes so the maximize button can toggle its glyph. */
+  onWindowMaximizeChange?(cb: (max: boolean) => void): () => void
 }
 
 export type DisplayBackend = "auto" | "wayland"

@@ -16,7 +16,7 @@ import {
 } from "@mimo-ai/app"
 import type { AsyncStorage } from "@solid-primitives/storage"
 import { MemoryRouter } from "@solidjs/router"
-import { createEffect, createResource, onCleanup, onMount, Show } from "solid-js"
+import { createEffect, createResource, createSignal, onCleanup, onMount, Show } from "solid-js"
 import { render } from "solid-js/web"
 import pkg from "../../package.json"
 import { initI18n, t } from "./i18n"
@@ -230,6 +230,13 @@ const createPlatform = (): Platform => {
 
     webviewZoom,
 
+    // SQUADCODER: custom window controls (Windows draws its own min/max/close, RTL-aware).
+    windowMinimize: () => window.api.windowMinimize(),
+    windowToggleMaximize: () => window.api.windowToggleMaximize(),
+    windowClose: () => window.api.windowClose(),
+    windowIsMaximized: () => window.api.windowIsMaximized(),
+    onWindowMaximizeChange: (cb: (max: boolean) => void) => window.api.onWindowMaximizeChange(cb),
+
     checkAppExists: async (appName: string) => {
       return window.api.checkAppExists(appName)
     },
@@ -242,6 +249,32 @@ const createPlatform = (): Platform => {
         type: "image/png",
       })
     },
+
+    // SQUADCODER: Remote-SSH bridge to the Electron main tunnel manager.
+    detectSsh: () => window.api.detectSsh(),
+
+    readSshConfig: () => window.api.readSshConfig(),
+
+    openSshTunnel: async (opts) => {
+      const outcome = await window.api.startSshTunnel({
+        host: opts.host,
+        user: opts.user,
+        port: opts.port,
+        remotePort: opts.remotePort,
+        auth: opts.keyFile ? { kind: "key", keyFile: opts.keyFile } : { kind: "agent" },
+      })
+      if (!outcome.ok) {
+        const error = new Error(outcome.message) as Error & { code?: string }
+        error.code = outcome.code
+        throw error
+      }
+      const { host, url, username, password } = outcome.result
+      return { host, url, username, password }
+    },
+
+    closeSshTunnel: (host: string) => window.api.stopSshTunnel(host),
+
+    onSshTunnelStatus: (cb) => window.api.onSshTunnelStatus(cb),
   }
 }
 
@@ -251,8 +284,53 @@ window.api.onMenuCommand((id) => {
 })
 listenForDeepLinks()
 
+const SSH_STORE = "ssh-servers.dat"
+
 render(() => {
   const platform = createPlatform()
+
+  // SQUADCODER: persist saved SSH servers (no secrets) + reconnect them on launch. Live reconnected
+  // connections live in this signal and flow into the server list via `servers()` below.
+  const [sshConns, setSshConns] = createSignal<ServerConnection.Any[]>([])
+  platform.persistSshServer = (config) => window.api.storeSet(SSH_STORE, config.host, JSON.stringify(config))
+  platform.forgetSshServer = async (host) => {
+    await window.api.storeDelete(SSH_STORE, host).catch(() => {})
+    setSshConns((list) => list.filter((c) => !(c.type === "ssh" && c.host === host)))
+  }
+  void (async () => {
+    const hosts = await window.api.storeKeys(SSH_STORE).catch(() => [] as string[])
+    for (const host of hosts) {
+      const raw = await window.api.storeGet(SSH_STORE, host).catch(() => null)
+      if (!raw) continue
+      let cfg: { host: string; user: string; port?: number; keyFile?: string; remotePort?: number; displayName?: string }
+      try {
+        cfg = JSON.parse(raw)
+      } catch {
+        continue
+      }
+      const outcome = await window.api
+        .startSshTunnel({
+          host: cfg.host,
+          user: cfg.user,
+          port: cfg.port,
+          remotePort: cfg.remotePort,
+          auth: cfg.keyFile ? { kind: "key", keyFile: cfg.keyFile } : { kind: "agent" },
+        })
+        .catch(() => null)
+      if (!outcome || !outcome.ok) continue
+      const r = outcome.result
+      setSshConns((list) => [
+        ...list.filter((c) => !(c.type === "ssh" && c.host === r.host)),
+        {
+          type: "ssh",
+          host: r.host,
+          http: { url: r.url, username: r.username, password: r.password },
+          displayName: cfg.displayName,
+        } as ServerConnection.Any,
+      ])
+    }
+  })()
+
   const [windowConfig] = createResource(() => window.api.getWindowConfig().catch(() => ({ updaterEnabled: false })))
   const loadLocale = async () => {
     const current = await platform.storage?.("opencode.global.dat").getItem("language")
@@ -280,18 +358,21 @@ render(() => {
 
   const servers = () => {
     const data = sidecar()
-    if (!data) return []
-    const server: ServerConnection.Sidecar = {
-      displayName: "Local Server",
-      type: "sidecar",
-      variant: "base",
-      http: {
-        url: data.url,
-        username: data.username ?? undefined,
-        password: data.password ?? undefined,
-      },
+    const list: ServerConnection.Any[] = []
+    if (data) {
+      list.push({
+        displayName: "Local Server",
+        type: "sidecar",
+        variant: "base",
+        http: {
+          url: data.url,
+          username: data.username ?? undefined,
+          password: data.password ?? undefined,
+        },
+      })
     }
-    return [server] as ServerConnection.Any[]
+    // SQUADCODER: include reconnected SSH servers.
+    return [...list, ...sshConns()]
   }
 
   function handleClick(e: MouseEvent) {

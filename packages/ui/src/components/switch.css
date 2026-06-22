@@ -29,6 +29,10 @@
     transition:
       background-color 150ms,
       border-color 150ms;
+    /* SQUADCODER: a toggle is a physical control — keep its track + thumb LTR so the thumb's
+       translateX animation stays inside the track in RTL (otherwise flex-start flips to the right
+       and the "on" thumb slides off the track). The whole switch (label vs control) still mirrors. */
+    direction: ltr;
   }
 
   [data-slot="switch-thumb"] {

@@ -49,6 +49,8 @@ import {
 } from "./prompt-input/history"
 import { createPromptSubmit, type FollowupDraft } from "./prompt-input/submit"
 import { PromptPopover, type AtOption, type AgentOption, type SlashCommand } from "./prompt-input/slash-popover"
+import { ActiveAgentsIndicator } from "./session/active-agents-indicator"
+import { collectActiveSubagents } from "@/pages/session/active-subagents"
 import { PromptContextItems } from "./prompt-input/context-items"
 import { PromptImageAttachments } from "./prompt-input/image-attachments"
 import { PromptDragOverlay } from "./prompt-input/drag-overlay"
@@ -245,6 +247,28 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       },
   )
   const working = createMemo(() => status()?.type !== "idle")
+  // SQUADCODER (#70): live roster of subagents a Team run has in flight (running task/actor
+  // parts). Powers the "N agents working" indicator + a Stop-all that stays reachable even
+  // when the orchestrator itself has gone idle while background roles finish.
+  const resolveAgentModel = (role: string): string | undefined => {
+    const match = (sync.data.agent ?? []).find((a) => a.name === role)
+    const model = match?.model as { providerID?: string; modelID?: string } | string | undefined
+    if (!model) return undefined
+    if (typeof model === "string") return model
+    if (model.providerID && model.modelID) return `${model.providerID}/${model.modelID}`
+    return undefined
+  }
+  const activeSubagents = createMemo(() =>
+    collectActiveSubagents(sync.data.message[params.id ?? ""], sync.data.part, resolveAgentModel),
+  )
+  // SQUADCODER: "Stop all" must visibly clear the roster — including a ghost subagent left stuck at
+  // status:"running" by an orphaned actor (engine process restart). Hide on stop; auto-unhide the
+  // moment the session works again (a real new run), so genuine background roles still surface.
+  const [agentsStopped, setAgentsStopped] = createSignal(false)
+  createEffect(() => {
+    if (working()) setAgentsStopped(false)
+  })
+  const visibleSubagents = createMemo(() => (agentsStopped() ? [] : activeSubagents()))
   const imageAttachments = createMemo(() =>
     prompt.current().filter((part): part is ImageAttachmentPart => part.type === "image"),
   )
@@ -906,8 +930,19 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         agentOnInput(agentMatch[1])
         setStore("popover", "agent")
       } else if (atMatch) {
-        atOnInput(atMatch[1])
-        setStore("popover", "at")
+        // SQUADCODER: align with the opencode docs — `@` mentions agents/subagents (general, explore,
+        // team-*), not only files. Show the agent picker when `@` is empty or its query matches an
+        // agent name; fall back to the file picker for non-agent queries (e.g. `@src/foo`). `$` still
+        // opens agents directly too.
+        const q = atMatch[1]
+        const matchesAgent = q === "" || agentList().some((a) => a.name.toLowerCase().includes(q.toLowerCase()))
+        if (matchesAgent) {
+          agentOnInput(q)
+          setStore("popover", "agent")
+        } else {
+          atOnInput(q)
+          setStore("popover", "at")
+        }
       } else if (slashMatch) {
         slashOnInput(slashMatch[1])
         setStore("popover", "slash")
@@ -948,7 +983,9 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         .map((p) => ("content" in p ? p.content : ""))
         .join("")
       const textBeforeCursor = rawText.substring(0, cursorPosition)
-      const triggerMatch = textBeforeCursor.match(part.type === "agent" ? /\$(\S*)$/ : /@(\S*)$/)
+      // Agent pills can be triggered by `$` OR `@` (opencode-style) — match either so the typed
+      // trigger text is replaced by the pill regardless of which the user used.
+      const triggerMatch = textBeforeCursor.match(part.type === "agent" ? /[@$](\S*)$/ : /@(\S*)$/)
       const pill = createPill(part)
       const gap = document.createTextNode(" ")
 
@@ -1429,6 +1466,28 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             />
 
             <div class="flex items-center gap-1 pointer-events-auto">
+              {/* SQUADCODER (#70): live "N agents working ▾" — who/what/model + Stop-all. Visible
+                  whenever a Team run has subagents in flight, even if the orchestrator is idle. */}
+              <ActiveAgentsIndicator
+                subagents={visibleSubagents}
+                onStopAll={() => {
+                  void abort()
+                  setAgentsStopped(true)
+                }}
+              />
+              {/* SQUADCODER: while the agent is working AND there's text queued (or a Team run is in
+                  flight), the send button stays an arrow (it queues a follow-up). Surface a dedicated
+                  Stop so the run is always abortable — abort() also cancels spawned subagents. */}
+              <Show when={working() && !blank()}>
+                <IconButton
+                  type="button"
+                  onClick={() => void abort()}
+                  icon="stop"
+                  variant="secondary"
+                  class="size-8"
+                  aria-label={language.t("prompt.action.stop")}
+                />
+              </Show>
               <Tooltip placement="top" inactive={!working() && blank()} value={tip()}>
                 <IconButton
                   data-action="prompt-submit"
@@ -1514,14 +1573,30 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                         triggerProps={{ "data-action": "prompt-agent" }}
                         variant="ghost"
                       >
-                        {(name) => (
-                          <span
-                            class="text-13-medium text-text-strong capitalize"
-                            title={agentDescription((name as string) ?? "") || undefined}
-                          >
-                            {name as string}
-                          </span>
-                        )}
+                        {(name) => {
+                          // SQUADCODER (#31): show each mode's description as a proper styled tooltip on
+                          // hover (was a crude native `title=`). RTL-aware placement; Hebrew via dir="auto".
+                          const desc = agentDescription((name as string) ?? "")
+                          const label = (
+                            <span class="text-13-medium text-text-strong capitalize">{name as string}</span>
+                          )
+                          return desc ? (
+                            <Tooltip
+                              class="w-full"
+                              placement={language.isRtl() ? "left-start" : "right-start"}
+                              gutter={12}
+                              value={
+                                <span dir="auto" class="block max-w-[260px] text-12-regular leading-snug">
+                                  {desc}
+                                </span>
+                              }
+                            >
+                              {label}
+                            </Tooltip>
+                          ) : (
+                            label
+                          )
+                        }}
                       </Select>
                     </TooltipKeybind>
                   </div>

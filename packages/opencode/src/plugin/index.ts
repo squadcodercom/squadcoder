@@ -18,7 +18,7 @@ import { Log } from "../util"
 import { createOpencodeClient } from "@mimo-ai/sdk"
 import { Flag } from "../flag/flag"
 import { CodexAuthPlugin } from "./codex"
-import { MimoAuthPlugin, AnthropicProxyPlugin } from "./mimo"
+import { MimoAuthPlugin } from "./mimo"
 import { Session } from "../session"
 import type { SessionID } from "../session/schema"
 import { NamedError } from "@mimo-ai/shared/util/error"
@@ -127,7 +127,10 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Pl
 // Built-in plugins that are directly imported (not installed from npm)
 const INTERNAL_PLUGINS: PluginInstance[] = [
   MimoAuthPlugin,
-  AnthropicProxyPlugin,
+  // NOTE: Anthropic auth (API key + opt-in Claude Pro/Max subscription OAuth) is intentionally NOT a
+  // built-in here. It ships as a standalone, auto-discovered plugin file
+  // (.squadcoder/plugin/anthropic-oauth.ts → seed/plugin/) so the ToS-risky subscription-OAuth
+  // cloaking is never compiled into the engine binary. See that file's header for the rationale.
   CodexAuthPlugin,
   CopilotAuthPlugin,
   // gitlab/poe auth are external npm packages typed against the published
@@ -244,8 +247,10 @@ export const layer = Layer.effect(
           get serverUrl(): URL {
             return Server.url ?? new URL("http://localhost:4096")
           },
+          // Only expose Bun's shell ($) under the REAL Bun runtime; our Node shim defines `Bun`
+          // without a `$`, so detect via process.versions.bun (see runtime-bun-shim.ts).
           // @ts-expect-error
-          $: typeof Bun === "undefined" ? undefined : Bun.$,
+          $: (globalThis as { process?: { versions?: { bun?: string } } }).process?.versions?.bun ? Bun.$ : undefined,
         }
 
         for (const plugin of INTERNAL_PLUGINS) {

@@ -118,7 +118,7 @@ export const dict: Record<string, string> = {
   "tui.tips.custom_formatter": "הגדר פקודות formatter מותאמות עם סיומות קבצים בהגדרות",
   "tui.tips.lsp": "SquadCoder משתמש בשרתי LSP לניתוח קוד חכם",
   "tui.tips.custom_tool":
-    "צור קובצי {highlight}.ts{/highlight} ב-{highlight}.mimocode/tools/{/highlight} כדי להגדיר כלי LLM חדשים",
+    "צור קובצי {highlight}.ts{/highlight} ב-{highlight}.squadcoder/tools/{/highlight} כדי להגדיר כלי LLM חדשים",
   "tui.tips.tool_scripts": "הגדרות כלים יכולות להפעיל סקריפטים שנכתבו ב-Python, Go ועוד",
   "tui.tips.plugins":
     "הוסף קובצי {highlight}.ts{/highlight} אל {highlight}.mimocode/plugin/{/highlight} עבור hooks של אירועים",

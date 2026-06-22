@@ -56,6 +56,40 @@ before using it. Hard-disable with `{"agent":{"team-researcher":{"disable":true}
 Role model tiers (`ultra`/`standard`/`lite`) come from `model_groups`; unset = your default
 model. Full details, the tooltip wording, and cost knobs are in `.squadcoder/TEAM_MODE.md`.
 
+## Routines — saved, repeatable tasks (NEW)
+Routines are reusable, parameterized task templates you run on demand as **slash-commands**. They're
+plain markdown in `.squadcoder/command/*.md` (frontmatter `description` + optional `agent`/`model`; the
+body is the prompt, `$ARGUMENTS` carries input) — these are core opencode commands, so they ship
+automatically and need zero engine code. Bundled:
+- **`/review`** — senior-engineer review of your current changes (correctness → security → performance → readability → tests; uses the `sc:code-review` skill).
+- **`/ship-check`** — pre-ship pass: typecheck → tests → RTL+LTR visual check, stop at the first failure.
+- **`/build`**, **`/ads`** — launch the Team-Mode development / ads flows.
+
+**Multi-step** is just numbered steps in the routine body (the agent runs them in order; it can fan out
+to subagents via the `actor` tool). **Add your own** by dropping a `.md` in `.squadcoder/command/`.
+
+### Recurring routines (opt-in) — run a routine on a schedule
+opencode has **no built-in scheduler by design** — unattended, autonomous agent runs are higher-risk, so
+recurrence is opt-in and lives **outside** the agent. Schedule `opencode run` at the OS level.
+**Recommended (zero extra dependency):**
+- **Windows (Task Scheduler):**
+  ```powershell
+  schtasks /Create /SC DAILY /ST 07:00 /TN "SquadCoder review" /TR "opencode run \"/review\""
+  ```
+- **macOS/Linux (cron):**
+  ```bash
+  0 7 * * 1-5  opencode run "/review"   # weekdays 07:00 (use 0-4 = Sun–Thu for an Israeli work week)
+  ```
+A convenience wrapper — **`different-ai/opencode-scheduler`** (MIT) — exists but is **opt-in and NOT
+bundled**. Quick security verdict (**safe only with conditions**):
+- ✅ MIT, thin wrapper over `opencode run`; jobs stored as local JSON; no credential proxying or network
+  egress of its own.
+- ⚠️ Unattended runs are higher-risk: keep permission **auto-approve OFF** so a scheduled agent can't
+  approve its own destructive tool calls; only schedule **trusted** routine prompts (no destructive ops,
+  no secrets in the prompt); **pin the version**; on Windows it has **no overlap/timeout guard** and
+  cron-mapping limits — prefer native Task Scheduler for anything sensitive.
+- 🔒 Treat a cron'd routine like a deploy job: least-privilege, reviewed prompt, logged output.
+
 ## Maximum-coding configuration (pre-tuned in squadcoder.json)
 Tuned out-of-the-box for parallel, high-throughput coding:
 - `experimental.batch_tool: true` — the agent issues multiple tool calls in **parallel** (faster multi-file reads/edits).

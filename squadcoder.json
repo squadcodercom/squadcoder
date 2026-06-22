@@ -8,6 +8,9 @@
       ".squadcoder/skills"
     ]
   },
+  "plugin": [
+    "opencode-ignore@1.1.0"
+  ],
   "experimental": {
     "batch_tool": true,
     "mcp_timeout": 20000
@@ -15,32 +18,50 @@
   "mcp": {
     "playwright": {
       "type": "local",
-      "command": ["npx", "-y", "@playwright/mcp@latest"],
+      "command": [
+        "npx",
+        "-y",
+        "@playwright/mcp@latest"
+      ],
       "enabled": true,
       "timeout": 20000
     },
     "context7": {
       "type": "local",
-      "command": ["npx", "-y", "@upstash/context7-mcp@latest"],
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ],
       "enabled": true,
       "timeout": 20000
     },
     "sequential-thinking": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
       "enabled": true,
       "timeout": 20000
     },
     "memory-graph": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
       "enabled": true,
       "timeout": 20000
     },
     "github": {
       "type": "remote",
       "url": "https://api.githubcopilot.com/mcp/",
-      "headers": { "Authorization": "Bearer ${GITHUB_TOKEN}" },
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      },
       "enabled": false
     },
     "higgsfield": {
@@ -50,7 +71,12 @@
     },
     "google-ads": {
       "type": "local",
-      "command": ["uvx", "--from", "git+https://github.com/googleads/google-ads-mcp", "google-ads-mcp"],
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/googleads/google-ads-mcp",
+        "google-ads-mcp"
+      ],
       "environment": {
         "GOOGLE_ADS_DEVELOPER_TOKEN": "${GOOGLE_ADS_DEVELOPER_TOKEN}",
         "GOOGLE_ADS_CLIENT_ID": "${GOOGLE_ADS_CLIENT_ID}",
@@ -60,11 +86,68 @@
       "enabled": false,
       "timeout": 20000
     },
-    "codebase-index": {
+    "code-memory": {
       "type": "local",
-      "command": ["npx", "-y", "opencode-codebase-index-mcp@0.11.0", "--project", "."],
+      "command": [
+        "uvx",
+        "code-memory"
+      ],
+      "enabled": true,
+      "timeout": 60000
+    },
+    "web-search": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "duckduckgo-mcp-server"
+      ],
+      "enabled": true,
+      "timeout": 60000
+    },
+    "claude-design": {
+      "type": "remote",
+      "url": "https://api.anthropic.com/v1/design/mcp",
+      "headers": {
+        "Authorization": "Bearer ${ANTHROPIC_API_KEY}",
+        "anthropic-version": "2023-06-01"
+      },
+      "enabled": false
+    },
+    "meta-ads": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "meta-ads-mcp"
+      ],
+      "environment": {
+        "META_APP_ID": "${META_APP_ID}",
+        "META_ACCESS_TOKEN": "${META_ACCESS_TOKEN}"
+      },
       "enabled": false,
-      "timeout": 30000
+      "timeout": 60000
     }
+  },
+  "permission": {
+    "skill": {
+      "*": "deny",
+      "sc:code-review": "allow",
+      "sc:webapp-testing": "allow",
+      "sc:mcp-builder": "allow",
+      "ui-ux-pro-max": "allow",
+      "ckm:design-system": "allow",
+      "sc:design-sync": "allow",
+      "ckm:ui-styling": "allow",
+      "hebrew-rtl-best-practices": "allow",
+      "hebrew-i18n": "allow",
+      "hebrew-tailwind-preset": "allow",
+      "hebrew-document-generator": "allow",
+      "israeli-accessibility-compliance": "allow",
+      "sc:codebase-index": "allow"
+    }
+  },
+  "model_groups": {
+    "ultra": "anthropic/claude-opus-4-8",
+    "standard": "anthropic/claude-sonnet-4-6",
+    "lite": "anthropic/claude-haiku-4-5-20251001"
   }
 }

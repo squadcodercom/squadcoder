@@ -335,11 +335,9 @@ export function DialogConnectProvider(props: { provider: string }) {
 
   async function complete() {
     await globalSDK.client.global.dispose()
-    // Optimistically mark the provider connected so the Providers list updates immediately instead of
-    // requiring a manual page reload (mirrors the disconnect fix in settings-providers.tsx).
-    globalSync.set("provider", "connected", (list) =>
-      (list as string[]).includes(props.provider) ? list : [...(list as string[]), props.provider],
-    )
+    // Optimistically mark the provider connected across global + project stores so the Providers list
+    // updates immediately (useProviders reads the per-directory store inside a project).
+    globalSync.setProviderConnected(props.provider, true)
     dialog.close()
     showToast({
       variant: "success",

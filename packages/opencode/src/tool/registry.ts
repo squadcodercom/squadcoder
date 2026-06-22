@@ -24,6 +24,7 @@ import { Provider } from "../provider"
 import { ProviderID, type ModelID } from "../provider/schema"
 import { WebSearchTool } from "./websearch"
 import { CodeSearchTool } from "./codesearch"
+import { CodebaseSearchTool } from "./codebase-search"
 import { Flag } from "@/flag/flag"
 import { Log } from "@/util"
 import { LspTool } from "./lsp"
@@ -129,6 +130,7 @@ export const layer = Layer.effect(
     const websearch = yield* WebSearchTool
     const bash = yield* BashTool
     const codesearch = yield* CodeSearchTool
+    const codebasesearch = yield* CodebaseSearchTool
     const globtool = yield* GlobTool
     const writetool = yield* WriteTool
     const edit = yield* EditTool
@@ -215,6 +217,7 @@ export const layer = Layer.effect(
           fetch: Tool.init(webfetch),
           search: Tool.init(websearch),
           code: Tool.init(codesearch),
+          codebase: Tool.init(codebasesearch),
           skill: Tool.init(skilltool),
           patch: Tool.init(patchtool),
           changedir: Tool.init(changedirtool),
@@ -242,6 +245,7 @@ export const layer = Layer.effect(
             tool.fetch,
             tool.search,
             tool.code,
+            tool.codebase,
             tool.skill,
             tool.patch,
             tool.changedir,

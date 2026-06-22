@@ -39,6 +39,12 @@
       will-change: transform;
     }
 
+    /* SQUADCODER: in RTL the collapsed chevron must point left (toward the row start on the
+       right edge), so flip the rotation direction. Expanded state stays pointing down. */
+    [dir="rtl"] & [data-slot="collapsible-arrow-icon"] {
+      transform: translateZ(0) rotate(90deg);
+    }
+
     &:hover [data-slot="collapsible-arrow"] {
       opacity: 1;
     }

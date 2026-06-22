@@ -1,7 +1,6 @@
 import { Button } from "@mimo-ai/ui/button"
 import { useDialog } from "@mimo-ai/ui/context/dialog"
 import { Icon } from "@mimo-ai/ui/icon"
-import { Select } from "@mimo-ai/ui/select"
 import { Switch } from "@mimo-ai/ui/switch"
 import { Tabs } from "@mimo-ai/ui/tabs"
 import { useMutation } from "@tanstack/solid-query"
@@ -9,6 +8,7 @@ import { showToast } from "@mimo-ai/ui/toast"
 import { useNavigate } from "@solidjs/router"
 import { type Accessor, createEffect, createMemo, For, type JSXElement, onCleanup, Show } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
+import { DialogAgentModel } from "@/components/dialog-agent-model"
 import { ServerHealthIndicator, ServerRow } from "@/components/server/server-row"
 import { useLanguage } from "@/context/language"
 import { useModels } from "@/context/models"
@@ -19,6 +19,17 @@ import { useSync } from "@/context/sync"
 import { useCheckServerHealth, type ServerHealth } from "@/utils/server-health"
 
 const pollMs = 10_000
+
+// SQUADCODER: a plugin spec is either an npm `name@version` (incl. scoped `@scope/name`) or a
+// local file path / file:// URL. npm names display as-is; local plugins show a clean filename
+// (e.g. "anthropic-oauth") instead of the full `file:///C:/Users/.../anthropic-oauth.js` path.
+// The full spec stays available on hover (title).
+function pluginLabel(spec: string): string {
+  const isFile = spec.startsWith("file://") || /^([a-zA-Z]:[\\/]|\/|\.\.?[\\/])/.test(spec)
+  if (!isFile) return spec
+  const base = spec.replace(/^file:\/\//, "").split(/[\\/]/).pop() ?? spec
+  return base.replace(/\.(c|m)?[jt]s$/i, "") || spec
+}
 
 const pluginEmptyMessage = (value: string, file: string): JSXElement => {
   const parts = value.split(file)
@@ -165,6 +176,16 @@ const skillPermissionMap = (config: { permission?: unknown }): Record<string, st
   return {}
 }
 
+// Effective enabled state, mirroring the engine's Permission.evaluate precedence: an explicit
+// per-skill rule wins, otherwise fall back to the "*" wildcard (so a deny-all + allow-core config
+// shows the non-core skills as OFF instead of all-ON).
+const skillRuleEnabled = (map: Record<string, string>, name: string): boolean => {
+  const explicit = map[name]
+  if (explicit === "deny") return false
+  if (explicit === "allow") return true
+  return map["*"] !== "deny"
+}
+
 const useSkillToggleMutation = () => {
   const sync = useSync()
   const sdk = useSDK()
@@ -176,7 +197,9 @@ const useSkillToggleMutation = () => {
     // "allow" re-enables (overrides a prior "deny" through the engine's mergeDeep).
     mutationFn: async (name: string) => {
       const current = skillPermissionMap(sync.data.config)
-      const next = { ...current, [name]: current[name] === "deny" ? "allow" : "deny" }
+      // Toggle relative to the EFFECTIVE state (honours the "*" wildcard), so clicking a skill that's
+      // off-via-wildcard turns it on (explicit "allow") rather than redundantly re-denying it.
+      const next = { ...current, [name]: skillRuleEnabled(current, name) ? "deny" : "allow" }
       await sdk.client.config.update({ config: { permission: { skill: next } } })
       const perm = sync.data.config.permission
       const base = perm && typeof perm === "object" ? (perm as Record<string, unknown>) : {}
@@ -192,7 +215,7 @@ const useSkillToggleMutation = () => {
   }))
 }
 
-export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
+export function StatusPopoverBody(props: { shown: Accessor<boolean>; onClose?: () => void }) {
   const sync = useSync()
   const server = useServer()
   const platform = usePlatform()
@@ -319,7 +342,7 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
     void platform.openPath(location).catch(fail)
   }
   const toggleSkill = useSkillToggleMutation()
-  const skillEnabled = (name: string) => skillPermissionMap(sync.data.config)[name] !== "deny"
+  const skillEnabled = (name: string) => skillRuleEnabled(skillPermissionMap(sync.data.config), name)
 
   // #37 per-agent model: list non-hidden agents (incl. Team roles) + a model picker each.
   // Writing config.agent[name].model persists via the per-directory config.update (#55 fix).
@@ -340,8 +363,27 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
     }
   }
 
+  // #67 top-bar shortcut: deep-link from a popover tab straight into the matching Settings section.
+  // Show the dialog FIRST, then close the popover — closing it first unmounts this component, which
+  // sets dialogDead and the async import then bailed before dialog.show ran (the "click does nothing"
+  // bug). dialog.show targets the root dialog owner, so it's safe to call as the popover tears down.
+  const openSettings = (section: string) => {
+    const run = ++dialogRun
+    void import("./dialog-settings").then((x) => {
+      if (dialogRun !== run) return // superseded by a newer openSettings (e.g. popover dismissed)
+      dialog.show(() => <x.DialogSettings section={section} />)
+      props.onClose?.()
+    })
+  }
+
+  const ManageInSettings = (manageProps: { section: string }) => (
+    <Button variant="secondary" class="mt-3 self-start h-8 px-3 py-1.5" onClick={() => openSettings(manageProps.section)}>
+      {language.t("status.popover.action.manageInSettings")}
+    </Button>
+  )
+
   return (
-    <div class="flex items-center gap-1 w-[360px] rounded-xl shadow-[var(--shadow-lg-border-base)]">
+    <div class="flex items-center gap-1 w-[420px] rounded-xl shadow-[var(--shadow-lg-border-base)]">
       <Tabs
         aria-label={language.t("status.popover.ariaLabel")}
         class="tabs bg-background-strong rounded-xl overflow-hidden"
@@ -425,19 +467,22 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                 }}
               </For>
 
-              <Button
-                variant="secondary"
-                class="mt-3 self-start h-8 px-3 py-1.5"
-                onClick={() => {
-                  const run = ++dialogRun
-                  void import("./dialog-select-server").then((x) => {
-                    if (dialogDead || dialogRun !== run) return
-                    dialog.show(() => <x.DialogSelectServer />, defaultServer.refresh)
-                  })
-                }}
-              >
-                {language.t("status.popover.action.manageServers")}
-              </Button>
+              <div class="flex items-center gap-2 flex-wrap">
+                <Button
+                  variant="secondary"
+                  class="mt-3 self-start h-8 px-3 py-1.5"
+                  onClick={() => {
+                    const run = ++dialogRun
+                    void import("./dialog-select-server").then((x) => {
+                      if (dialogDead || dialogRun !== run) return
+                      dialog.show(() => <x.DialogSelectServer />, defaultServer.refresh)
+                    })
+                  }}
+                >
+                  {language.t("status.popover.action.manageServers")}
+                </Button>
+                <ManageInSettings section="remote" />
+              </div>
             </div>
           </div>
         </Tabs.Content>
@@ -491,6 +536,7 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                   }}
                 </For>
               </Show>
+              <ManageInSettings section="mcp" />
             </div>
           </div>
         </Tabs.Content>
@@ -534,11 +580,14 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                   {(plugin) => (
                     <div class="flex items-center gap-2 w-full px-2 py-1">
                       <div class="size-1.5 rounded-full shrink-0 bg-icon-success-base" />
-                      <span class="text-14-regular text-text-base truncate">{plugin}</span>
+                      <span class="text-14-regular text-text-base truncate" title={plugin}>
+                        {pluginLabel(plugin)}
+                      </span>
                     </div>
                   )}
                 </For>
               </Show>
+              <ManageInSettings section="plugins" />
             </div>
           </div>
         </Tabs.Content>
@@ -604,18 +653,21 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                 </For>
               </Show>
 
-              <Show when={platform.openPath}>
-                <Button
-                  variant="secondary"
-                  class="mt-3 self-start h-8 px-3 py-1.5"
-                  onClick={() => {
-                    if (!platform.openPath) return
-                    void platform.openPath(skillsDir()).catch(fail)
-                  }}
-                >
-                  {language.t("dialog.skills.action.manage")}
-                </Button>
-              </Show>
+              <div class="flex items-center gap-2 flex-wrap">
+                <Show when={platform.openPath}>
+                  <Button
+                    variant="secondary"
+                    class="mt-3 self-start h-8 px-3 py-1.5"
+                    onClick={() => {
+                      if (!platform.openPath) return
+                      void platform.openPath(skillsDir()).catch(fail)
+                    }}
+                  >
+                    {language.t("dialog.skills.action.manage")}
+                  </Button>
+                </Show>
+                <ManageInSettings section="skills" />
+              </div>
             </div>
           </div>
         </Tabs.Content>
@@ -632,23 +684,36 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
                 }
               >
                 <For each={agentItems()}>
-                  {(agent) => (
-                    <div class="flex items-center gap-2 w-full ps-2 pe-1 py-1">
-                      <span class="text-13-regular text-text-base truncate flex-1 capitalize">{agent.name}</span>
-                      <Select
-                        options={models.list()}
-                        current={agentCurrentModel(agent)}
-                        value={(m) => `${m.provider.id}/${m.id}`}
-                        label={(m) => m.name}
-                        onSelect={(m) => m && void setAgentModel(agent.name, m.provider.id, m.id)}
-                        variant="secondary"
-                        size="small"
-                        triggerStyle={{ "max-width": "150px" }}
-                      />
-                    </div>
-                  )}
+                  {(agent) => {
+                    const current = () => agentCurrentModel(agent)
+                    return (
+                      <div class="flex items-center gap-2 w-full ps-2 pe-1 py-1">
+                        <span class="text-13-regular text-text-base truncate flex-1 capitalize">{agent.name}</span>
+                        {/* #37: open a MODAL model picker (the popover is non-modal → a nested Select can't work) */}
+                        <button
+                          type="button"
+                          class="shrink-0 max-w-[150px] truncate text-13-regular text-text-base bg-surface-raised-base hover:bg-surface-raised-base-hover rounded-md px-2.5 h-7 flex items-center gap-1.5"
+                          onClick={() =>
+                            dialog.show(() => (
+                              <DialogAgentModel
+                                agent={agent.name}
+                                current={current()}
+                                onSelect={(providerID, modelID) => void setAgentModel(agent.name, providerID, modelID)}
+                              />
+                            ))
+                          }
+                        >
+                          <span class="truncate">
+                            {current()?.name ?? language.t("dialog.agents.chooseModel")}
+                          </span>
+                          <Icon name="chevron-down" size="small" class="text-icon-weak shrink-0" />
+                        </button>
+                      </div>
+                    )
+                  }}
                 </For>
               </Show>
+              <ManageInSettings section="agents" />
             </div>
           </div>
         </Tabs.Content>

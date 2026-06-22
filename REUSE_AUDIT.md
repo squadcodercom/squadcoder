@@ -93,3 +93,17 @@ The **no-key set is enabled AND runtime-verified working**; MCPs + skills bundle
 - `CC Safety Net` (MIT, 1.4k★) + `Envsitter Guard` (MIT) — opt-in guardrails for autonomous `/goal` runs → **#46**.
 
 **Avoid bundling:** scrapers (Xquik/x-twitter), credential-proxy auth plugins (Antigravity/Omniroute/Kilo — high blast radius), network-egress notifiers/search (Google AI Search, WakaTime, Slack/ntfy) — wrong for an offline-first Hebrew IDE. Naive loop plugins (ralph-loop/opencode-loop/OpenLoop) — weaker than core `/goal`. CLI skill installers (openskills et al.) — clone+exec external content (skill-installer risk, not a viewer).
+
+---
+
+## 2026-06-21 — Routines + Usage-limit indicator
+
+### Routines — VERDICT: reuse-core + adopt-extension (do NOT copy OpenChamber)
+- **OpenChamber has NO "routines" feature** — only UI-layer "Project Actions" + per-project notes/todos, all OpenChamber-only (not opencode-engine reusable). Verified via README/roadmap/releases. Nothing to port from it.
+- **"Saved / reusable / multi-step task" = opencode CORE `command/**/*.md`** (frontmatter `template`/`description`/`agent`/`model`/`subtask` + `$ARGUMENTS` / `!shell` / `@file`). Implement SquadCoder routines as **`.squadcoder/command/*.md`** (auto-seeded by make-seed, merge-safe). Multi-step = a `steps`-style convention expanded in the routine prompt — **cannot depend on `subtask2`** (PolyForm Noncommercial = reuse blocker; design reference only).
+- **Recurrence/scheduling = NOT in core.** Adopt **MIT `different-ai/opencode-scheduler`** (~408★, Windows via schtasks) OR keep scheduling out-of-process (OS Task Scheduler / GitHub Actions calling `opencode run`). Scheduling must live **outside the agent loop**; bundle disabled/opt-in + security-review autonomous runs before shipping.
+- **Status:** verdict delivered + recorded. Implementation is a separate tracked task (pending user go) — user wants on-demand + recurring + multi-step, shipped automatically on install.
+
+### Usage-limit indicator — VERDICT: build-thin (DONE 2026-06-21)
+- Anthropic **Pro/Max OAuth** subscription usage = `anthropic-ratelimit-unified-5h/7d-{utilization,reset,status}` response headers (also `GET /api/oauth/usage`). Reverse-engineered/undocumented, **medium-high** confidence (ccusage + claude-relay + Claude Code all rely on them). The SquadCoder OAuth plugin already sends the required `oauth-2025-04-20` beta.
+- **Built:** plugin captures headers → temp JSON snapshot (`anthropic-oauth.ts`, kept OUT of core for ToS reasons); dumb core route `GET /usage/anthropic` serves it; app polls + renders a yellow `DockTray` above the prompt input (`use-anthropic-usage.ts` + `session-usage-dock.tsx`, en/he, RTL). Ships via seed. Safe degradation: if headers absent, box never shows.

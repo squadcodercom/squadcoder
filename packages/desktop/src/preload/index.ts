@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron"
-import type { ElectronAPI, InitStep, SqliteMigrationProgress } from "./types"
+import type { ElectronAPI, InitStep, SqliteMigrationProgress, SshTunnelStatus } from "./types"
 
 const api: ElectronAPI = {
   killSidecar: () => ipcRenderer.invoke("kill-sidecar"),
@@ -47,6 +47,17 @@ const api: ElectronAPI = {
     return () => ipcRenderer.removeListener("deep-link", handler)
   },
 
+  // SQUADCODER: Remote-SSH
+  detectSsh: () => ipcRenderer.invoke("detect-ssh"),
+  startSshTunnel: (opts) => ipcRenderer.invoke("start-ssh-tunnel", opts),
+  stopSshTunnel: (host) => ipcRenderer.invoke("stop-ssh-tunnel", host),
+  readSshConfig: () => ipcRenderer.invoke("read-ssh-config"),
+  onSshTunnelStatus: (cb) => {
+    const handler = (_: unknown, status: SshTunnelStatus) => cb(status)
+    ipcRenderer.on("ssh-tunnel-status", handler)
+    return () => ipcRenderer.removeListener("ssh-tunnel-status", handler)
+  },
+
   openDirectoryPicker: (opts) => ipcRenderer.invoke("open-directory-picker", opts),
   openFilePicker: (opts) => ipcRenderer.invoke("open-file-picker", opts),
   saveFilePicker: (opts) => ipcRenderer.invoke("save-file-picker", opts),
@@ -66,6 +77,17 @@ const api: ElectronAPI = {
   checkUpdate: () => ipcRenderer.invoke("check-update"),
   installUpdate: () => ipcRenderer.invoke("install-update"),
   setBackgroundColor: (color: string) => ipcRenderer.invoke("set-background-color", color),
+
+  // SQUADCODER: custom Windows window controls (frameless, RTL-aware).
+  windowMinimize: () => ipcRenderer.send("window-minimize"),
+  windowToggleMaximize: () => ipcRenderer.send("window-toggle-maximize"),
+  windowClose: () => ipcRenderer.send("window-close"),
+  windowIsMaximized: () => ipcRenderer.invoke("window-is-maximized"),
+  onWindowMaximizeChange: (cb) => {
+    const handler = (_: unknown, max: boolean) => cb(max)
+    ipcRenderer.on("window-maximize-changed", handler)
+    return () => ipcRenderer.removeListener("window-maximize-changed", handler)
+  },
 }
 
 contextBridge.exposeInMainWorld("api", api)

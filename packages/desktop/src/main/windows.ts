@@ -1,5 +1,5 @@
 import windowState from "electron-window-state"
-import { app, BrowserWindow, net, nativeImage, nativeTheme, protocol } from "electron"
+import { app, BrowserWindow, net, nativeImage, protocol } from "electron"
 import { dirname, isAbsolute, join, relative, resolve } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import type { TitlebarTheme } from "../preload/types"
@@ -39,22 +39,21 @@ function iconPath() {
   return join(iconsDir(), `icon.${ext}`)
 }
 
-function tone() {
-  return nativeTheme.shouldUseDarkColors ? "dark" : "light"
+export function setTitlebar(_win: BrowserWindow, _theme: Partial<TitlebarTheme> = {}) {
+  // SQUADCODER: Windows now draws its own min/max/close (custom titlebar, RTL-aware) instead of the
+  // native titleBarOverlay (which is locked to the top-right and can't move left for Hebrew/RTL).
+  // No native overlay to recolor on theme change, so this is a no-op (kept for API compatibility).
 }
 
-function overlay(theme: Partial<TitlebarTheme> = {}) {
-  const mode = theme.mode ?? tone()
-  return {
-    color: "#00000000",
-    symbolColor: mode === "dark" ? "white" : "black",
-    height: 40,
+// SQUADCODER: notify the renderer when the window's maximize state flips, so the custom maximize
+// button can toggle its glyph (maximize <-> restore).
+function wireMaximizeEvents(win: BrowserWindow) {
+  const send = () => {
+    if (win.isDestroyed()) return
+    win.webContents.send("window-maximize-changed", win.isMaximized())
   }
-}
-
-export function setTitlebar(win: BrowserWindow, theme: Partial<TitlebarTheme> = {}) {
-  if (process.platform !== "win32") return
-  win.setTitleBarOverlay(overlay(theme))
+  win.on("maximize", send)
+  win.on("unmaximize", send)
 }
 
 export function setDockIcon() {
@@ -69,7 +68,6 @@ export function createMainWindow() {
     defaultHeight: 800,
   })
 
-  const mode = tone()
   const win = new BrowserWindow({
     x: state.x,
     y: state.y,
@@ -87,9 +85,10 @@ export function createMainWindow() {
       : {}),
     ...(process.platform === "win32"
       ? {
+          // SQUADCODER: frameless WITHOUT titleBarOverlay — the renderer draws RTL-aware custom
+          // window controls (the native overlay is right-locked and clips the RTL sidebar).
           frame: false,
           titleBarStyle: "hidden" as const,
-          titleBarOverlay: overlay({ mode }),
         }
       : {}),
     webPreferences: {
@@ -99,6 +98,8 @@ export function createMainWindow() {
       sandbox: true,
     },
   })
+
+  if (process.platform === "win32") wireMaximizeEvents(win)
 
   win.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
     const { requestHeaders } = details
@@ -125,7 +126,6 @@ export function createMainWindow() {
 }
 
 export function createLoadingWindow() {
-  const mode = tone()
   const win = new BrowserWindow({
     width: 640,
     height: 480,
@@ -139,7 +139,6 @@ export function createLoadingWindow() {
       ? {
           frame: false,
           titleBarStyle: "hidden" as const,
-          titleBarOverlay: overlay({ mode }),
         }
       : {}),
     webPreferences: {

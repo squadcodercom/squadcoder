@@ -1,6 +1,6 @@
 import { Button } from "@mimo-ai/ui/button"
 import { Markdown } from "@mimo-ai/ui/markdown"
-import { type Component, createResource, createSignal, For, Show } from "solid-js"
+import { type Component, createResource, createSignal, For, Match, Show, Switch } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
 import { useSDK } from "@/context/sdk"
@@ -32,13 +32,12 @@ export const DialogWorkspaceDocs: Component = () => {
     return md
   })
 
+  // Use file.read (the verified-working /file/content reader) and let the resource track loading /
+  // error so the viewer never shows a silent blank pane. A swallowed error here was the root cause
+  // of "I click a doc and can't view it" — now it surfaces a real error/empty/loading state below.
   const [content] = createResource(selected, async (path) => {
-    const res = await sdk.client.file
-      .content({ directory: sdk.directory, path })
-      .then((x) => x.data)
-      .catch(() => undefined)
-    if (res == null) return ""
-    return typeof res === "string" ? res : ((res as { content?: string }).content ?? "")
+    const res = await sdk.client.file.read({ directory: sdk.directory, path })
+    return (res.data ?? "") as string
   })
 
   const openExternal = () => {
@@ -89,7 +88,22 @@ export const DialogWorkspaceDocs: Component = () => {
               <div class="text-12-regular text-text-weak">{language.t("dialog.workspaceDocs.selectPrompt")}</div>
             }
           >
-            <Markdown text={content() ?? ""} class="text-14-regular" />
+            <Switch>
+              <Match when={content.loading}>
+                <div class="text-12-regular text-text-weak">{language.t("dialog.workspaceDocs.loading")}</div>
+              </Match>
+              <Match when={content.error}>
+                <div class="text-12-regular text-text-danger-base">
+                  {language.t("dialog.workspaceDocs.loadError")}
+                </div>
+              </Match>
+              <Match when={(content() ?? "").trim().length === 0}>
+                <div class="text-12-regular text-text-weak">{language.t("dialog.workspaceDocs.fileEmpty")}</div>
+              </Match>
+              <Match when={true}>
+                <Markdown text={content() ?? ""} class="text-14-regular" />
+              </Match>
+            </Switch>
           </Show>
         </div>
       </div>

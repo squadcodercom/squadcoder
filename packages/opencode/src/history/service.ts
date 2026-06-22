@@ -133,7 +133,7 @@ export const layer = Layer.effect(
         ORDER BY score
         LIMIT ?
       `
-      const rows = Database.Client().$client.query(sqlText).all(ftsQuery, ...params, limit) as Row[]
+      const rows = Database.statement(sqlText).all(ftsQuery, ...params, limit) as Row[]
       return rows.map((r) => ({
         part_id: r.part_id,
         session_id: r.session_id,
