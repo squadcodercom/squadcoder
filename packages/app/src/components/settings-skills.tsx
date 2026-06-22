@@ -3,6 +3,7 @@ import { Icon } from "@mimo-ai/ui/icon"
 import { Markdown } from "@mimo-ai/ui/markdown"
 import { Switch } from "@mimo-ai/ui/switch"
 import { showToast } from "@mimo-ai/ui/toast"
+import type { PermissionActionConfig } from "@mimo-ai/sdk/v2/client"
 import { type Component, createEffect, createMemo, createSignal, For, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
@@ -23,10 +24,10 @@ const sourceOf = (location: string): Source => {
   return "other"
 }
 
-const skillPermissionMap = (config: { permission?: unknown }): Record<string, string> => {
+const skillPermissionMap = (config: { permission?: unknown }): Record<string, PermissionActionConfig> => {
   const perm = config.permission as { skill?: unknown } | string | undefined
   if (perm && typeof perm === "object" && perm.skill && typeof perm.skill === "object") {
-    return perm.skill as Record<string, string>
+    return perm.skill as Record<string, PermissionActionConfig>
   }
   return {}
 }
@@ -34,7 +35,7 @@ const skillPermissionMap = (config: { permission?: unknown }): Record<string, st
 // Effective enabled state, mirroring the engine's Permission.evaluate precedence: an explicit
 // per-skill rule wins, otherwise fall back to the "*" wildcard (so a deny-all + allow-core config
 // shows non-core skills as OFF instead of all-ON).
-const skillRuleEnabled = (map: Record<string, string>, name: string): boolean => {
+const skillRuleEnabled = (map: Record<string, PermissionActionConfig>, name: string): boolean => {
   const explicit = map[name]
   if (explicit === "deny") return false
   if (explicit === "allow") return true
@@ -74,7 +75,7 @@ export const SettingsSkills: Component = () => {
       const current = skillPermissionMap(ws.data.config)
       // Toggle relative to the EFFECTIVE state (honours the "*" wildcard) so clicking a
       // wildcard-disabled skill enables it (explicit "allow") instead of re-denying.
-      const next = { ...current, [name]: skillRuleEnabled(current, name) ? "deny" : "allow" }
+      const next: Record<string, PermissionActionConfig> = { ...current, [name]: skillRuleEnabled(current, name) ? "deny" : "allow" }
       await ws.client.config.update({ config: { permission: { skill: next } } })
       const perm = ws.data.config.permission
       const base = perm && typeof perm === "object" ? (perm as Record<string, unknown>) : {}

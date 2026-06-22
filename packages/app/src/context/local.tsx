@@ -62,6 +62,10 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
 
     const id = createMemo(() => params.id || undefined)
     const list = createMemo(() => sync.data.agent.filter((item) => item.mode !== "subagent" && !item.hidden))
+    const defaultAgentName = () => {
+      const items = list()
+      return items.find((item) => item.name === "team")?.name ?? items[0]?.name
+    }
     const connected = createMemo(() => new Set(providers.connected().map((item) => item.id)))
 
     const [saved, setSaved] = persisted(
@@ -84,7 +88,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         variant?: string | null
       }
     }>({
-      current: list()[0]?.name,
+      current: defaultAgentName(),
       draft: undefined,
       last: undefined,
     })
@@ -115,7 +119,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         return
       }
       if (items.some((item) => item.name === store.current)) return
-      setStore("current", items[0]?.name)
+      setStore("current", defaultAgentName())
     })
 
     const scope = createMemo<State | undefined>(() => {

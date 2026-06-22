@@ -30,8 +30,8 @@ export function SessionFollowupDock(props: {
       data-component="session-followup-dock"
       style={{
         "margin-bottom": "-0.875rem",
-        "border-bottom-start-radius": 0,
-        "border-bottom-end-radius": 0,
+        "border-end-start-radius": 0,
+        "border-end-end-radius": 0,
       }}
     >
       <div
