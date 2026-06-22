@@ -63,6 +63,7 @@ export const dict: Record<string, string> = {
   "ui.sessionTurn.status.makingEdits": "מבצע עריכות",
   "ui.sessionTurn.status.runningCommands": "מריץ פקודות",
   "ui.sessionTurn.status.thinking": "חושב",
+  "ui.sessionTurn.status.compacting": "מסכם הקשר",
   "ui.sessionTurn.status.thinkingWithTopic": "חושב - {{topic}}",
   "ui.sessionTurn.status.gatheringThoughts": "מגבש מחשבות",
   "ui.sessionTurn.status.consideringNextSteps": "שוקל את השלבים הבאים",

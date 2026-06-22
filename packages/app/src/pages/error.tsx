@@ -5,6 +5,7 @@ import { Component, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { usePlatform } from "@/context/platform"
 import { useLanguage } from "@/context/language"
+import { GITHUB_REPO_URL } from "@/constants"
 import { Icon } from "@mimo-ai/ui/icon"
 
 export type InitError = {
@@ -301,10 +302,10 @@ export const ErrorPage: Component<ErrorPageProps> = (props) => {
             <button
               type="button"
               class="flex items-center text-text-interactive-base gap-1"
-              onClick={() => platform.openLink("#")}
+              onClick={() => platform.openLink(GITHUB_REPO_URL)}
             >
               <div>{language.t("error.page.report.discord")}</div>
-              <Icon name="discord" class="text-text-interactive-base" />
+              <Icon name="github" class="text-text-interactive-base" />
             </button>
           </div>
           <Show when={platform.version}>

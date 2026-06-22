@@ -60,3 +60,7 @@ remote-engine/cache/
 remote-engine/squadcoder-remote-engine.tgz
 remote-engine/relay-e2e.sh
 remote-engine/pty-cache/
+
+# SquadCoder build artifacts (never commit installers/build output)
+/release/
+/out/

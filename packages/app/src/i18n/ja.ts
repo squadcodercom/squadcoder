@@ -406,7 +406,7 @@ export const dict = {
   "error.page.action.checkUpdates": "アップデートを確認",
   "error.page.action.updateTo": "{{version}}にアップデート",
   "error.page.report.prefix": "このエラーをSquadCoderチームに報告してください: ",
-  "error.page.report.discord": "Discord",
+  "error.page.report.discord": "GitHub",
   "error.page.version": "バージョン: {{version}}",
   "error.dev.rootNotFound":
     "ルート要素が見つかりません。index.htmlに追加するのを忘れていませんか？またはid属性のスペルが間違っていませんか？",

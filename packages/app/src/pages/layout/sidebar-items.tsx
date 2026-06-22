@@ -159,12 +159,18 @@ export const SessionItem = (props: SessionItemProps): JSX.Element => {
         typeof (message as { time?: { completed?: unknown } }).time?.completed !== "number",
     )
     const status = sessionStore.session_status[props.session.id]
-    return (
-      pending !== undefined ||
-      status?.type === "busy" ||
-      status?.type === "retry" ||
-      (status !== undefined && status.type !== "idle")
-    )
+    // SQUADCODER ghost guard: an explicit idle status is authoritative and MUST override a
+    // dangling (no `time.completed`) assistant message. Such a message in an idle session is a
+    // stale orphan from an interrupted/aborted turn — the engine emits busy→idle when the main
+    // runner stops (Stop, cut-off command, aborted subagent, process restart) even when it never
+    // writes `time.completed`, so without this guard the sidebar spinner spins forever. Verified
+    // against the engine: subagents share this session's ID and only the `main` agent sets
+    // session-level status (prompt.ts F55, run-state.ts F47, actor.ts v6 shared-sessionID), so a
+    // genuine run ALWAYS surfaces here as a non-idle status. `pending` is retained only as a
+    // safety net for the brief pre-bootstrap / event-lag window where `status` is still undefined.
+    if (status?.type === "idle") return false
+    if (status !== undefined) return true // busy | retry | any future non-idle variant
+    return pending !== undefined
   })
 
   const tint = createMemo(() => messageAgentColor(sessionStore.message[props.session.id], sessionStore.agent))

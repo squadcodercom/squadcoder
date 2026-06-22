@@ -6,9 +6,10 @@ import { usePlatform } from "@/context/platform"
 import { useSettings } from "@/context/settings"
 import { persisted } from "@/utils/persist"
 import { DialogReleaseNotes, type Highlight } from "@/components/dialog-release-notes"
+import { GITHUB_REPO_URL } from "@/constants"
 
-// SQUADCODER: placeholder — points nowhere until our changelog endpoint exists. See PLACEHOLDER_LINKS.md.
-const CHANGELOG_URL = "#"
+// SQUADCODER: points to the GitHub releases page until a dedicated JSON changelog endpoint exists.
+const CHANGELOG_URL = `${GITHUB_REPO_URL}/releases`
 
 type Store = {
   version?: string

@@ -17,6 +17,22 @@ fork of **MiMoCode** (`XiaomiMiMo/MiMo-Code`, itself a fork of `sst/opencode`).
   `~/.claude/projects/C--Users-raviv-OneDrive-Desktop-SquadCoder/memory/` (`MEMORY.md` index) and
   the plan at `~/.claude/plans/i-decided-to-create-compiled-corbato.md`. Read them first.
 
+## Build & release (auto-rebuild rule)
+- When a set of fixes is COMPLETE and requires a rebuild for the user to install, REBUILD THE PRODUCTION INSTALLER automatically (without waiting to be asked) to the canonical path:
+  `C:\Users\raviv\OneDrive\Desktop\MuminAI\mumin\release\SquadCoder-desktop-win-x64-installer.exe`
+- Recipe (run from `packages/desktop`, prod channel). If `seed/` or `.squadcoder/plugin-src/*` changed, first run `bun script/make-seed.ts` from repo root:
+  1. Clear `out/` + `dist/` first (OneDrive locks files).
+  2. `$env:OPENCODE_CHANNEL='prod'; bun run build`
+  3. `$env:OPENCODE_CHANNEL='prod'; bun run package:win`
+  4. `Copy-Item -Force packages/desktop/dist/SquadCoder-desktop-win-x64-installer.exe release/` (also copy the `.blockmap`).
+- Renderer-only edits (packages/app components / i18n) ship via `bun run build` alone — SKIP `prebuild`. A `.squadcoder/plugin-src/*` or engine (`packages/opencode`) change is engine-side → run `bun run prebuild` (re-bundles the plugin + rebuilds the engine node bundle) BEFORE `package:win`.
+- `bun run build` (electron-vite/babel+solid) is a SEPARATE pass from `bun typecheck` — a file can pass typecheck yet fail babel parse (e.g. a duplicate import). Always run the real build before declaring a fix shipped.
+
+## GitHub: use the configured MCP
+- A GitHub MCP is configured and authenticated (account `snipecoder`, org/repo target `squadcodercom/squadcoder`). PREFER the GitHub MCP tools for GitHub & repo operations: opening/reading PRs, issues, releases, code search, and single-file commits/edits/reads against the remote.
+- EXCEPTION — the one-time initial full-history repo mirror uses `git push` (the MCP REST API cannot transfer existing git history/commits). After the repo exists on GitHub, use the MCP for ongoing changes.
+- Git remote `origin` = https://github.com/squadcodercom/squadcoder.git ; default branch `main`. The repo has a husky PRE-PUSH hook that runs `turbo typecheck` — a typecheck error in ANY package blocks `git push`; fix the error (do NOT use --no-verify unless the user explicitly asks).
+
 The opencode/MiMoCode developer style guide follows and still applies.
 <!-- SQUADCODER:end -->
 

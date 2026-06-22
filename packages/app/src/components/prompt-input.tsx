@@ -268,7 +268,16 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   createEffect(() => {
     if (working()) setAgentsStopped(false)
   })
-  const visibleSubagents = createMemo(() => (agentsStopped() ? [] : activeSubagents()))
+  // SQUADCODER ghost guard: a blocking `run` subagent cannot outlive an idle orchestrator, so a
+  // task/actor part stuck at status:"running" while session_status is `idle` is necessarily an
+  // orphaned ghost (process restart, aborted actor with no terminal event written). Suppress the
+  // roster when idle — matching the sidebar spinner (sidebar-items.tsx) + top progress bar
+  // (message-timeline.tsx) truth so all three surfaces agree on one "is this session really
+  // working" answer. `agentsStopped` still gives immediate visual feedback on Stop-all before the
+  // status event lands.
+  const visibleSubagents = createMemo(() =>
+    agentsStopped() || !working() ? [] : activeSubagents(),
+  )
   const imageAttachments = createMemo(() =>
     prompt.current().filter((part): part is ImageAttachmentPart => part.type === "image"),
   )

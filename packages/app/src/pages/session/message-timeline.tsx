@@ -259,7 +259,23 @@ export function MessageTimeline(props: {
     if (!id) return idle
     return sync.data.session_status[id] ?? idle
   })
-  const working = createMemo(() => !!pending() || sessionStatus().type !== "idle")
+  const working = createMemo(() => {
+    // SQUADCODER ghost guard: an explicit `idle` status is authoritative and MUST override a
+    // dangling (no `time.completed`) assistant message — such a message in an idle session is a
+    // stale orphan from an interrupted/aborted turn (Stop, cut-off command, aborted subagent,
+    // process restart) where the engine flipped busy→idle without ever writing `time.completed`.
+    // Without this guard the top progress bar stays on forever (third surface of the same bug as
+    // the sidebar spinner in sidebar-items.tsx). `pending` is retained only as a safety net for
+    // the brief pre-bootstrap / event-lag window where `session_status[id]` is still undefined,
+    // matching the sidebar's truth so all three surfaces (sidebar spinner, this top bar, prompt
+    // roster) agree on one "is this session really working" answer.
+    const id = sessionID()
+    if (!id) return false
+    const status = sync.data.session_status[id]
+    if (status?.type === "idle") return false
+    if (status !== undefined) return true // busy | retry | any future non-idle variant
+    return !!pending()
+  })
   const tint = createMemo(() => messageAgentColor(sessionMessages(), sync.data.agent))
 
   const [timeoutDone, setTimeoutDone] = createSignal(true)

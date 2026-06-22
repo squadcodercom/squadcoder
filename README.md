@@ -1,226 +1,84 @@
-<h1 align="center">MiMoCode</h1>
+<div align="center">
 
-<p align="center">
-  <img src="assets/readme/mimocode-banner.png" alt="MiMoCode" width="700">
-</p>
+<pre>
+  ____                       _  ____          _
+ / ___|  __ _ _   _  __ _  __| |/ ___|___   __| | ___ _ __
+ \___ \ / _` | | | |/ _` |/ _` | |   / _ \ / _` |/ _ \ '__|
+  ___) | (_| | |_| | (_| | (_| | |__| (_) | (_| |  __/ |
+ |____/ \__, |\__,_|\__,_|\__,_|\____\___/ \__,_|\___|_|
+           |_|
+</pre>
 
-<p align="center"><strong>MiMo Code: Where Models and Agents Co-Evolve</strong></p>
+# SquadCoder
 
-<p align="center">
-  <a href="README.zh.md">中文</a> | English
-</p>
+### Your AI software team — right inside your editor.
 
-<p align="center">
-  <a href="https://mimo.xiaomi.com/en/mimocode">Website</a> | <a href="https://mimo.xiaomi.com/en/blog/mimo-code-long-horizon">Blog</a>
-</p>
+SquadCoder is an open-source AI coding assistant that doesn't just autocomplete code — it orchestrates an entire **AI software team** (architect, developers, QA, security, and more) that plan, build, review, and ship features **in parallel**.
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+![Built with Bun](https://img.shields.io/badge/built%20with-Bun%20%2B%20TypeScript-black)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+
+<img src="assets/squadcoder.png" alt="SquadCoder" width="820">
+
+</div>
 
 ---
 
-MiMoCode is a terminal-native AI coding assistant. It can read and write code, run commands, manage Git, and use a persistent memory system to keep a deep understanding of your project across sessions while continuously improving itself.
+## ✨ Why SquadCoder
 
-MiMo Auto is built in as a free-for-limited-time channel, so you can start with zero configuration. MiMoCode also supports connecting to any mainstream LLM provider API.
+Most AI coding tools give you a single assistant. **SquadCoder gives you a whole team** — a coordinated squad of specialist agents that delegate, build, and verify each other's work the way a real engineering org does. It runs as a polished **desktop app** and a scriptable **CLI**, is **local-first**, and is **MIT-licensed** and fully open.
 
----
+## 🚀 Features
 
-## Quick Start
+- **🧑‍🤝‍🧑 Team Mode** — an orchestrator fans out specialist agents (Architect, Developers, QA, Security, UI/UX, and more) that work in parallel, then reconcile into one verified result — with a built-in quality gate that loops fixes until everything is green.
+- **🧠 Persistent memory** — project rules, architecture decisions, and hard-won fixes survive across sessions, so SquadCoder gets smarter about *your* codebase over time.
+- **🔎 Semantic codebase index** — find code by meaning, not just text. Runs fully offline with a bundled model — no cloud, no API cost.
+- **🧩 Skills** — reusable, composable capability packs (design systems, document generation, code review, and more) that agents load on demand.
+- **🔌 MCP-native** — first-class Model Context Protocol support: GitHub, Playwright, web search, docs, and any MCP server you add.
+- **⏰ Routines & scheduling** — save reusable multi-step tasks and run them on demand or on a schedule.
+- **📊 Live usage tracking** — see your model usage at a glance, right above the prompt.
+- **🌍 25+ languages, full RTL** — complete internationalization with first-class right-to-left support (Hebrew, Arabic).
+- **🖥️ Desktop + CLI** — a beautiful cross-platform desktop app and a scriptable command line.
+- **🔒 Local-first & private** — your code and context stay on your machine.
 
+## 📦 Install
+
+### Desktop
+Download the latest installer from the [**Releases**](https://github.com/squadcodercom/squadcoder/releases) page and run it.
+- **Windows:** `SquadCoder-desktop-win-x64-installer.exe`
+
+### From source
 ```bash
-# One-line install
-curl -fsSL https://mimo.xiaomi.com/install | bash
-
-# Or install via npm
-npm install -g @mimo-ai/cli
-
-# Run
-mimo
+git clone https://github.com/squadcodercom/squadcoder.git
+cd squadcoder
+bun install
 ```
 
-The first launch guides you through configuration automatically. Supported options:
-- **MiMo Auto (free for a limited time)** — anonymous channel, zero configuration
-- **Xiaomi MiMo Platform** — OAuth login
-- **Import from Claude Code** — migrate existing authentication in one step
-- **Custom Provider** — add any OpenAI-compatible API in the TUI
+## ⚡ Quick start
 
-<details>
-<summary><strong>WSL: clipboard issues</strong></summary>
+1. Launch SquadCoder (desktop app or CLI).
+2. Connect a model provider (bring your own key, or sign in).
+3. Open a project folder and start chatting — ask for a feature, a fix, or a refactor.
+4. Switch to **Team Mode** for anything multi-step: SquadCoder will plan it, split the work across agents, build it, and review it before handing it back.
 
-If you encounter garbled text when copying on WSL, install `xsel`:
-```bash
-sudo apt install xsel
-```
-</details>
+## 🧑‍🤝‍🧑 How Team Mode works
 
----
+A single **orchestrator** reads your request, classifies it, and spawns only the specialists the work actually needs — running independent units **in parallel** and looping every fix through a CTO-style **quality gate** (security + QA + end-to-end verification) until it's green. You get **one coherent result**, not a pile of raw agent output.
 
-## Core Features
+## ⚙️ Configuration
 
-### Multiple Agents
+SquadCoder is configured via `squadcoder.json` — MCP servers, skills, permissions, and model groups. Secrets in config use `{env:VAR}` or `${VAR}` placeholders that resolve from your environment, so **you never hard-code tokens**.
 
-| Agent | Description |
-|--------|------|
-| **build** | Default. Full tool permissions for development |
-| **plan** | Read-only analysis mode for code exploration and solution design |
-| **compose** | Orchestration mode for specs-driven development and skill-driven workflows |
+## 🤝 Contributing
 
-Press `Tab` to switch between primary agents. Subagents are created by the system as needed.
+Contributions are welcome! Open an issue to discuss a change, or send a pull request. Please run the project's type checks and tests before submitting.
 
-### Persistent Memory
+## 📄 License
 
-Cross-session memory powered by SQLite FTS5 full-text search:
+[MIT](LICENSE) — free to use, modify, and distribute.
 
-- **Project memory** (`MEMORY.md`) — persistent project knowledge, rules, and architecture decisions
-- **Session checkpoint** (`checkpoint.md`) — structured state snapshots maintained automatically by the checkpoint-writer subagent
-- **Scratch notes** (`notes.md`) — temporary note area for agents
-- **Task progress** (`tasks/<id>/progress.md`) — per-task logs
-
-Memory is injected automatically when a session resumes, so the agent does not need to relearn project context.
-
-### Intelligent Context Management
-
-- **Automatic checkpoints** — decides when to save session state based on the model context window
-- **Context reconstruction** — when context approaches the limit, rebuilds it from the latest checkpoint, project memory, task progress, and retained recent messages so the agent can continue the current task
-- **Budgeted injection** — uses a token budget to control how much checkpoint, memory, and notes content enters context, with importance ranking
-
-### Task Tracking
-
-A tree-shaped task system (`T1`, `T1.1`, `T1.2`, …) that integrates automatically with the checkpoint system, so task progress is preserved when sessions resume.
-
-### Subagent System
-
-The primary agent can create subagents on demand. Subagents share the current session context and can work in parallel, with lifecycle tracking, cancellation, and background execution.
-
-### Goal / Stop Condition
-
-The `/goal` command sets a stopping condition for a session. When the agent tries to stop, an independent judge model evaluates the conversation to decide whether the condition is truly satisfied — preventing premature "optimistic stops" during autonomous work.
-
-### Compose Mode
-
-Compose mode provides a structured workflow for specs-driven development. It includes built-in skills for planning, execution, code review, TDD, debugging, verification, and merging — orchestrating the full lifecycle from spec to shipped code.
-
-### Voice Input
-
-Real-time streaming voice input powered by TenVAD and MiMo ASR. Activate with `/voice`, then speak — audio is segmented by pauses and transcribed incrementally into the input. Available for MiMo logged-in users. Requires `sox` (`brew install sox` on macOS, other platforms similar).
-
-<details>
-<summary><strong>WSLg audio setup</strong></summary>
-
-```bash
-sudo apt install -y sox pulseaudio libasound2-plugins
-export PULSE_SERVER=unix:/mnt/wslg/PulseServer
-```
-</details>
-
-<details>
-<summary><strong>SSH remote audio (Mac → remote host)</strong></summary>
-
-```bash
-# Mac (local)
-brew install pulseaudio
-pulseaudio --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1" --exit-idle-time=-1 --daemonize
-# Add to ~/.ssh/config: RemoteForward 4713 127.0.0.1:4713
-
-# Remote host
-apt install -y pulseaudio pulseaudio-utils sox
-export PULSE_SERVER=tcp:127.0.0.1:4713
-# Verify: pactl info
-```
-</details>
-
-<details>
-<summary><strong>Non-MiMo voice providers (OpenRouter, internal API, etc.)</strong></summary>
-
-Voice input can route through other OpenAI-compatible providers via the `voice` config field. The ASR model (`mimo-v2.5-asr`) is only available on MiMo's platform; voice control mode (`mimo-v2.5`) is available on OpenRouter and compatible relay platforms.
-
-**OpenRouter (voice control only):**
-
-Use `/connect` to sign in to OpenRouter, then add to your config:
-```jsonc
-{
-  "voice": {
-    "control_model": "openrouter/xiaomi/mimo-v2.5"
-  }
-}
-```
-
-**Internal / self-hosted relay (both ASR and voice control):**
-```jsonc
-{
-  "provider": {
-    "internal": {
-      "options": {
-        "baseURL": "https://your-api-gateway.example.com/v1",
-        "apiKey": "sk-..."
-      },
-      "models": {
-        "xiaomi/mimo-v2.5-asr": { "name": "MiMo-V2.5-ASR" },
-        "xiaomi/mimo-v2.5": { "name": "MiMo-V2.5" }
-      }
-    }
-  },
-  "voice": {
-    "asr_model": "internal/xiaomi/mimo-v2.5-asr",
-    "control_model": "internal/xiaomi/mimo-v2.5"
-  }
-}
-```
-
-Custom providers must register at least one model in their `models` field to be recognized. The model names in `voice.*_model` are sent directly to the API — they don't need to match the registered model keys exactly.
-
-> **Note:** Models registered under a custom provider will appear in the model selection list. Don't use ASR-only models (e.g. `mimo-v2.5-asr`) as your primary coding model.
-
-</details>
-
-### Dream & Distill
-
-- **`/dream`** — scans recent session traces, extracts persistent knowledge into project memory, and removes outdated entries
-- **`/distill`** — discovers repeated manual workflows in recent work and packages high-confidence candidates into reusable skills, subagents, or commands
-
----
-
-## Configuration
-
-MiMoCode is configured via `.mimocode/mimocode.json` in the project directory (or `~/.config/mimocode/mimocode.json` globally). Key options include:
-
-- Provider and model selection
-- Agent permissions and custom agents
-- Checkpoint and memory behavior
-- MCP server connections
-- Keybindings and theme
-
-Max Mode (parallel best-of-N reasoning with judge selection) can be enabled via `experimental.maxMode` in the config.
-
----
-
-## Development
-
-```bash
-bun install              # Install dependencies
-bun run dev              # Run in development mode
-bun turbo typecheck      # Type check
-```
-
----
-
-## Relationship to SquadCoder
-
-MiMoCode is built as a fork of [SquadCoder](https://github.com/XiaomiMiMo/MiMo-Code). It keeps all core SquadCoder capabilities (multiple providers, TUI, LSP, MCP, plugins) and adds persistent memory, intelligent context management, subagent orchestration, goal-driven autonomous loops, compose workflows, and self-improvement via dream/distill.
-
----
-
-## Community
-
-Scan the QR code to join the community group chat:
-
-<p align="center">
-  <img src="assets/readme/community-qrcode.jpg" alt="Community group chat QR code" width="240">
-</p>
-
----
-
-## License
-
-Source code is licensed under the [MIT License](./LICENSE).
-
-Use of MiMoCode is also subject to the [Use Restrictions](./USE_RESTRICTIONS.md).
-Use of Xiaomi MiMo-hosted services is subject to the [MiMo Terms of Service](https://platform.xiaomimimo.com/docs/terms/user-agreement).
-Use of the MiMo name, logo, and trademarks is subject to the MiMo Trademark Policy.
+<div align="center">
+<sub>Built with ❤️ by the SquadCoder community.</sub>
+</div>

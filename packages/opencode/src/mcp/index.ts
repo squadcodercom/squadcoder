@@ -11,6 +11,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js"
 import { Config } from "../config"
 import { ConfigMCP } from "../config/mcp"
+import { ConfigVariable } from "../config/variable"
 import { Log } from "../util"
 import { NamedError } from "@mimo-ai/shared/util/error"
 import z from "zod/v4"
@@ -314,19 +315,27 @@ export const layer = Layer.effect(
         )
       }
 
+      // Resolve {env:VAR} / ${VAR} in headers here so values are expanded
+      // regardless of how the server entered the config. The on-disk loader
+      // substitutes on file read, but GUI-added servers (mcp.add route) pass
+      // the raw ConfigMCP.Info straight through, bypassing substitution.
+      const headers = mcp.headers
+        ? Object.fromEntries(Object.entries(mcp.headers).map(([name, value]) => [name, ConfigVariable.expandEnv(value)]))
+        : undefined
+
       const transports: Array<{ name: string; transport: TransportWithAuth }> = [
         {
           name: "StreamableHTTP",
           transport: new StreamableHTTPClientTransport(new URL(mcp.url), {
             authProvider,
-            requestInit: mcp.headers ? { headers: mcp.headers } : undefined,
+            requestInit: headers ? { headers } : undefined,
           }),
         },
         {
           name: "SSE",
           transport: new SSEClientTransport(new URL(mcp.url), {
             authProvider,
-            requestInit: mcp.headers ? { headers: mcp.headers } : undefined,
+            requestInit: headers ? { headers } : undefined,
           }),
         },
       ]
@@ -378,7 +387,16 @@ export const layer = Layer.effect(
               url: ConfigMCP.redactString(mcp.url),
               error: lastError.message,
             })
-            lastStatus = { status: "failed" as const, error: lastError.message }
+            // If a header still carries an unresolved variable token (env var
+            // unset or wrong syntax), surface a generic hint. SECURITY: never
+            // include the header value or token text — only a static message.
+            const hasUnresolvedHeaderVar = mcp.headers
+              ? Object.values(mcp.headers).some((v) => v.includes("${") || v.includes("{env:"))
+              : false
+            const hint = hasUnresolvedHeaderVar
+              ? " (a request header still contains an unresolved variable — set the referenced environment variable, then fully restart the app)"
+              : ""
+            lastStatus = { status: "failed" as const, error: lastError.message + hint }
             return Effect.succeed(undefined)
           }),
         )

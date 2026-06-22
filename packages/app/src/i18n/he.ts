@@ -483,7 +483,7 @@ export const dict = {
   "error.page.action.updateTo": "עדכן ל-{{version}}",
   "error.page.circular": "[Circular]",
   "error.page.report.prefix": "אנא דווחו על שגיאה זו לצוות SquadCoder",
-  "error.page.report.discord": "ב-Discord",
+  "error.page.report.discord": "ב-GitHub",
   "error.page.version": "גרסה: {{version}}",
   "error.dev.rootNotFound": "רכיב השורש (root) לא נמצא. אולי שכחתם להוסיף אותו ל-index.html שלכם? או אולי מאפיין ה-id אוית בטעות?",
   "error.globalSync.connectFailed": "לא ניתן להתחבר לשרת. האם פועל שרת בכתובת `{{url}}`?",

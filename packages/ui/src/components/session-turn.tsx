@@ -321,6 +321,12 @@ export function SessionTurn(
     return data.store.session_status[props.sessionID] ?? idle
   })
   const working = createMemo(() => status().type !== "idle" && active())
+  // SquadCoder: surface auto-compaction so a long context-compact reads as "Compacting…"
+  // instead of an indistinguishable spinner that looks like a hang.
+  const compacting = createMemo(() => {
+    const s = status()
+    return s.type === "busy" && s.message === "compacting"
+  })
   const showReasoningSummaries = createMemo(() => props.showReasoningSummaries ?? true)
 
   const assistantCopyPartID = createMemo(() => {
@@ -413,7 +419,9 @@ export function SessionTurn(
               </Show>
               <Show when={showThinking()}>
                 <div data-slot="session-turn-thinking">
-                  <TextShimmer text={i18n.t("ui.sessionTurn.status.thinking")} />
+                  <TextShimmer
+                    text={i18n.t(compacting() ? "ui.sessionTurn.status.compacting" : "ui.sessionTurn.status.thinking")}
+                  />
                   <Show when={!showReasoningSummaries()}>
                     <TextReveal
                       text={reasoningHeading()}

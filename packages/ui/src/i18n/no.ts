@@ -58,6 +58,7 @@ export const dict: Record<Keys, string> = {
   "ui.sessionTurn.status.makingEdits": "Gjør endringer",
   "ui.sessionTurn.status.runningCommands": "Kjører kommandoer",
   "ui.sessionTurn.status.thinking": "Tenker",
+  "ui.sessionTurn.status.compacting": "Compacting context",
   "ui.sessionTurn.status.thinkingWithTopic": "Tenker - {{topic}}",
   "ui.sessionTurn.status.gatheringThoughts": "Samler tanker",
   "ui.sessionTurn.status.consideringNextSteps": "Vurderer neste trinn",

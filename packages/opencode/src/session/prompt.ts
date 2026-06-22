@@ -2360,6 +2360,11 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           // part, route to compact.process() instead of the normal LLM flow.
           const lastUserMsgForCompaction = msgs.findLast((m) => m.info.role === "user")
           if (lastUserMsgForCompaction?.parts.some((p) => p.type === "compaction")) {
+            // SquadCoder: signal compaction to the UI (busy.message="compacting") so a long
+            // auto-compact shows "Compacting…" instead of a generic spinner that looks hung.
+            // The next loop iteration resets status to plain "busy", so it auto-clears.
+            if (!lastUser.agentID || lastUser.agentID === "main")
+              yield* status.set(sessionID, { type: "busy", message: "compacting" })
             const compactionPart = lastUserMsgForCompaction.parts.find(
               (p): p is MessageV2.CompactionPart => p.type === "compaction",
             )

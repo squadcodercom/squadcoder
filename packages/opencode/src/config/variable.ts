@@ -29,12 +29,25 @@ function dir(input: ParseSource) {
   return input.type === "path" ? path.dirname(input.path) : input.dir
 }
 
-/** Apply {env:VAR} and {file:path} substitutions to config text. */
+const ENV_BRACE = /\{env:([^}]+)\}/g
+// Shell-style ${VAR}: restricted to valid env-var names so unrelated ${...} text
+// (e.g. template literals, shell substitutions) is left untouched. Linear regex.
+const ENV_SHELL = /\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g
+
+/** Synchronously expand `{env:VAR}` and shell-style `${VAR}` references against
+ *  `process.env`. Missing variables expand to an empty string. Used to resolve
+ *  values at use-time regardless of how they entered the config (e.g.
+ *  GUI-entered remote MCP headers that bypass the on-disk config loader). */
+export function expandEnv(text: string) {
+  return text
+    .replace(ENV_BRACE, (_, varName) => process.env[varName] || "")
+    .replace(ENV_SHELL, (_, varName) => process.env[varName] || "")
+}
+
+/** Apply {env:VAR}, ${VAR}, and {file:path} substitutions to config text. */
 export async function substitute(input: SubstituteInput) {
   const missing = input.missing ?? "error"
-  let text = input.text.replace(/\{env:([^}]+)\}/g, (_, varName) => {
-    return process.env[varName] || ""
-  })
+  const text = expandEnv(input.text)
 
   const fileMatches = Array.from(text.matchAll(/\{file:[^}]+\}/g))
   if (!fileMatches.length) return text

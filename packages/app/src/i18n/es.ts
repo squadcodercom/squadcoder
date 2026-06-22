@@ -453,7 +453,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Buscar actualizaciones",
   "error.page.action.updateTo": "Actualizar a {{version}}",
   "error.page.report.prefix": "Por favor reporta este error al equipo de SquadCoder",
-  "error.page.report.discord": "en Discord",
+  "error.page.report.discord": "en GitHub",
   "error.page.version": "Versión: {{version}}",
 
   "error.dev.rootNotFound":
