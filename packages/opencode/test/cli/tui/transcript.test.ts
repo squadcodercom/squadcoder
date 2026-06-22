@@ -5,7 +5,7 @@ import {
   formatPart,
   formatTranscript,
 } from "../../../src/cli/cmd/tui/util/transcript"
-import type { AssistantMessage, Part, Provider, UserMessage } from "@mimo-ai/sdk/v2"
+import type { AssistantMessage, Part, Provider, UserMessage } from "@squadcoder/sdk/v2"
 
 const providers: Provider[] = [
   {

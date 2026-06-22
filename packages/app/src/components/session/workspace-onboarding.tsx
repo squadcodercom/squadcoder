@@ -1,6 +1,6 @@
 import { For, Show, createSignal } from "solid-js"
 import { useLanguage } from "@/context/language"
-import { Icon } from "@mimo-ai/ui/icon"
+import { Icon } from "@squadcoder/ui/icon"
 
 // SQUADCODER: per-workspace onboarding guide shown on the empty-session view.
 // Reuses the built-in `/init` (guided AGENTS.md setup) and points the user at the

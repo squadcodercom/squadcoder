@@ -36,8 +36,8 @@
   "devDependencies": {
     "@actions/artifact": "4.0.0",
     "@lydell/node-pty": "catalog:",
-    "@mimo-ai/app": "workspace:*",
-    "@mimo-ai/ui": "workspace:*",
+    "@squadcoder/app": "workspace:*",
+    "@squadcoder/ui": "workspace:*",
     "@solid-primitives/i18n": "2.2.1",
     "@solid-primitives/storage": "catalog:",
     "@solidjs/meta": "catalog:",

@@ -29,7 +29,7 @@ Before writing anything, inventory what already exists so you extend it instead 
 - Token sources: `tailwind.config.*`, CSS custom properties (`--color-*`, `--space-*`), `theme.*`,
   any `tokens.json`, or a design-system package.
 - Existing components that resemble the target (buttons, cards, inputs) — match their API and styling.
-- For SquadCoder/this repo: prefer the shared `@mimo-ai/ui` primitives and the bundled
+- For SquadCoder/this repo: prefer the shared `@squadcoder/ui` primitives and the bundled
   `design-system` / `israeli-ui-design-system` skills for token architecture and Hebrew typography.
 
 ## Step 2 — extract design intent, then map to tokens

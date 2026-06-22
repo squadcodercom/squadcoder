@@ -165,7 +165,7 @@ clean ultramode MCPs, GlobalSDK crash investigation, agent-mode dropdown hoverca
 - **Zips:** PowerShell `Compress-Archive` (`zip` not in Git Bash here).
 - **Engine route check:** `curl -H "x-mimocode-directory: <repo>" http://127.0.0.1:4096/<route>` (e.g. `/skill`, `/mcp`).
 - **Browser verify:** vite dev on `:3000`; set locale via `localStorage["opencode.global.dat:language"]={"locale":"he"|"en"}` then reload; Playwright at 1440×900.
-- **Typecheck:** `bun run --filter '@mimo-ai/app' typecheck` (pre-existing `custom-elements.d.ts` tsgo quirk is benign).
+- **Typecheck:** `bun run --filter '@squadcoder/app' typecheck` (pre-existing `custom-elements.d.ts` tsgo quirk is benign).
 - Build needs **bun ≥ 1.3.11**. Upstream merge = **unrelated histories** → cherry-pick/diff-apply only.
 
 ---

@@ -1,10 +1,10 @@
 import * as i18n from "@solid-primitives/i18n"
 import { createEffect, createMemo, createResource } from "solid-js"
 import { createStore } from "solid-js/store"
-import { createSimpleContext } from "@mimo-ai/ui/context"
+import { createSimpleContext } from "@squadcoder/ui/context"
 import { Persist, persisted } from "@/utils/persist"
 import { dict as en } from "@/i18n/en"
-import { dict as uiEn } from "@mimo-ai/ui/i18n/en"
+import { dict as uiEn } from "@squadcoder/ui/i18n/en"
 
 export type Locale =
   | "en"
@@ -104,23 +104,23 @@ const merge = (app: Promise<Source>, ui: Promise<Source>) =>
   Promise.all([app, ui]).then(([a, b]) => ({ ...base, ...i18n.flatten({ ...a.dict, ...b.dict }) }) as Dictionary)
 
 const loaders: Record<Exclude<Locale, "en">, () => Promise<Dictionary>> = {
-  zh: () => merge(import("@/i18n/zh"), import("@mimo-ai/ui/i18n/zh")),
-  zht: () => merge(import("@/i18n/zht"), import("@mimo-ai/ui/i18n/zht")),
-  ko: () => merge(import("@/i18n/ko"), import("@mimo-ai/ui/i18n/ko")),
-  de: () => merge(import("@/i18n/de"), import("@mimo-ai/ui/i18n/de")),
-  es: () => merge(import("@/i18n/es"), import("@mimo-ai/ui/i18n/es")),
-  fr: () => merge(import("@/i18n/fr"), import("@mimo-ai/ui/i18n/fr")),
-  da: () => merge(import("@/i18n/da"), import("@mimo-ai/ui/i18n/da")),
-  ja: () => merge(import("@/i18n/ja"), import("@mimo-ai/ui/i18n/ja")),
-  pl: () => merge(import("@/i18n/pl"), import("@mimo-ai/ui/i18n/pl")),
-  ru: () => merge(import("@/i18n/ru"), import("@mimo-ai/ui/i18n/ru")),
-  ar: () => merge(import("@/i18n/ar"), import("@mimo-ai/ui/i18n/ar")),
-  he: () => merge(import("@/i18n/he"), import("@mimo-ai/ui/i18n/he")),
-  no: () => merge(import("@/i18n/no"), import("@mimo-ai/ui/i18n/no")),
-  br: () => merge(import("@/i18n/br"), import("@mimo-ai/ui/i18n/br")),
-  th: () => merge(import("@/i18n/th"), import("@mimo-ai/ui/i18n/th")),
-  bs: () => merge(import("@/i18n/bs"), import("@mimo-ai/ui/i18n/bs")),
-  tr: () => merge(import("@/i18n/tr"), import("@mimo-ai/ui/i18n/tr")),
+  zh: () => merge(import("@/i18n/zh"), import("@squadcoder/ui/i18n/zh")),
+  zht: () => merge(import("@/i18n/zht"), import("@squadcoder/ui/i18n/zht")),
+  ko: () => merge(import("@/i18n/ko"), import("@squadcoder/ui/i18n/ko")),
+  de: () => merge(import("@/i18n/de"), import("@squadcoder/ui/i18n/de")),
+  es: () => merge(import("@/i18n/es"), import("@squadcoder/ui/i18n/es")),
+  fr: () => merge(import("@/i18n/fr"), import("@squadcoder/ui/i18n/fr")),
+  da: () => merge(import("@/i18n/da"), import("@squadcoder/ui/i18n/da")),
+  ja: () => merge(import("@/i18n/ja"), import("@squadcoder/ui/i18n/ja")),
+  pl: () => merge(import("@/i18n/pl"), import("@squadcoder/ui/i18n/pl")),
+  ru: () => merge(import("@/i18n/ru"), import("@squadcoder/ui/i18n/ru")),
+  ar: () => merge(import("@/i18n/ar"), import("@squadcoder/ui/i18n/ar")),
+  he: () => merge(import("@/i18n/he"), import("@squadcoder/ui/i18n/he")),
+  no: () => merge(import("@/i18n/no"), import("@squadcoder/ui/i18n/no")),
+  br: () => merge(import("@/i18n/br"), import("@squadcoder/ui/i18n/br")),
+  th: () => merge(import("@/i18n/th"), import("@squadcoder/ui/i18n/th")),
+  bs: () => merge(import("@/i18n/bs"), import("@squadcoder/ui/i18n/bs")),
+  tr: () => merge(import("@/i18n/tr"), import("@squadcoder/ui/i18n/tr")),
 }
 
 function loadDict(locale: Locale) {

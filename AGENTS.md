@@ -28,10 +28,12 @@ fork of **MiMoCode** (`XiaomiMiMo/MiMo-Code`, itself a fork of `sst/opencode`).
 - Renderer-only edits (packages/app components / i18n) ship via `bun run build` alone — SKIP `prebuild`. A `.squadcoder/plugin-src/*` or engine (`packages/opencode`) change is engine-side → run `bun run prebuild` (re-bundles the plugin + rebuilds the engine node bundle) BEFORE `package:win`.
 - `bun run build` (electron-vite/babel+solid) is a SEPARATE pass from `bun typecheck` — a file can pass typecheck yet fail babel parse (e.g. a duplicate import). Always run the real build before declaring a fix shipped.
 
-## GitHub: use the configured MCP
-- A GitHub MCP is configured and authenticated (account `snipecoder`, org/repo target `squadcodercom/squadcoder`). PREFER the GitHub MCP tools for GitHub & repo operations: opening/reading PRs, issues, releases, code search, and single-file commits/edits/reads against the remote.
-- EXCEPTION — the one-time initial full-history repo mirror uses `git push` (the MCP REST API cannot transfer existing git history/commits). After the repo exists on GitHub, use the MCP for ongoing changes.
-- Git remote `origin` = https://github.com/squadcodercom/squadcoder.git ; default branch `main`. The repo has a husky PRE-PUSH hook that runs `turbo typecheck` — a typecheck error in ANY package blocks `git push`; fix the error (do NOT use --no-verify unless the user explicitly asks).
+## GitHub: use the configured MCP (DEFAULT for all GitHub work)
+- A GitHub MCP is configured and authenticated (account `snipecoder`, target `squadcodercom/squadcoder`). For ANY GitHub/repo operation — PRs, issues, releases, code search, reading/creating/updating files on the remote, comments, reviews — ALWAYS use the GitHub MCP tools FIRST. Do NOT shell out to `git`/`gh` for these.
+- ONLY exception: the ONE-TIME initial full-history repo mirror (pushing existing local commits) uses `git push`, because the MCP REST API cannot transfer git commit history. After the repo exists on GitHub, ALL ongoing changes go through the MCP.
+- `git push` to this repo requires a token with BOTH `repo` AND `workflow` scopes — the repo contains `.github/workflows/*`, and GitHub rejects any push that touches workflow files when the token lacks `workflow` scope. The MCP uses the same token, so it hits the same wall on workflow files.
+- The repo has a husky PRE-PUSH hook that runs `turbo typecheck`; a typecheck error in ANY package blocks the push — fix it (do NOT use `--no-verify` unless the user explicitly asks).
+- Remote `origin` = https://github.com/squadcodercom/squadcoder.git ; default branch `main`.
 
 The opencode/MiMoCode developer style guide follows and still applies.
 <!-- SQUADCODER:end -->

@@ -1,12 +1,12 @@
-import { TextField } from "@mimo-ai/ui/text-field"
-import { Logo } from "@mimo-ai/ui/logo"
-import { Button } from "@mimo-ai/ui/button"
+import { TextField } from "@squadcoder/ui/text-field"
+import { Logo } from "@squadcoder/ui/logo"
+import { Button } from "@squadcoder/ui/button"
 import { Component, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { usePlatform } from "@/context/platform"
 import { useLanguage } from "@/context/language"
 import { GITHUB_REPO_URL } from "@/constants"
-import { Icon } from "@mimo-ai/ui/icon"
+import { Icon } from "@squadcoder/ui/icon"
 
 export type InitError = {
   name: string

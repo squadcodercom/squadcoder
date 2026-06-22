@@ -28,7 +28,7 @@ import { Provider } from "@/provider"
 import { errors } from "../../error"
 import { lazy } from "@/util/lazy"
 import { Bus } from "@/bus"
-import { NamedError } from "@mimo-ai/shared/util/error"
+import { NamedError } from "@squadcoder/shared/util/error"
 import { jsonRequest, runRequest } from "./trace"
 
 const log = Log.create({ service: "server" })

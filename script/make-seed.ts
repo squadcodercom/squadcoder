@@ -83,7 +83,7 @@ copyDir(path.join(squadcoderDir, "command"), path.join(seedDir, "command"))
 // The Anthropic auth plugin (incl. opt-in Claude Pro/Max OAuth) ships PRE-COMPILED to .js: the packaged
 // engine runs on Electron's NODE runtime, which can't transpile a .ts plugin at import time (it throws
 // "Bun is not defined") — so we Bun.build the editable .squadcoder/plugin-src/*.ts into seed/plugin/*.js.
-// The compiled file is self-contained (only node:crypto), so no @mimo-ai/plugin runtime dep is needed.
+// The compiled file is self-contained (only node:crypto), so no @squadcoder/plugin runtime dep is needed.
 const pluginSrcDir = path.join(squadcoderDir, "plugin-src")
 if (fs.existsSync(pluginSrcDir)) {
   const outDir = path.join(seedDir, "plugin")

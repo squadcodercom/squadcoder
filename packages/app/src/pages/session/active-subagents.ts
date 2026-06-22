@@ -1,4 +1,4 @@
-import type { Message, Part } from "@mimo-ai/sdk/v2"
+import type { Message, Part } from "@squadcoder/sdk/v2"
 
 // SQUADCODER (#70): a Team run spawns role subagents via the `task`/`actor` tools. Each one
 // surfaces as a tool part on the orchestrator's messages, carrying state.status = pending|running

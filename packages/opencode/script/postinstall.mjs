@@ -49,7 +49,7 @@ function detectPlatformAndArch() {
 
 function findBinary() {
   const { platform, arch } = detectPlatformAndArch()
-  const packageName = `@mimo-ai/mimocode-${platform}-${arch}`
+  const packageName = `@squadcoder/mimocode-${platform}-${arch}`
   const binaryName = platform === "windows" ? "mimo.exe" : "mimo"
 
   try {

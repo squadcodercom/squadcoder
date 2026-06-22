@@ -39,7 +39,7 @@ import crypto from "node:crypto"
 import os from "node:os"
 import fs from "node:fs"
 import path from "node:path"
-import type { Hooks, Plugin, PluginInput, PluginModule } from "@mimo-ai/plugin"
+import type { Hooks, Plugin, PluginInput, PluginModule } from "@squadcoder/plugin"
 
 const CLAUDE_OAUTH = {
   CLIENT_ID: "9d1c250a-e61b-44d9-88ed-5944d1962f5e",

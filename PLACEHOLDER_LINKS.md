@@ -14,7 +14,7 @@ Replace the `#` with the real SquadCoder URL when ready.
 
 ## Intentionally LEFT as `opencode.ai` (wire tokens / back-compat — do NOT change)
 - `$schema: "https://opencode.ai/config.json"` — JSON-schema identifier the config validates against. Changing it breaks config validation. (per `mumin/REBRAND.md`)
-- `opencode://` URL scheme, `OPENCODE_*` env vars, `@mimo-ai/*` import scope — protocol/wire identifiers.
+- `opencode://` URL scheme, `OPENCODE_*` env vars, `@squadcoder/*` import scope — protocol/wire identifiers.
 
 ## Not touched yet (lower priority, not in the main GUI)
 - `packages/enterprise/src/routes/share/[shareID].tsx` — public share page footer links to opencode.ai + opencode.ai/discord (enterprise share view; rebrand when that surface is in scope).

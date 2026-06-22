@@ -23,7 +23,7 @@
         "-y",
         "@playwright/mcp@latest"
       ],
-      "enabled": true,
+      "enabled": false,
       "timeout": 20000
     },
     "context7": {
@@ -33,7 +33,7 @@
         "-y",
         "@upstash/context7-mcp@latest"
       ],
-      "enabled": true,
+      "enabled": false,
       "timeout": 20000
     },
     "sequential-thinking": {
@@ -43,7 +43,7 @@
         "-y",
         "@modelcontextprotocol/server-sequential-thinking"
       ],
-      "enabled": true,
+      "enabled": false,
       "timeout": 20000
     },
     "memory-graph": {
@@ -53,7 +53,7 @@
         "-y",
         "@modelcontextprotocol/server-memory"
       ],
-      "enabled": true,
+      "enabled": false,
       "timeout": 20000
     },
     "github": {
@@ -92,7 +92,7 @@
         "uvx",
         "code-memory"
       ],
-      "enabled": true,
+      "enabled": false,
       "timeout": 60000
     },
     "web-search": {
@@ -101,7 +101,7 @@
         "uvx",
         "duckduckgo-mcp-server"
       ],
-      "enabled": true,
+      "enabled": false,
       "timeout": 60000
     },
     "claude-design": {

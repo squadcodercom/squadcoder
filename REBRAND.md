@@ -11,7 +11,7 @@ The codebase is *mid-rebrand*. Three brands coexist, at different depths:
 | Layer | Tokens | State |
 |---|---|---|
 | **opencode** (original) | `opencode`, `SquadCoder`, `ai.opencode`, `opencode.ai`, `anomalyco`, `anoma.ly`, `sst-dev`, `OPENCODE_*` | Still everywhere one+ layers down (web site, docs, infra, icons, env wire-names, VS Code ext) |
-| **MiMoCode** (Xiaomi's layer) | `mimocode`, `@mimo-ai/*`, `MIMOCODE_*`, `MiMo`, `Xiaomi`, `mimo.xiaomi.com`, `XiaomiMiMo/MiMo-Code` | The npm scope of **every** package + the whole env-flag namespace; itself never finished |
+| **MiMoCode** (Xiaomi's layer) | `mimocode`, `@squadcoder/*`, `MIMOCODE_*`, `MiMo`, `Xiaomi`, `mimo.xiaomi.com`, `XiaomiMiMo/MiMo-Code` | The npm scope of **every** package + the whole env-flag namespace; itself never finished |
 | **SquadCoder** (our visible layer) | `SquadCoder`, `mumin`, `squadcoder`, `MUMIN AI`, `.squadcoder`, `ai.squadcoder`, `@squadcoder/`, `SQUADCODER_*` | Only the *visible* surface: CLI wordmark, binary name, desktop productName/appId, config dir, brand SVGs, seed, Team Mode |
 
 **So a "rename to NewName" is two jobs:**
@@ -28,7 +28,7 @@ Plus a hard **DO-NOT-TOUCH** set (wire identifiers + back-compat) that will brea
 |---|---|---|
 | **Display name** | `SquadCoder` / `MUMIN AI` | the brand string + ASCII wordmark |
 | **Binary name** | `mumin` | `bin/mumin`, build outfile, install command |
-| **npm scope** | mixed: `@squadcoder/*` (desktop, cli platform pkgs) **and** `@mimo-ai/*` (everything else) | **Biggest blast radius** — `@mimo-ai/` appears in **261 imports across 100+ files**. Decide: rename the whole scope to `@newname/` (touches every package + import) or leave `@mimo-ai` internal. |
+| **npm scope** | mixed: `@squadcoder/*` (desktop, cli platform pkgs) **and** `@squadcoder/*` (everything else) | **Biggest blast radius** — `@squadcoder/` appears in **261 imports across 100+ files**. Decide: rename the whole scope to `@newname/` (touches every package + import) or leave `@mimo-ai` internal. |
 | **Config dir** | `.squadcoder` (with `.mimocode` read for back-compat) | not shipped yet → safe to rename `.squadcoder`→`.newname`; keep `.mimocode` back-compat only |
 | **Config home (XDG app dir)** | `squadcoder` (`packages/shared/src/global.ts` `APP`) | `%APPDATA%/squadcoder` etc.; legacy `mimocode` already migrated |
 | **App ID** | `ai.squadcoder.desktop[.dev/.beta]` | macOS/Windows app identity |
@@ -66,18 +66,18 @@ Grouped by surface. **(R)** = text rename, **(?)** = review/decide, **(K)** = ke
 
 ### 3a. Build / binary / publish pipeline
 - `packages/opencode/script/build.ts` **(R)** — UA `mimocode/${version}`, `MIMOCODE_VERSION/_CHANNEL` defines, repo url `XiaomiMiMo/MiMo-Code` **(?)**
-- `packages/opencode/script/build-node.ts` **(R)** — `@mimo-ai/script`, `MIMOCODE_CHANNEL`
-- `packages/opencode/src/installation/{index,version}.ts` **(R)** — `USER_AGENT mimocode/…`, `PACKAGE_NAME @mimo-ai/cli`, install URL `mimo.xiaomi.com/install`, releases `XiaomiMiMo/MiMo-Code`, `MIMOCODE_VERSION/_CHANNEL` consumers
-- `packages/opencode/package.json` **(R)** — name `@mimo-ai/cli`; **ships BOTH `mimo` and `mumin` bins**
-- `packages/opencode/bin/mumin` **(R)** — internals still resolve `@mimo-ai/mimocode-<plat>`, `mimo`/`mimo.exe`, `.mimocode`, `MIMOCODE_BIN_PATH` (MUST match build.ts output names)
+- `packages/opencode/script/build-node.ts` **(R)** — `@squadcoder/script`, `MIMOCODE_CHANNEL`
+- `packages/opencode/src/installation/{index,version}.ts` **(R)** — `USER_AGENT mimocode/…`, `PACKAGE_NAME @squadcoder/cli`, install URL `mimo.xiaomi.com/install`, releases `XiaomiMiMo/MiMo-Code`, `MIMOCODE_VERSION/_CHANNEL` consumers
+- `packages/opencode/package.json` **(R)** — name `@squadcoder/cli`; **ships BOTH `mimo` and `mumin` bins**
+- `packages/opencode/bin/mumin` **(R)** — internals still resolve `@squadcoder/mimocode-<plat>`, `mimo`/`mimo.exe`, `.mimocode`, `MIMOCODE_BIN_PATH` (MUST match build.ts output names)
 - `packages/opencode/bin/mimo` **(?)** — fully MiMo-branded duplicate launcher; likely **delete** or keep as alias
-- `packages/opencode/script/postinstall.mjs` **(R)** — `@mimo-ai/mimocode-*`, `mimo`(.exe)
+- `packages/opencode/script/postinstall.mjs` **(R)** — `@squadcoder/mimocode-*`, `mimo`(.exe)
 - `packages/opencode/script/publish.ts` **(R)** — author "Xiaomi MiMo Team", `mimo.xiaomi.com`, keywords xiaomi/mimo, bin `mimo`
-- `packages/script/src/index.ts` + `packages/script/package.json` **(R)** — `MIMOCODE_*` env reads, `@mimo-ai/script`
+- `packages/script/src/index.ts` + `packages/script/package.json` **(R)** — `MIMOCODE_*` env reads, `@squadcoder/script`
 - root `script/{release,publish,version}.ts`, root `package.json` (name `opencode`, repo `anomalyco`) **(R)**
 
-### 3b. npm scope & package names — `@mimo-ai/*` (the big one)
-Every workspace package is still `@mimo-ai/*`: `cli, script, shared, plugin, sdk, app, ui, web, enterprise, function, slack, storybook, console-{app,core,function,mail,resource}`. **261 import sites across 100+ `.ts/.tsx`.** Renaming the scope = update all package `name` fields **and** every `from "@mimo-ai/…"` import. Decide first (Job-A scope `@squadcoder/` is only on 2 packages). `packages/sdk/openapi.json` also references `@mimo-ai` **(?)**.
+### 3b. npm scope & package names — `@squadcoder/*` (the big one)
+Every workspace package is still `@squadcoder/*`: `cli, script, shared, plugin, sdk, app, ui, web, enterprise, function, slack, storybook, console-{app,core,function,mail,resource}`. **261 import sites across 100+ `.ts/.tsx`.** Renaming the scope = update all package `name` fields **and** every `from "@squadcoder/…"` import. Decide first (Job-A scope `@squadcoder/` is only on 2 packages). `packages/sdk/openapi.json` also references `@mimo-ai` **(?)**.
 
 ### 3c. Web marketing/docs site — `packages/web` (NOT rebranded at all)
 Still full opencode/Anomaly: `config.mjs` (`opencode.ai`, `github.com/anomalyco/opencode`, `contact@anoma.ly`, discord), `astro.config.mjs` title, `components/{Head,Lander,Footer}.astro`, `pages/s/[id].astro`, `content/i18n/*.json`, and the **docs content tree** `content/docs/**/*.mdx` across ~18 locales (`opencode`, `SquadCoder`, `OPENCODE_`, `ai.opencode`, `@mimo-ai`, `anomalyco`). Logos/favicons → §4.

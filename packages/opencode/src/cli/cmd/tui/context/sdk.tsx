@@ -1,5 +1,5 @@
-import { createOpencodeClient } from "@mimo-ai/sdk/v2"
-import type { GlobalEvent } from "@mimo-ai/sdk/v2"
+import { createOpencodeClient } from "@squadcoder/sdk/v2"
+import type { GlobalEvent } from "@squadcoder/sdk/v2"
 import { createSimpleContext } from "./helper"
 import { createGlobalEmitter } from "@solid-primitives/event-bus"
 import { Flag } from "@/flag/flag"

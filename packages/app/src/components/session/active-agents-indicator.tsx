@@ -1,7 +1,7 @@
 import { For, Show, createSignal } from "solid-js"
-import { Button } from "@mimo-ai/ui/button"
-import { Icon } from "@mimo-ai/ui/icon"
-import { Popover } from "@mimo-ai/ui/popover"
+import { Button } from "@squadcoder/ui/button"
+import { Icon } from "@squadcoder/ui/icon"
+import { Popover } from "@squadcoder/ui/popover"
 import { useLanguage } from "@/context/language"
 import type { ActiveSubagent } from "@/pages/session/active-subagents"
 

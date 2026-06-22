@@ -1,5 +1,5 @@
-import { Button } from "@mimo-ai/ui/button"
-import { Markdown } from "@mimo-ai/ui/markdown"
+import { Button } from "@squadcoder/ui/button"
+import { Markdown } from "@squadcoder/ui/markdown"
 import { type Component, createResource, createSignal, For, Match, Show, Switch } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"

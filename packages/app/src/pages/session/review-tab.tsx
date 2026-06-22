@@ -1,12 +1,12 @@
 import { createEffect, onCleanup, type JSX } from "solid-js"
 import { makeEventListener } from "@solid-primitives/event-listener"
-import type { SnapshotFileDiff, VcsFileDiff } from "@mimo-ai/sdk/v2"
-import { SessionReview } from "@mimo-ai/ui/session-review"
+import type { SnapshotFileDiff, VcsFileDiff } from "@squadcoder/sdk/v2"
+import { SessionReview } from "@squadcoder/ui/session-review"
 import type {
   SessionReviewCommentActions,
   SessionReviewCommentDelete,
   SessionReviewCommentUpdate,
-} from "@mimo-ai/ui/session-review"
+} from "@squadcoder/ui/session-review"
 import type { SelectedLineRange } from "@/context/file"
 import { useSDK } from "@/context/sdk"
 import { useLayout } from "@/context/layout"
@@ -122,6 +122,17 @@ export function SessionReviewTab(props: SessionReviewTabProps) {
     props.diffStyle
     if (!layout.ready()) return
     queueRestore()
+  })
+
+  // SquadCoder: auto-collapse the review on (re)start. A persisted "Expand all" over a
+  // large changeset would otherwise restore every diff expanded on launch and hang the
+  // renderer. On the first load with diffs, if a large set is restored open, collapse it.
+  let autoCollapsed = false
+  createEffect(() => {
+    const count = props.diffs().length
+    if (autoCollapsed || !layout.ready() || count === 0) return
+    autoCollapsed = true
+    if (props.view().review.open().length > 15) props.view().review.setOpen([])
   })
 
   onCleanup(() => {

@@ -10,7 +10,7 @@ import { TuiInfo } from "./tui-schema"
 import { Flag } from "@/flag/flag"
 import { isRecord } from "@/util/record"
 import { Global } from "@/global"
-import { AppFileSystem } from "@mimo-ai/shared/filesystem"
+import { AppFileSystem } from "@squadcoder/shared/filesystem"
 import { CurrentWorkingDirectory } from "./cwd"
 import { ConfigPlugin } from "@/config/plugin"
 import { ConfigKeybinds } from "@/config/keybinds"
@@ -160,7 +160,7 @@ export const layer = Layer.effect(
           .install(dir, {
             add: [
               {
-                name: "@mimo-ai/plugin",
+                name: "@squadcoder/plugin",
                 version: InstallationLocal ? undefined : InstallationVersion,
               },
             ],

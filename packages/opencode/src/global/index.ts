@@ -3,8 +3,8 @@ import { existsSync } from "fs"
 import path from "path"
 import os from "os"
 import { Filesystem } from "../util"
-import { Flock } from "@mimo-ai/shared/util/flock"
-import { resolveMimocodeHome } from "@mimo-ai/shared/global"
+import { Flock } from "@squadcoder/shared/util/flock"
+import { resolveMimocodeHome } from "@squadcoder/shared/global"
 import { seedDefaults } from "./seed"
 
 const resolved = resolveMimocodeHome()

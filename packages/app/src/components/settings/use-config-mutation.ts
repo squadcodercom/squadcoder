@@ -1,6 +1,6 @@
-import type { Config } from "@mimo-ai/sdk/v2/client"
+import type { Config } from "@squadcoder/sdk/v2/client"
 import { reconcile } from "solid-js/store"
-import { showToast } from "@mimo-ai/ui/toast"
+import { showToast } from "@squadcoder/ui/toast"
 import { useGlobalSync } from "@/context/global-sync"
 import { useLanguage } from "@/context/language"
 import { normalizeAgentList } from "@/context/global-sync/utils"

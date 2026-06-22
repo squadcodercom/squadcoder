@@ -13,7 +13,7 @@ import { InstallationChannel, InstallationVersion } from "./version"
 
 const log = Log.create({ service: "installation" })
 
-const PACKAGE_NAME = "@mimo-ai/cli"
+const PACKAGE_NAME = "@squadcoder/cli"
 
 export type Method = "curl" | "npm" | "pnpm" | "bun" | "brew" | "scoop" | "choco" | "unknown"
 

@@ -66,5 +66,5 @@ lowers future merge cost.
 - `packages/squadcoder-plugin-*` (bootstrap, brand, anthropic-oauth)
 - `.squadcoder/` (default config, bundled skills, brand constants)
 - `CLAUDE.md`, `AGENTS.md`, `FORK_STRATEGY.md`, `SKILLS_ATTRIBUTION.md`
-- Rebrand edits (scopes `@mimo-ai/*`→`@squadcoder/*`, binary `mimo`→`mumin`, config dir
+- Rebrand edits (scopes `@squadcoder/*`→`@squadcoder/*`, binary `mimo`→`mumin`, config dir
   `.mimocode/`→`.squadcoder/`, stripped Xiaomi-hosted defaults) — all tagged `SQUADCODER:`.

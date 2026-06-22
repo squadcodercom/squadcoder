@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import path from "path"
-import { resolveMimocodeHome } from "@mimo-ai/shared/global"
+import { resolveMimocodeHome } from "@squadcoder/shared/global"
 
 describe("resolveMimocodeHome", () => {
   test("with MIMOCODE_HOME set, resolves 4 subdirs under root", () => {

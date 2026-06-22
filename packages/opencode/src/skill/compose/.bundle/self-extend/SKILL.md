@@ -14,7 +14,7 @@ You can extend your own capabilities by writing files to `.squadcoder/`. Changes
 Write to `.squadcoder/tools/<name>.ts`:
 
 ```ts
-import { tool } from "@mimo-ai/plugin"
+import { tool } from "@squadcoder/plugin"
 
 export default tool({
   description: "What this tool does",
@@ -69,7 +69,7 @@ A custom tool with the same id as a built-in replaces it:
 
 ```ts
 // .squadcoder/tools/bash.ts — overrides built-in bash
-import { tool } from "@mimo-ai/plugin"
+import { tool } from "@squadcoder/plugin"
 import { execSync } from "child_process"
 
 export default tool({

@@ -11,11 +11,11 @@ import { Tooltip } from "./tooltip"
 import { ScrollView } from "./scroll-view"
 import { useFileComponent } from "../context/file"
 import { useI18n } from "../context/i18n"
-import { getDirectory, getFilename } from "@mimo-ai/shared/util/path"
-import { checksum } from "@mimo-ai/shared/util/encode"
+import { getDirectory, getFilename } from "@squadcoder/shared/util/path"
+import { checksum } from "@squadcoder/shared/util/encode"
 import { createEffect, createMemo, For, Match, onCleanup, Show, Switch, untrack, type JSX } from "solid-js"
 import { createStore } from "solid-js/store"
-import { type FileContent, type SnapshotFileDiff, type VcsFileDiff } from "@mimo-ai/sdk/v2"
+import { type FileContent, type SnapshotFileDiff, type VcsFileDiff } from "@squadcoder/sdk/v2"
 import { PreloadMultiFileDiffResult } from "@pierre/diffs/ssr"
 import { type SelectedLineRange } from "@pierre/diffs"
 import { Dynamic } from "solid-js/web"
@@ -256,8 +256,14 @@ export const SessionReview = (props: SessionReviewProps) => {
   })
 
   const handleChange = (next: string[]) => {
-    props.onOpenChange?.(next)
-    if (props.open === undefined) setStore("open", next)
+    // SquadCoder: hard-cap simultaneously-expanded review diffs. "Expand all" over a large
+    // changeset (e.g. hundreds of files) renders every diff body at once and hangs the
+    // renderer ("not responding"). Cap it so the panel stays responsive — scroll and
+    // expand more on demand. Keep the first N so the top of the list stays expanded.
+    const MAX_OPEN = 40
+    const capped = next.length > MAX_OPEN ? next.slice(0, MAX_OPEN) : next
+    props.onOpenChange?.(capped)
+    if (props.open === undefined) setStore("open", capped)
     queue()
   }
 

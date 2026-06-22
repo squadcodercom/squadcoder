@@ -1,5 +1,5 @@
-import { Button } from "@mimo-ai/ui/button"
-import { showToast } from "@mimo-ai/ui/toast"
+import { Button } from "@squadcoder/ui/button"
+import { showToast } from "@squadcoder/ui/toast"
 import { type Component, createEffect, createMemo, createSignal, on, onCleanup, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useGlobalSDK } from "@/context/global-sdk"

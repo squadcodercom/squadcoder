@@ -1,8 +1,8 @@
 import { Show, createMemo } from "solid-js"
-import { DockTray } from "@mimo-ai/ui/dock-surface"
-import { Icon } from "@mimo-ai/ui/icon"
-import { IconButton } from "@mimo-ai/ui/icon-button"
-import { useDialog } from "@mimo-ai/ui/context/dialog"
+import { DockTray } from "@squadcoder/ui/dock-surface"
+import { Icon } from "@squadcoder/ui/icon"
+import { IconButton } from "@squadcoder/ui/icon-button"
+import { useDialog } from "@squadcoder/ui/context/dialog"
 import { useLanguage } from "@/context/language"
 import { useAnthropicUsage } from "@/hooks/use-anthropic-usage"
 
