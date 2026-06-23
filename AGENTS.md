@@ -30,7 +30,9 @@ fork of **MiMoCode** (`XiaomiMiMo/MiMo-Code`, itself a fork of `sst/opencode`).
 
 ## GitHub: use the configured MCP (DEFAULT for all GitHub work)
 - A GitHub MCP is configured and authenticated (account `snipecoder`, target `squadcodercom/squadcoder`). For ANY GitHub/repo operation — PRs, issues, releases, code search, reading/creating/updating files on the remote, comments, reviews — ALWAYS use the GitHub MCP tools FIRST. Do NOT shell out to `git`/`gh` for these.
-- ONLY exception: the ONE-TIME initial full-history repo mirror (pushing existing local commits) uses `git push`, because the MCP REST API cannot transfer git commit history. After the repo exists on GitHub, ALL ongoing changes go through the MCP.
+- What the MCP CAN do: it makes REAL commits on the remote via the REST API — `create_or_update_file` (one file) and `push_files` (multiple files in one commit), plus branches, PRs, issues, releases, code search, comments, reviews. For any NEW change authored against the remote, the MCP is the correct tool.
+- What the MCP CANNOT do: replicate your EXISTING LOCAL git commit history. The REST API authors fresh commits server-side file-by-file; it cannot upload pre-existing local commit objects/graph. So when your local branch already has unpushed commits, use `git push` to sync them — otherwise the MCP would create divergent fresh commits on the remote that don't match local HEAD.
+- Rule of thumb: local branch has unpushed commits → `git push` to mirror them. Editing/adding files directly on the remote with no local-history concern → GitHub MCP.
 - `git push` to this repo requires a token with BOTH `repo` AND `workflow` scopes — the repo contains `.github/workflows/*`, and GitHub rejects any push that touches workflow files when the token lacks `workflow` scope. The MCP uses the same token, so it hits the same wall on workflow files.
 - The repo has a husky PRE-PUSH hook that runs `turbo typecheck`; a typecheck error in ANY package blocks the push — fix it (do NOT use `--no-verify` unless the user explicitly asks).
 - Remote `origin` = https://github.com/squadcodercom/squadcoder.git ; default branch `main`.
