@@ -214,7 +214,26 @@ export const { use: useLanguage, provider: LanguageProvider } = createSimpleCont
       initialValue: dicts.get(initial) ?? base,
     })
 
-    const t = i18n.translator(() => dict() ?? base, i18n.resolveTemplate) as (
+    // SQUADCODER: isolate every interpolated value from the surrounding bidi text so
+    // numbers / English identifiers / paths keep their visual order inside RTL (Hebrew/
+    // Arabic) strings. FSI (U+2068) opens a bidi isolate whose direction is auto-detected
+    // from the run's first strong character; PDI (U+2069) closes it. For LTR locales this
+    // is a visual no-op. Internal sentinel tokens (the \u0000…\u0000 markers some callers
+    // split the result on) are passed through unwrapped so their regexes still match.
+    const resolveTemplateIsolated = (
+      template: string,
+      args?: Record<string, string | number | boolean>,
+    ): string => {
+      if (!args) return template
+      return template.replace(/\{\{\s*([\w.]+)\s*}}/g, (match, key: string) => {
+        if (!(key in args)) return match
+        const raw = String(args[key])
+        if (raw.charCodeAt(0) === 0) return raw
+        return `\u2068${raw}\u2069`
+      })
+    }
+
+    const t = i18n.translator(() => dict() ?? base, resolveTemplateIsolated) as (
       key: keyof Dictionary,
       params?: Record<string, string | number | boolean>,
     ) => string

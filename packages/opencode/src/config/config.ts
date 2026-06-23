@@ -12,7 +12,6 @@ import { Auth } from "../auth"
 import { Env } from "../env"
 import { applyEdits, modify } from "jsonc-parser"
 import { Instance, type InstanceContext } from "../project/instance"
-import { InstallationLocal, InstallationVersion } from "@/installation/version"
 import { existsSync } from "fs"
 import { GlobalBus } from "@/bus/global"
 import { Event } from "../server/event"
@@ -800,14 +799,17 @@ export const layer = Layer.effect(
 
           yield* ensureGitignore(dir).pipe(Effect.orDie)
 
+          // NOTE(SQUADCODER): upstream provisions the plugin SDK here by force-adding
+          // `@opencode-ai/plugin` into every config dir so user-authored plugins can resolve
+          // their imports at runtime. We don't publish `@squadcoder/plugin` (our rebrand of
+          // that package) to npm — our own plugins under `.squadcoder/plugin-src/*` are
+          // bundled by esbuild via make-seed and import it as a TYPE-ONLY (erased) import,
+          // so they don't need it. Passing an empty `add` keeps the dir reconciliation
+          // (node_modules sync for anything the USER declared) but skips the 404-fetch of
+          // our unpublished package.
           const dep = yield* npmSvc
             .install(dir, {
-              add: [
-                {
-                  name: "@squadcoder/plugin",
-                  version: InstallationLocal ? undefined : InstallationVersion,
-                },
-              ],
+              add: [],
             })
             .pipe(
               Effect.exit,

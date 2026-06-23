@@ -4,6 +4,12 @@
   vertical-align: baseline;
   line-height: inherit;
   font-variant-numeric: tabular-nums;
+  /* SQUADCODER: a multi-digit number has a fixed visual order regardless of the
+     surrounding paragraph direction. Force LTR + isolate the run so the internal
+     `flex-direction: row-reverse` odometer layout (designed for LTR) resolves
+     consistently and the digit order never flips inside RTL (Hebrew/Arabic) text. */
+  direction: ltr;
+  unicode-bidi: isolate;
 
   [data-slot="animated-number-value"] {
     display: inline-flex;

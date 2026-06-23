@@ -14,7 +14,6 @@ import { AppFileSystem } from "@squadcoder/shared/filesystem"
 import { CurrentWorkingDirectory } from "./cwd"
 import { ConfigPlugin } from "@/config/plugin"
 import { ConfigKeybinds } from "@/config/keybinds"
-import { InstallationLocal, InstallationVersion } from "@/installation/version"
 import { makeRuntime } from "@/effect/runtime"
 import { Filesystem, Log } from "@/util"
 import { ConfigVariable } from "@/config/variable"
@@ -156,14 +155,12 @@ export const layer = Layer.effect(
     const deps = yield* Effect.forEach(
       data.dirs,
       (dir) =>
+        // NOTE(SQUADCODER): see config.ts — `@squadcoder/plugin` isn't published, our
+        // plugins are bundled with the import erased, so we don't force-add it here.
+        // Empty `add` preserves dir reconciliation without the 404.
         npm
           .install(dir, {
-            add: [
-              {
-                name: "@squadcoder/plugin",
-                version: InstallationLocal ? undefined : InstallationVersion,
-              },
-            ],
+            add: [],
           })
           .pipe(Effect.forkScoped),
       {

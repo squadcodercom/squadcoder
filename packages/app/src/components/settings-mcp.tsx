@@ -63,6 +63,10 @@ export const SettingsMcp: Component = () => {
   const [busy, setBusy] = createSignal(false)
   const [importOpen, setImportOpen] = createSignal(false)
   const [importText, setImportText] = createSignal("")
+  // Per-server toggle state for the live Enabled switch: "enabling"/"disabling" while that server's
+  // op is in flight, undefined when idle. Keyed by name so multiple servers toggle independently and
+  // never revert each other; also doubles as the optimistic intended value for `checked`.
+  const [toggleState, setToggleState] = createStore<Record<string, "enabling" | "disabling" | undefined>>({})
 
   // Load runtime status once.
   createEffect(() => {
@@ -93,6 +97,17 @@ export const SettingsMcp: Component = () => {
   const statusLabelOf = (name: string) => {
     const key = STATUS_LABEL[statusOf(name) ?? "disabled"]
     return key ? language.t(key) : statusOf(name)
+  }
+
+  // Effective "enabled" for a server's live switch: while its toggle is in flight, show the
+  // optimistic intended value; otherwise reflect the persisted config flag. (Runtime connected
+  // status is shown separately by the status dot/label.)
+  const enabledOf = (name: string) => {
+    const t = toggleState[name]
+    if (t === "enabling") return true
+    if (t === "disabling") return false
+    const cfg = configMcp()[name] as { enabled?: boolean } | undefined
+    return cfg ? cfg.enabled !== false : false
   }
 
   const [form, setForm] = createStore({
@@ -269,6 +284,45 @@ export const SettingsMcp: Component = () => {
       fail(err)
     } finally {
       setBusy(false)
+    }
+  }
+
+  // Live-enable/disable a server from the Enabled switch (no Save required). Persists the config
+  // flag, connects/disconnects at runtime, and optimistically flips the switch per-server so it
+  // never blinks back during the async roundtrip. Other fields (command/url/env/headers) still go
+  // through `save()`.
+  const toggleEnabled = async (name: string, nextEnabled: boolean) => {
+    if (!name || toggleState[name] !== undefined) return
+    setToggleState(name, nextEnabled ? "enabling" : "disabling")
+    setForm("enabled", nextEnabled) // keep form in sync so a later Save doesn't revert the live flip
+    try {
+      const existing = configMcp()[name] as McpLocalConfig | McpRemoteConfig | { enabled?: boolean } | undefined
+      const cfg =
+        existing && "type" in existing
+          ? ({ ...existing, enabled: nextEnabled } as McpLocalConfig | McpRemoteConfig)
+          : ({ enabled: nextEnabled } as { enabled: boolean })
+      await ws.client.config.update({ config: { mcp: { [name]: cfg } } as Config })
+      const base = (ws.data.config.mcp ?? {}) as Record<string, unknown>
+      ws.set("config", "mcp", { ...base, [name]: cfg } as never)
+
+      if (nextEnabled) await ws.client.mcp.connect({ name }).catch(() => {})
+      else await ws.client.mcp.disconnect({ name }).catch(() => {})
+      await refreshStatus()
+
+      if (nextEnabled && statusOf(name) !== "connected") {
+        showToast({
+          variant: "error",
+          title: statusLabelOf(name) ?? language.t("mcp.status.failed"),
+          description: errorOf(name) ?? name,
+        })
+      }
+    } catch (err) {
+      fail(err)
+    } finally {
+      setToggleState(name, undefined)
+      // Re-sync form.enabled with the actual persisted config (covers the failure path too).
+      const cfg = configMcp()[name] as { enabled?: boolean } | undefined
+      setForm("enabled", cfg ? cfg.enabled !== false : true)
     }
   }
 
@@ -480,13 +534,25 @@ export const SettingsMcp: Component = () => {
                 </div>
               </Show>
 
-              {/* Enabled */}
+              {/* Enabled — live for existing servers (no Save needed), local-only for new servers */}
               <div class="flex items-center justify-between gap-4 py-1">
                 <div class="flex flex-col gap-0.5 min-w-0">
                   <span class="text-14-medium text-text-strong">{language.t("settings.mcp.field.enabled")}</span>
                   <span class="text-12-regular text-text-weak">{language.t("settings.mcp.field.enabledHint")}</span>
                 </div>
-                <Switch checked={form.enabled} onChange={(v) => setForm("enabled", v)} />
+                <div class="flex items-center gap-2">
+                  <Show when={!isNew() && toggleState[form.name] !== undefined}>
+                    <span class="text-11-regular text-text-weak">{language.t("common.loading.ellipsis")}</span>
+                  </Show>
+                  <Switch
+                    checked={isNew() ? form.enabled : enabledOf(form.name)}
+                    disabled={!isNew() && toggleState[form.name] !== undefined}
+                    onChange={(v) => {
+                      if (isNew()) setForm("enabled", v)
+                      else void toggleEnabled(form.name, v)
+                    }}
+                  />
+                </div>
               </div>
 
               <p class="text-12-regular text-text-weak">{language.t("settings.mcp.mergeNote")}</p>

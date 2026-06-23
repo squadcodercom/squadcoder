@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/solid-query"
 import { Component, createEffect, createMemo, on, Show } from "solid-js"
 import { createStore } from "solid-js/store"
+import type { Config } from "@squadcoder/sdk/v2/client"
 import { useSync } from "@/context/sync"
 import { useSDK } from "@/context/sdk"
 import { Dialog } from "@squadcoder/ui/dialog"
@@ -24,6 +24,10 @@ export const DialogSelectMcp: Component = () => {
     done: false,
     loading: false,
   })
+  // Per-server toggle state: "enabling"/"disabling" while that server's op + status refetch is in
+  // flight, undefined when idle. Keyed by name so multiple servers toggle independently (no single
+  // global isPending blocking the whole list) and doubles as the optimistic intended switch value.
+  const [toggleState, setToggleState] = createStore<Record<string, "enabling" | "disabling" | undefined>>({})
 
   createEffect(
     on(
@@ -69,19 +73,57 @@ export const DialogSelectMcp: Component = () => {
       .sort((a, b) => a.name.localeCompare(b.name)),
   )
 
-  const toggle = useMutation(() => ({
-    mutationFn: async (name: string) => {
-      const status = sync.data.mcp[name]
-      if (status?.status === "connected") {
-        await sdk.client.mcp.disconnect({ name })
-      } else {
-        await sdk.client.mcp.connect({ name })
-      }
+  // Switch reflects the optimistic intended value while a toggle is in flight, else the real
+  // connected status. This is what kills the "blinks back to the previous value" symptom: the
+  // switch flips instantly on click and only reconciles to reality on settle.
+  const enabledOf = (name: string) => {
+    const t = toggleState[name]
+    if (t === "enabling") return true
+    if (t === "disabling") return false
+    return sync.data.mcp[name]?.status === "connected"
+  }
 
+  // Live toggle without a global busy flag: persist the config flag, connect/disconnect at runtime,
+  // then refetch status. Per-server pending means toggling server A never blocks or reverts server B.
+  const toggle = async (name: string) => {
+    if (toggleState[name] !== undefined) return
+    const nextEnabled = !enabledOf(name)
+    setToggleState(name, nextEnabled ? "enabling" : "disabling")
+    try {
+      // 1. Persist the config flag + optimistically mirror it in the local config store.
+      const base = (sync.data.config.mcp ?? {}) as Record<string, unknown>
+      const existing = base[name] as Record<string, unknown> | undefined
+      const cfg =
+        existing && typeof existing === "object"
+          ? { ...existing, enabled: nextEnabled }
+          : { enabled: nextEnabled }
+      await sdk.client.config.update({ config: { mcp: { [name]: cfg } } as Config })
+      sync.set("config", "mcp", { ...base, [name]: cfg } as never)
+
+      // 2. Connect/disconnect at runtime.
+      if (nextEnabled) await sdk.client.mcp.connect({ name })
+      else await sdk.client.mcp.disconnect({ name })
+
+      // 3. Refetch status and reconcile the switch to the real resulting state.
       const result = await sdk.client.mcp.status()
       if (result.data) sync.set("mcp", result.data)
-    },
-  }))
+    } catch (err) {
+      showToast({
+        variant: "error",
+        title: language.t("common.requestFailed"),
+        description: err instanceof Error ? err.message : String(err),
+      })
+      // Refetch so the switch reflects the actual resulting status rather than silently snapping back.
+      try {
+        const result = await sdk.client.mcp.status()
+        if (result.data) sync.set("mcp", result.data)
+      } catch {
+        /* secondary failure already surfaced via the toast above */
+      }
+    } finally {
+      setToggleState(name, undefined)
+    }
+  }
 
   const enabledCount = createMemo(() => items().filter((i) => i.status === "connected").length)
   const totalCount = createMemo(() => items().length)
@@ -99,8 +141,8 @@ export const DialogSelectMcp: Component = () => {
         filterKeys={["name", "status"]}
         sortBy={(a, b) => a.name.localeCompare(b.name)}
         onSelect={(x) => {
-          if (!x || toggle.isPending) return
-          toggle.mutate(x.name)
+          if (!x || toggleState[x.name] !== undefined) return
+          void toggle(x.name)
         }}
       >
         {(i) => {
@@ -115,7 +157,7 @@ export const DialogSelectMcp: Component = () => {
             const s = mcpStatus()
             return s?.status === "failed" ? s.error : undefined
           }
-          const enabled = () => status() === "connected"
+          const pending = () => toggleState[i.name] !== undefined
           return (
             <div class="w-full flex items-center justify-between gap-x-3">
               <div class="flex flex-col gap-0.5 min-w-0">
@@ -124,7 +166,7 @@ export const DialogSelectMcp: Component = () => {
                   <Show when={statusLabel()}>
                     <span class="text-11-regular text-text-weaker">{statusLabel()}</span>
                   </Show>
-                  <Show when={toggle.isPending && toggle.variables === i.name}>
+                  <Show when={pending()}>
                     <span class="text-11-regular text-text-weak">{language.t("common.loading.ellipsis")}</span>
                   </Show>
                 </div>
@@ -134,12 +176,9 @@ export const DialogSelectMcp: Component = () => {
               </div>
               <div onClick={(e) => e.stopPropagation()}>
                 <Switch
-                  checked={enabled()}
-                  disabled={toggle.isPending && toggle.variables === i.name}
-                  onChange={() => {
-                    if (toggle.isPending) return
-                    toggle.mutate(i.name)
-                  }}
+                  checked={enabledOf(i.name)}
+                  disabled={pending()}
+                  onChange={() => void toggle(i.name)}
                 />
               </div>
             </div>
