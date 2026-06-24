@@ -26,7 +26,7 @@ hard-rejected. No SSH password is ever stored.
 **Architecture:** the engine is touched **zero** — the tunnel lives entirely in the desktop app
 (Electron main owns `child_process`; web has no SSH and the SSH tab is hidden there). This keeps the
 core fully upstream-updatable. Engine-username over the tunnel is pinned to `squadcoder`
-(`MIMOCODE_SERVER_USERNAME`) to match `createSdkForServer` — see `UPSTREAM_SYNC.md` if upstream
+(`MIMOCODE_SERVER_USERNAME`) to match `createSdkForServer` — see `docs/UPSTREAM_SYNC.md` if upstream
 changes that default.
 
 **MVP scope / deferred to increment 2:** reconnect-on-drop + persistence across app restarts

@@ -45,4 +45,4 @@ Requires bun >= 1.3.11. On OneDrive paths, clear `dist/` between rebuilds if you
 
 ## Keeping up with upstream
 MuminAI tracks MiMoCode/opencode (`upstream`/`opencode` git remotes) with an isolated diff —
-see `FORK_STRATEGY.md`.
+see `docs/FORK_STRATEGY.md`.

@@ -2,7 +2,7 @@
 
 > Reuse-before-build, security-reviewed. This is the canonical list of which community
 > extensions we adopt vs avoid, and how the built-in **loop / until-done** mode works.
-> Source verdicts: `REUSE_AUDIT.md` (workflow `wf_d67eb78e`, 13 agents). Don't re-research — update here.
+> Source verdicts: `docs/REUSE_AUDIT.md` (workflow `wf_d67eb78e`, 13 agents). Don't re-research — update here.
 
 ---
 

@@ -5,14 +5,14 @@ This repo is **SquadCoder** — an open-source, **RTL/Hebrew-first** AI coding a
 fork of **MiMoCode** (`XiaomiMiMo/MiMo-Code`, itself a fork of `sst/opencode`).
 
 - **Goal:** keep pulling bug fixes/updates from MiMo/opencode (`upstream`/`opencode` remotes)
-  while keeping our brand and developing our way. Isolate our diff — see `FORK_STRATEGY.md`.
+  while keeping our brand and developing our way. Isolate our diff — see `docs/FORK_STRATEGY.md`.
 - **What's ours (don't expect upstream to maintain):** `.squadcoder/` (config, skills, plugins),
   `packages/squadcoder-plugin-*`, and rebrand edits tagged `SQUADCODER:`. These are `merge=ours`.
 - **Working method:** reuse before build (core → plugin/config → safe third-party → build);
   only i18n/RTL/branding touch core, kept small and marked.
-- **⛔ BEFORE BUILDING ANY FEATURE, READ `REUSE_AUDIT.md`** — the canonical per-feature verdict
+- **⛔ BEFORE BUILDING ANY FEATURE, READ `docs/REUSE_AUDIT.md`** — the canonical per-feature verdict
   (already-in-core? safe extension to adopt? or build?). It exists so we **never double-work**.
-  `PROJECT_STATUS.md` is the living status board (requirements, done, pending, user's notes).
+  `docs/PROJECT_STATUS.md` is the living status board (requirements, done, pending, user's notes).
 - **Durable context lives outside the repo:** the memory store at
   `~/.claude/projects/C--Users-raviv-OneDrive-Desktop-SquadCoder/memory/` (`MEMORY.md` index) and
   the plan at `~/.claude/plans/i-decided-to-create-compiled-corbato.md`. Read them first.

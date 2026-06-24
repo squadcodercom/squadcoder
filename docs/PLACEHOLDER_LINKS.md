@@ -13,7 +13,7 @@ Replace the `#` with the real SquadCoder URL when ready.
 | Desktop **notification icon** | `packages/desktop/src/renderer/index.tsx` | Notification image | `/favicon-96x96-v3.png` (local `>_`) | (already local — fine) |
 
 ## Intentionally LEFT as `opencode.ai` (wire tokens / back-compat — do NOT change)
-- `$schema: "https://opencode.ai/config.json"` — JSON-schema identifier the config validates against. Changing it breaks config validation. (per `mumin/REBRAND.md`)
+- `$schema: "https://opencode.ai/config.json"` — JSON-schema identifier the config validates against. Changing it breaks config validation. (per `mumin/docs/REBRAND.md`)
 - `opencode://` URL scheme, `OPENCODE_*` env vars, `@squadcoder/*` import scope — protocol/wire identifiers.
 
 ## Not touched yet (lower priority, not in the main GUI)

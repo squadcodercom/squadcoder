@@ -1,6 +1,6 @@
 # SquadCoder — keep OUR files during merges from upstream (MiMoCode / opencode).
 # The `ours` merge driver is enabled via: git config merge.ours.driver true
-# (see FORK_STRATEGY.md). Only files that are 100% SquadCoder-owned go here —
+# (see docs/FORK_STRATEGY.md). Only files that are 100% SquadCoder-owned go here —
 # shared core files we edit (i18n tables, UI components) are intentionally NOT
 # listed, so we still receive and reconcile upstream fixes to them.
 
@@ -24,13 +24,10 @@ muminai.json                               merge=ours
 # SquadCoder project docs / instructions
 CLAUDE.md                                  merge=ours
 AGENTS.md                                  merge=ours
-FORK_STRATEGY.md                           merge=ours
 SKILLS_ATTRIBUTION.md                      merge=ours
 REMOTE.md                                  merge=ours
-FIXED_ISSUES.md                            merge=ours
-UPSTREAM_SYNC.md                           merge=ours
-PLACEHOLDER_LINKS.md                       merge=ours
-REBRAND.md                                 merge=ours
+# internal / maintenance docs (moved under docs/)
+docs/**                                    merge=ours
 
 # SquadCoder brand assets (icons / favicons / logos / banner)
 assets/**                                  merge=ours

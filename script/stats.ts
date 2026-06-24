@@ -123,7 +123,7 @@ function calculate(releases: Release[]) {
 }
 
 async function save(githubTotal: number, npmDownloads: number) {
-  const file = "STATS.md"
+  const file = "docs/STATS.md"
   const date = new Date().toISOString().split("T")[0]
   const total = githubTotal + npmDownloads
 

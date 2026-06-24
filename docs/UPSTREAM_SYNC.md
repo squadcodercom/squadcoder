@@ -13,7 +13,7 @@ We renamed the config file `opencode.json`/`mimocode.json` → **`squadcoder.jso
 that a user migrating from opencode/MiMoCode does NOT get their old config silently picked up and
 conflicting with ours (which is exactly the kind of clash the user hit with the inherited
 `~/.claude.json` MCPs). Lowercase WIRE tokens (`$schema https://opencode.ai/config.json`,
-`opencode://` scheme, `OPENCODE_*` env) are intentionally LEFT for back-compat — see `mumin/REBRAND.md`.
+`opencode://` scheme, `OPENCODE_*` env) are intentionally LEFT for back-compat — see `mumin/docs/REBRAND.md`.
 
 ## Status snapshot (2026-06-18)
 - Our HEAD: `666c7e1` on `feat/muminai-foundation`.
@@ -65,7 +65,7 @@ when each is relevant. No double-conflict risk because there's no merge.
 3. Re-run: `app`+`ui` typecheck, the Anthropic `/provider/auth` check, RTL browser spot-check,
    a non-git `/undo` (#460 regression guard), and a desktop build.
 4. Record the merge SHA + what was taken/skipped/conflicted here.
-5. Cross-check `mumin/FIXED_ISSUES.md` so we don't re-fix anything on this list.
+5. Cross-check `mumin/docs/FIXED_ISSUES.md` so we don't re-fix anything on this list.
 
 > Not merged yet as of 2026-06-18 — flagged for the next focused sync turn to avoid clobbering the
 > RTL / Anthropic-auth / favicon / branding work done this session.
