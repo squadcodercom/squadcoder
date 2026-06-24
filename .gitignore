@@ -64,3 +64,9 @@ remote-engine/pty-cache/
 # SquadCoder build artifacts (never commit installers/build output)
 /release/
 /out/
+
+# Stray dev/debug artifacts
+code_memory.db
+push.log
+push.err
+tasks/
