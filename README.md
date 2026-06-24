@@ -11,74 +11,145 @@
 
 # SquadCoder
 
-### Your AI software team — right inside your editor.
+### Your entire engineering team, one install away.
 
-SquadCoder is an open-source AI coding assistant that doesn't just autocomplete code — it orchestrates an entire **AI software team** (architect, developers, QA, security, and more) that plan, build, review, and ship features **in parallel**.
+Other AI coding tools give you **one assistant**. SquadCoder gives you **a whole company** — an Architect, Developers, QA, Security, UI/UX, and a CTO quality gate — that plan, build, review, and ship features **in parallel**, out of the box, with **zero configuration**.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
-![Built with Bun](https://img.shields.io/badge/built%20with-Bun%20%2B%20TypeScript-black)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](#-install)
+[![Release](https://img.shields.io/github/v/release/squadcodercom/squadcoder)](https://github.com/squadcodercom/squadcoder/releases)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
 <img src="assets/squadcoder.png" alt="SquadCoder" width="820">
+
+[Download](#-install) &nbsp;&bull;&nbsp; [Quick Start](#-quick-start) &nbsp;&bull;&nbsp; [Features](#-what-you-get) &nbsp;&bull;&nbsp; [Team Mode](#-how-team-mode-works) &nbsp;&bull;&nbsp; [Docs](docs/)
 
 </div>
 
 ---
 
-## ✨ Why SquadCoder
+## Why SquadCoder?
 
-Most AI coding tools give you a single assistant. **SquadCoder gives you a whole team** — a coordinated squad of specialist agents that delegate, build, and verify each other's work the way a real engineering org does. It runs as a polished **desktop app** and a scriptable **CLI**, is **local-first**, and is **MIT-licensed** and fully open.
+Most AI coding tools are **one agent talking to one model**. When the task gets complex, you babysit it — prompt-by-prompt, file-by-file, hoping it doesn't forget what it did three messages ago.
 
-## 🚀 Features
+**SquadCoder runs like a real engineering org:**
 
-- **🧑‍🤝‍🧑 Team Mode** — an orchestrator fans out specialist agents (Architect, Developers, QA, Security, UI/UX, and more) that work in parallel, then reconcile into one verified result — with a built-in quality gate that loops fixes until everything is green.
-- **🧠 Persistent memory** — project rules, architecture decisions, and hard-won fixes survive across sessions, so SquadCoder gets smarter about *your* codebase over time.
-- **🔎 Semantic codebase index** — find code by meaning, not just text. Runs fully offline with a bundled model — no cloud, no API cost.
-- **🧩 Skills** — reusable, composable capability packs (design systems, document generation, code review, and more) that agents load on demand.
-- **🔌 MCP-native** — first-class Model Context Protocol support: GitHub, Playwright, web search, docs, and any MCP server you add.
-- **⏰ Routines & scheduling** — save reusable multi-step tasks and run them on demand or on a schedule.
-- **📊 Live usage tracking** — see your model usage at a glance, right above the prompt.
-- **🌍 25+ languages, full RTL** — complete internationalization with first-class right-to-left support (Hebrew, Arabic).
-- **🖥️ Desktop + CLI** — a beautiful cross-platform desktop app and a scriptable command line.
-- **🔒 Local-first & private** — your code and context stay on your machine.
+- You describe what you want — a feature, a fix, a refactor, a full project.
+- An **orchestrator** breaks it into tasks and spins up the right specialists — _in parallel_.
+- Each specialist does its job (architecture, implementation, testing, security review, UI/UX verification).
+- A **CTO quality gate** loops fixes until every check is green.
+- You get **one coherent, verified result** — not a pile of raw agent output.
 
-## 📦 Install
+All of this happens **on first install, with zero configuration.** Open a folder, type a request, switch to Team Mode. That's it.
 
-### Desktop
-Download the latest installer from the [**Releases**](https://github.com/squadcodercom/squadcoder/releases) page and run it.
-- **Windows:** `SquadCoder-desktop-win-x64-installer.exe`
+---
+
+## What you get
+
+| | Feature | Why it matters |
+|---|---|---|
+| **Squad** | **Team Mode** — parallel specialist agents with a quality gate | One request kicks off an entire dev cycle: plan, code, test, review, ship. |
+| **Brain** | **Persistent memory** — never forgets | Project rules, architecture decisions, and past fixes survive across sessions. Your assistant gets smarter about _your_ codebase over time. |
+| **Search** | **Semantic codebase index** — find code by meaning | Fully offline, bundled model. No cloud, no API cost. Ask "where do we handle auth?" and get the right files. |
+| **Skills** | **820+ bundled skills** — ready on first launch | Design systems, code review, document generation, ad platforms (Google/Meta/TikTok), and more. Skills auto-fire when relevant — no manual activation. |
+| **Tools** | **MCP-native** — built-in integrations | GitHub, Playwright (browser testing), web search, docs lookup, and any MCP server you add. |
+| **Remote** | **Remote SSH** — work on any machine | VS Code-style remote: connect to a server, index its code, run agents there. |
+| **Clock** | **Routines & scheduling** | Save multi-step tasks and run them on demand or on a schedule. |
+| **Globe** | **25+ languages, full RTL** | Complete internationalization including first-class Hebrew and Arabic support with right-to-left layout. |
+| **Lock** | **Local-first & private** | Your code and context stay on your machine. No telemetry, no cloud dependency. |
+| **Heart** | **Open source (MIT)** | Free to use, modify, and distribute. Built on [opencode](https://github.com/sst/opencode). |
+
+---
+
+## Install
+
+### Desktop app (recommended)
+
+Download from [**Releases**](https://github.com/squadcodercom/squadcoder/releases/latest) and run:
+
+| Platform | File | Size |
+|----------|------|------|
+| **Windows x64** | [`SquadCoder-desktop-win-x64-installer.exe`](https://github.com/squadcodercom/squadcoder/releases/latest) | ~214 MB |
+| **Windows x64 (portable)** | [`SquadCoder-desktop-win-x64-portable.zip`](https://github.com/squadcodercom/squadcoder/releases/latest) | ~165 MB |
+| macOS / Linux | Coming soon | — |
+
+### CLI
+
+Download the standalone CLI from [**Releases**](https://github.com/squadcodercom/squadcoder/releases/latest):
+
+| Platform | File | Size |
+|----------|------|------|
+| **Windows x64** | [`SquadCoder-cli-windows-x64.zip`](https://github.com/squadcodercom/squadcoder/releases/latest) | ~48 MB |
+
+Unzip and add to your `PATH`. Run `squadcoder` from any project directory.
 
 ### From source
+
 ```bash
 git clone https://github.com/squadcodercom/squadcoder.git
 cd squadcoder
 bun install
+bun run dev        # desktop app + engine (hot reload)
+# or
+bun run cli        # CLI only
 ```
 
-## ⚡ Quick start
+> Requires [Bun](https://bun.sh) >= 1.3.11
 
-1. Launch SquadCoder (desktop app or CLI).
-2. Connect a model provider (bring your own key, or sign in).
-3. Open a project folder and start chatting — ask for a feature, a fix, or a refactor.
-4. Switch to **Team Mode** for anything multi-step: SquadCoder will plan it, split the work across agents, build it, and review it before handing it back.
+---
 
-## 🧑‍🤝‍🧑 How Team Mode works
+## Quick start
 
-A single **orchestrator** reads your request, classifies it, and spawns only the specialists the work actually needs — running independent units **in parallel** and looping every fix through a CTO-style **quality gate** (security + QA + end-to-end verification) until it's green. You get **one coherent result**, not a pile of raw agent output.
+1. **Launch** SquadCoder (desktop app or `squadcoder` CLI).
+2. **Add a model** — bring your own API key (Anthropic, OpenRouter, or any OpenAI-compatible provider).
+3. **Open a project** folder and start chatting.
+4. **Switch to Team Mode** for anything multi-step — SquadCoder will plan it, split the work across specialist agents, build it, test it, and review it before handing it back.
 
-## ⚙️ Configuration
+> **Tip:** You don't need to configure agents, skills, or MCPs. Everything ships pre-configured and works out of the box. Just add your API key and go.
 
-SquadCoder is configured via `squadcoder.json` — MCP servers, skills, permissions, and model groups. Secrets in config use `{env:VAR}` or `${VAR}` placeholders that resolve from your environment, so **you never hard-code tokens**.
+---
 
-## 🤝 Contributing
+## How Team Mode works
 
-Contributions are welcome! Open an issue to discuss a change, or send a pull request. Please run the project's type checks and tests before submitting.
+```
+You: "Add user authentication with OAuth"
+                    |
+            [ Orchestrator ]
+           /    |     |     \
+     Architect  Dev1  Dev2  Security
+          \     |     |     /
+           [ CTO Quality Gate ]
+            loops until green
+                    |
+            [ Verified Result ]
+```
 
-## 📄 License
+A single **orchestrator** reads your request, classifies it, and spawns only the specialists the task needs — running independent units **in parallel**. Every fix loops through a **CTO-style quality gate** (security + QA + end-to-end verification) until it passes. You get one coherent, tested result.
+
+The team ships pre-configured with sensible roles and model assignments. You can customize roles, add your own agents, or change which model each agent uses — but you don't have to.
+
+---
+
+## Configuration
+
+SquadCoder works with zero config, but everything is customizable via `squadcoder.json`:
+
+- **Model providers** — Anthropic (Claude), OpenRouter, OpenAI, Gemini, or any OpenAI-compatible endpoint.
+- **MCP servers** — add any MCP server (local or remote).
+- **Skills** — drop a `SKILL.md` into `.squadcoder/skills/` to teach your agents new capabilities.
+- **Agent roles** — customize the Team Mode roster, or create your own specialist agents.
+- **Secrets** — use `{env:VAR}` or `${VAR}` placeholders. Never hard-code tokens.
+
+---
+
+## Contributing
+
+Contributions are welcome! Open an issue to discuss a change, or send a pull request. Please run `bun typecheck` before submitting.
+
+## License
 
 [MIT](LICENSE) — free to use, modify, and distribute.
 
 <div align="center">
-<sub>Built with ❤️ by the SquadCoder community.</sub>
+<sub>Built with care by the SquadCoder community. Fork of <a href="https://github.com/sst/opencode">opencode</a> via <a href="https://github.com/XiaomiMiMo/MiMo-Code">MiMoCode</a>.</sub>
 </div>
