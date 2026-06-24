@@ -13,7 +13,7 @@ import { useFileComponent } from "../context/file"
 import { useI18n } from "../context/i18n"
 import { getDirectory, getFilename } from "@squadcoder/shared/util/path"
 import { checksum } from "@squadcoder/shared/util/encode"
-import { createEffect, createMemo, For, Match, onCleanup, Show, Switch, untrack, type JSX } from "solid-js"
+import { createEffect, createMemo, createSignal, For, Match, onCleanup, Show, Switch, untrack, type JSX } from "solid-js"
 import { createStore } from "solid-js/store"
 import { type FileContent, type SnapshotFileDiff, type VcsFileDiff } from "@squadcoder/sdk/v2"
 import { PreloadMultiFileDiffResult } from "@pierre/diffs/ssr"
@@ -27,6 +27,12 @@ import { normalize, text, type ViewDiff } from "./session-diff"
 
 const MAX_DIFF_CHANGED_LINES = 500
 const REVIEW_MOUNT_MARGIN = 300
+// SquadCoder: windowed rendering so a huge changeset (thousands of files) never instantiates
+// every row at once. Render an initial window, then grow it as the user scrolls toward the end
+// (infinite scroll). The header still shows the true total; only the rendered rows are bounded.
+const REVIEW_INITIAL_RENDER = 120
+const REVIEW_RENDER_STEP = 120
+const REVIEW_LOAD_MORE_MARGIN = 600
 
 export type SessionReviewDiffStyle = "unified" | "split"
 
@@ -181,6 +187,17 @@ export const SessionReview = (props: SessionReviewProps) => {
     list(props.diffs).map((diff) => ({ ...normalize(diff), preloaded: diff.preloaded })),
   )
   const files = createMemo(() => items().map((diff) => diff.file))
+  // SquadCoder: windowed render — only the first `renderLimit` rows are instantiated;
+  // syncVisible grows it as the user scrolls near the end. Reset when the diff set changes.
+  const [renderLimit, setRenderLimit] = createSignal(REVIEW_INITIAL_RENDER)
+  const visibleItems = createMemo(() => {
+    const all = items()
+    return renderLimit() >= all.length ? all : all.slice(0, renderLimit())
+  })
+  createEffect(() => {
+    items().length
+    setRenderLimit(REVIEW_INITIAL_RENDER)
+  })
   const grouped = createMemo(() => {
     const next = new Map<string, SessionReviewComment[]>()
     for (const comment of props.comments ?? []) {
@@ -199,6 +216,15 @@ export const SessionReview = (props: SessionReviewProps) => {
   const syncVisible = () => {
     frame = undefined
     if (!scroll) return
+
+    // SquadCoder: grow the render window as the user scrolls toward the end (infinite scroll).
+    const total = items().length
+    if (
+      renderLimit() < total &&
+      scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - REVIEW_LOAD_MORE_MARGIN
+    ) {
+      setRenderLimit((n) => Math.min(n + REVIEW_RENDER_STEP, total))
+    }
 
     const root = scroll.getBoundingClientRect()
     const top = root.top - REVIEW_MOUNT_MARGIN
@@ -389,7 +415,7 @@ export const SessionReview = (props: SessionReviewProps) => {
           <Show when={hasDiffs()} fallback={props.empty}>
             <div class="pb-6">
               <Accordion multiple value={open()} onChange={handleChange}>
-                <For each={items()}>
+                <For each={visibleItems()}>
                   {(diff) => {
                     const file = diff.file
 
