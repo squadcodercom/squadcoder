@@ -22,6 +22,8 @@ Other AI coding tools give you **one assistant**. SquadCoder gives you **a whole
 
 <img src="assets/squadcoder.png" alt="SquadCoder" width="820">
 
+**Created with ❤️ by Raviv** &nbsp;·&nbsp; [raviv@mailbux.com](mailto:raviv@mailbux.com)
+
 [Download](#install) &nbsp;&bull;&nbsp; [Quick Start](#quick-start) &nbsp;&bull;&nbsp; [Features](#what-you-get) &nbsp;&bull;&nbsp; [Team Mode](#how-team-mode-works) &nbsp;&bull;&nbsp; [Docs](docs/)
 
 </div>
@@ -55,9 +57,9 @@ All of this happens **on first install, with zero configuration.** Open a folder
 | **Tools** | **MCP-native** — built-in integrations | GitHub, Playwright (browser testing), web search, docs lookup, and any MCP server you add. |
 | **Remote** | **Remote SSH** — work on any machine | VS Code-style remote: connect to a server, index its code, run agents there. |
 | **Clock** | **Routines & scheduling** | Save multi-step tasks and run them on demand or on a schedule. |
-| **Globe** | **25+ languages, full RTL** | Complete internationalization including first-class Hebrew and Arabic support with right-to-left layout. |
 | **Lock** | **Local-first & private** | Your code and context stay on your machine. No telemetry, no cloud dependency. |
 | **Heart** | **Open source (MIT)** | Free to use, modify, and distribute. Built on [opencode](https://github.com/sst/opencode). |
+| **Globe** | **Full Hebrew GUI + 25 languages** | 100% translated (1700+ keys), full RTL layout, bundled Hebrew font (Rubik). First-class Hebrew & Arabic, plus 25+ more languages. |
 
 ---
 
@@ -146,10 +148,22 @@ SquadCoder works with zero config, but everything is customizable via `squadcode
 
 Contributions are welcome! Open an issue to discuss a change, or send a pull request. Please run `bun typecheck` before submitting.
 
+For collaboration, partnerships, or anything else — reach out at **[raviv@mailbux.com](mailto:raviv@mailbux.com)**.
+
+## Built & powered by
+
+SquadCoder is part of a family of products built by Raviv:
+
+- **[mailbux.com](https://mailbux.com)**
+- **[cloudwish.com](https://cloudwish.com)**
+- **[formtix.com](https://formtix.com)**
+
+…and more. Want to build something together? **[raviv@mailbux.com](mailto:raviv@mailbux.com)**
+
 ## License
 
 [MIT](LICENSE) — free to use, modify, and distribute.
 
 <div align="center">
-<sub>Built with care by the SquadCoder community. Fork of <a href="https://github.com/sst/opencode">opencode</a> via <a href="https://github.com/XiaomiMiMo/MiMo-Code">MiMoCode</a>.</sub>
+<sub>Created with ❤️ by <a href="mailto:raviv@mailbux.com">Raviv</a> and the SquadCoder community. Fork of <a href="https://github.com/sst/opencode">opencode</a> via <a href="https://github.com/XiaomiMiMo/MiMo-Code">MiMoCode</a>.</sub>
 </div>
