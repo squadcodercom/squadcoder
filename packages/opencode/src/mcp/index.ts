@@ -488,7 +488,29 @@ export const layer = Layer.effect(
 
     const descendants = Effect.fnUntraced(
       function* (pid: number) {
-        if (process.platform === "win32") return [] as number[]
+        if (process.platform === "win32") {
+          // SQUADCODER: Windows has no pgrep. Use wmic to walk the process tree.
+          const pids: number[] = []
+          const queue = [pid]
+          while (queue.length > 0) {
+            const current = queue.shift()!
+            const handle = yield* spawner.spawn(
+              ChildProcess.make("wmic", ["process", "where", `(ParentProcessId=${current})`, "get", "ProcessId"], {
+                stdin: "ignore",
+              }),
+            )
+            const text = yield* Stream.mkString(Stream.decodeText(handle.stdout))
+            yield* handle.exitCode
+            for (const tok of text.split(/\s+/)) {
+              const cpid = parseInt(tok, 10)
+              if (!isNaN(cpid) && cpid !== current && !pids.includes(cpid)) {
+                pids.push(cpid)
+                queue.push(cpid)
+              }
+            }
+          }
+          return pids
+        }
         const pids: number[] = []
         const queue = [pid]
         while (queue.length > 0) {

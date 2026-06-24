@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto"
+import { execSync } from "node:child_process"
 import { EventEmitter } from "node:events"
 import { existsSync } from "node:fs"
 import { createServer } from "node:net"
@@ -148,7 +149,64 @@ function setInitStep(step: InitStep) {
   initEmitter.emit("step", step)
 }
 
+// SQUADCODER: kill orphan MCP processes from prior crashes/force-kills.
+// On Windows, MCP servers spawn as cmd→npx→node; the engine's kill-tree
+// can't reach grandchildren (upstream #26336). After a crash these pile up
+// (36+ processes, 3GB+) and starve the next session of resources.
+function sweepOrphanMcpProcesses() {
+  if (process.platform !== "win32") return
+  try {
+    const raw = execSync(
+      'wmic process where "Name=\'node.exe\'" get ProcessId,CommandLine /format:csv',
+      { encoding: "utf-8", windowsHide: true, timeout: 5000 },
+    )
+    const mcpPatterns = [
+      "@modelcontextprotocol",
+      "@playwright",
+      "fetcher-mcp",
+      "open-web-search",
+      "@upstash",
+      "mcp-server",
+    ]
+    const pidsToKill: number[] = []
+    for (const line of raw.split(/\r?\n/)) {
+      if (!line.includes("node.exe")) continue
+      const lower = line.toLowerCase()
+      if (mcpPatterns.some((p) => lower.includes(p.toLowerCase()))) {
+        const match = line.match(/,(\d+)\s*$/)
+        if (match) pidsToKill.push(parseInt(match[1], 10))
+      }
+    }
+    if (pidsToKill.length === 0) return
+    logger.log(`sweepOrphanMcpProcesses: killing ${pidsToKill.length} orphan MCP node processes`)
+    for (const pid of pidsToKill) {
+      try {
+        execSync(`taskkill /pid ${pid} /T /F`, { windowsHide: true, timeout: 3000 })
+      } catch {}
+    }
+    // Also kill orphan cmd.exe shells that launched npx
+    try {
+      const cmdRaw = execSync(
+        'wmic process where "Name=\'cmd.exe\'" get ProcessId,CommandLine /format:csv',
+        { encoding: "utf-8", windowsHide: true, timeout: 5000 },
+      )
+      for (const line of cmdRaw.split(/\r?\n/)) {
+        if (!line.includes("npx")) continue
+        const match = line.match(/,(\d+)\s*$/)
+        if (match) {
+          try {
+            execSync(`taskkill /pid ${match[1]} /T /F`, { windowsHide: true, timeout: 3000 })
+          } catch {}
+        }
+      }
+    } catch {}
+  } catch (err) {
+    logger.log("sweepOrphanMcpProcesses: sweep failed (non-fatal)", err)
+  }
+}
+
 async function initialize() {
+  sweepOrphanMcpProcesses()
   const needsMigration = !sqliteFileExists()
   const sqliteDone = needsMigration ? defer<void>() : undefined
   let overlay: BrowserWindow | null = null
@@ -216,6 +274,32 @@ async function initialize() {
 
   await loadingTask
   setInitStep({ phase: "done" })
+
+  // SQUADCODER: heal ghost-busy sessions left by prior crash/force-kill.
+  // Incomplete assistant messages make busy()=true → eternal spinner, no stop button.
+  // The engine's sweepOrphanAssistants only runs per-session on user prompt + needs 1h age.
+  // This boot sweep finalizes ALL incomplete assistants with no live runner (age irrelevant).
+  try {
+    const { url: sidecarUrl, password: sidecarPw } = await serverReady.promise
+    const headers = { Authorization: `Basic ${Buffer.from(`squadcoder:${sidecarPw}`).toString("base64")}` }
+    const sessResp = await fetch(`${sidecarUrl}/session`, { headers })
+    if (sessResp.ok) {
+      const sessions: any[] = await sessResp.json()
+      for (const s of sessions) {
+        if (!s.id) continue
+        // Abort any session the engine thinks is running (no actual runner exists after restart)
+        const statusResp = await fetch(`${sidecarUrl}/session/${s.id}/abort`, {
+          method: "POST",
+          headers,
+        }).catch(() => null)
+        if (statusResp?.ok) {
+          logger.log("boot-heal: aborted ghost session", s.id)
+        }
+      }
+    }
+  } catch (err) {
+    logger.log("boot-heal: sweep failed (non-fatal)", err)
+  }
 
   if (overlay) {
     await loadingComplete.promise
