@@ -355,6 +355,43 @@ export const layer: Layer.Layer<Service, never, Bus.Service> = Layer.effect(
     )
     log.info("orphan recovery complete")
 
+    // --- Orphaned message + task recovery (SQUADCODER) ---
+    // A force-kill (e.g. dismissing the Windows "Not Responding" dialog) kills the
+    // engine mid-stream and leaves assistant `message` rows with no `time.completed`
+    // and `task` rows stuck `in_progress`. The GUI then treats those sessions as
+    // permanently "busy" (spinner, dead Stop button) and resuming one replays a
+    // half-finished Team workflow -> engine hang. After a process restart nothing
+    // can still be in-flight, so finalize them all. This mirrors
+    // SessionPrompt.sweepOrphanAssistants but runs globally with no age gate (the 1h
+    // gate there only guards a still-live retry chain, which cannot survive a restart).
+    // Wrapped so a failure can never block engine startup.
+    yield* Effect.sync(() =>
+      Database.use((db) => {
+        try {
+          const now = Date.now()
+          const aborted = JSON.stringify({
+            name: "MessageAbortedError",
+            data: { message: "Abandoned: previous request interrupted before completion" },
+          })
+          db.run(
+            sql`UPDATE message
+                  SET data = json_set(json_set(data, '$.time.completed', ${now}), '$.error', json(${aborted})),
+                      time_updated = ${now}
+                WHERE json_extract(data, '$.role') = 'assistant'
+                  AND json_extract(data, '$.time.completed') IS NULL`,
+          )
+          db.run(
+            sql`UPDATE task
+                  SET status = 'abandoned', ended_at = ${now}, last_event_at = ${now}
+                WHERE status IN ('in_progress', 'running')`,
+          )
+        } catch (cause) {
+          log.warn("orphan message/task recovery failed", { cause })
+        }
+      }),
+    )
+    log.info("orphan message/task recovery complete")
+
     // --- Stuck Detection ---
     const scanStuck = Effect.gen(function* () {
       const cutoff = Date.now() - STUCK_THRESHOLD_MS
