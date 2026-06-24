@@ -16,13 +16,13 @@
 Other AI coding tools give you **one assistant**. SquadCoder gives you **a whole company** — an Architect, Developers, QA, Security, UI/UX, and a CTO quality gate — that plan, build, review, and ship features **in parallel**, out of the box, with **zero configuration**.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](#-install)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](#install)
 [![Release](https://img.shields.io/github/v/release/squadcodercom/squadcoder)](https://github.com/squadcodercom/squadcoder/releases)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
 
 <img src="assets/squadcoder.png" alt="SquadCoder" width="820">
 
-[Download](#-install) &nbsp;&bull;&nbsp; [Quick Start](#-quick-start) &nbsp;&bull;&nbsp; [Features](#-what-you-get) &nbsp;&bull;&nbsp; [Team Mode](#-how-team-mode-works) &nbsp;&bull;&nbsp; [Docs](docs/)
+[Download](#install) &nbsp;&bull;&nbsp; [Quick Start](#quick-start) &nbsp;&bull;&nbsp; [Features](#what-you-get) &nbsp;&bull;&nbsp; [Team Mode](#how-team-mode-works) &nbsp;&bull;&nbsp; [Docs](docs/)
 
 </div>
 
