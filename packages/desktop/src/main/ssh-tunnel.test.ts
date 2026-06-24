@@ -98,6 +98,8 @@ describe("bootstrapScript", () => {
     expect(s).toContain(`NEEDUPLOAD ${VER}`)
     // password is a runtime stdin var, never baked in
     expect(s).not.toMatch(/MIMOCODE_SERVER_PASSWORD=[A-Za-z0-9]/)
+    // launch inherits owner-only umask → token files hardened at-rest
+    expect(s).toContain("umask 077")
   })
 })
 
@@ -108,6 +110,8 @@ describe("installAndStartScript", () => {
     expect(s).toContain("tar -xzf")
     expect(s).toContain("launcher.mjs")
     expect(s).toContain("--experimental-sqlite")
+    // launch inherits owner-only umask → token files hardened at-rest
+    expect(s).toContain("umask 077")
   })
 })
 

@@ -82,10 +82,13 @@ export function safeVersion(v: string): string {
 
 // Shared snippet: start the bundled launcher under its OWN Node (Node 22 + --experimental-sqlite for
 // node:sqlite), loopback-bound, password via env (not argv), then poll health → STARTED|FAILED.
+// umask 077 hardens token files at-rest on shared remote hosts (auth.json / mcp-auth.json are written
+// lazily on first login and on every refresh, so a one-shot chmod 600 would race the write — the umask
+// makes EVERY file the engine creates owner-only for its whole lifetime).
 function startEngineSnippet(): string[] {
   return [
     `chmod +x "$DIR/node-bin" 2>/dev/null || true`,
-    `MIMOCODE_SERVER_USERNAME=${SERVER_USERNAME} MIMOCODE_SERVER_PASSWORD="$SC_PW" SC_PORT="$P" ` +
+    `umask 077; MIMOCODE_SERVER_USERNAME=${SERVER_USERNAME} MIMOCODE_SERVER_PASSWORD="$SC_PW" SC_PORT="$P" ` +
       `nohup "$DIR/node-bin" --experimental-sqlite "$DIR/launcher.mjs" >"${REMOTE_SERVER_ROOT}/serve.log" 2>&1 &`,
     "PID=$!",
     `i=0; while [ $i -lt 60 ]; do if curl -fsS -u "${SERVER_USERNAME}:$SC_PW" -o /dev/null "http://127.0.0.1:$P/global/health" 2>/dev/null; then echo "STARTED $P $PID"; exit 0; fi; sleep 0.3; i=$((i+1)); done`,
@@ -105,7 +108,7 @@ export function bootstrapScript(remotePort: number, version: string): string {
   const v = safeVersion(version)
   return [
     "read SC_PW",
-    `mkdir -p "${REMOTE_SERVER_ROOT}"`,
+    `mkdir -p "${REMOTE_SERVER_ROOT}"; chmod 700 "${REMOTE_SERVER_ROOT}"`,
     `P=${p}`,
     `DIR="${REMOTE_SERVER_ROOT}/${v}"`,
     `if curl -fsS -u "${SERVER_USERNAME}:$SC_PW" -o /dev/null "http://127.0.0.1:$P/global/health" 2>/dev/null; then echo "REUSE $P"; exit 0; fi`,
@@ -127,7 +130,7 @@ export function installAndStartScript(remotePort: number, version: string): stri
     `DIR="${REMOTE_SERVER_ROOT}/${v}"`,
     `TGZ="${REMOTE_SERVER_ROOT}/${v}.tgz"`,
     `if [ ! -f "$TGZ" ]; then echo "FAILED $P"; echo "bundle not uploaded"; exit 0; fi`,
-    `rm -rf "$DIR"; mkdir -p "$DIR"`,
+    `rm -rf "$DIR"; mkdir -p "$DIR"; chmod 700 "${REMOTE_SERVER_ROOT}" 2>/dev/null || true`,
     `tar -xzf "$TGZ" -C "$DIR" || { echo "FAILED $P"; echo "extract failed"; exit 0; }`,
     `rm -f "$TGZ"`,
     ...startEngineSnippet(),

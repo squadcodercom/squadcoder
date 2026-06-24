@@ -9,12 +9,14 @@ import { ProviderIcon } from "@squadcoder/ui/provider-icon"
 import { Spinner } from "@squadcoder/ui/spinner"
 import { TextField } from "@squadcoder/ui/text-field"
 import { showToast } from "@squadcoder/ui/toast"
-import { createEffect, createMemo, createResource, Match, onCleanup, onMount, Switch } from "solid-js"
+import { createEffect, createMemo, createResource, Match, onCleanup, onMount, Show, Switch } from "solid-js"
 import { createStore, produce } from "solid-js/store"
+import { Persist, persisted } from "@/utils/persist"
 import { Link } from "@/components/link"
 import { useGlobalSDK } from "@/context/global-sdk"
 import { useGlobalSync } from "@/context/global-sync"
 import { useLanguage } from "@/context/language"
+import { useServer } from "@/context/server"
 import { useProviders } from "@/hooks/use-providers"
 
 export function DialogConnectProvider(props: { provider: string }) {
@@ -23,6 +25,11 @@ export function DialogConnectProvider(props: { provider: string }) {
   const globalSDK = useGlobalSDK()
   const language = useLanguage()
   const providers = useProviders()
+  const server = useServer()
+  // SQUADCODER: one-time, globally-dismissed notice — on a remote (SSH) server the user's login tokens
+  // are stored at-rest on that host, so we warn before connecting on a shared/untrusted machine.
+  const [warn, setWarn] = persisted(Persist.global("remote-token-warning", []), createStore({ dismissed: false }))
+  const showRemoteWarning = createMemo(() => server.current?.type === "ssh" && !warn.dismissed)
 
   const all = () => {
     void import("./dialog-select-provider").then((x) => {
@@ -618,6 +625,27 @@ export function DialogConnectProvider(props: { provider: string }) {
           </div>
         </div>
         <div class="px-2.5 pb-10 flex flex-col gap-6">
+          <Show when={showRemoteWarning()}>
+            <div class="flex items-start gap-3 rounded-md bg-surface-raised-base px-3 py-2.5">
+              <Icon name="shield" class="text-icon-strong-base shrink-0" />
+              <div class="flex flex-col gap-1 min-w-0">
+                <div class="text-14-medium text-text-strong">
+                  {language.t("provider.connect.remoteWarning.title")}
+                </div>
+                <div class="text-14-regular text-text-weak">
+                  {language.t("provider.connect.remoteWarning.body")}
+                </div>
+              </div>
+              <Button
+                class="ms-auto"
+                variant="ghost"
+                size="small"
+                onClick={() => setWarn("dismissed", true)}
+              >
+                {language.t("provider.connect.remoteWarning.dismiss")}
+              </Button>
+            </div>
+          </Show>
           <div onKeyDown={handleKey} tabIndex={0} autofocus={store.methodIndex === undefined ? true : undefined}>
             <Switch>
               <Match when={loading()}>
