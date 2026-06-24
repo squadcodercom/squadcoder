@@ -249,6 +249,23 @@ export function MessageTimeline(props: {
     if (!id) return emptyMessages
     return sync.data.message[id] ?? emptyMessages
   })
+  // SQUADCODER perf: group messages into per-turn slices (user message + its assistant children)
+  // in ONE O(n) pass keyed by the user messageID. Each rendered SessionTurn then iterates only its
+  // OWN turn instead of re-scanning the whole session array (session-turn.tsx assistantMessages).
+  // On a resumed 100+ message Team session every step-finish otherwise ran a full O(n) scan inside
+  // each of the ~10 mounted turns — a co-cause of the renderer-thread saturation that froze the app.
+  // Rebuilds only on message add/update (NOT on per-token part updates), so streaming stays cheap.
+  const messagesByParent = createMemo(() => {
+    const all = sessionMessages()
+    const map = new Map<string, MessageType[]>()
+    for (const m of all) if (m.role === "user") map.set(m.id, [m])
+    for (const m of all) {
+      if (m.role === "user") continue
+      const parentID = (m as AssistantMessage).parentID
+      if (parentID) map.get(parentID)?.push(m)
+    }
+    return map
+  })
   const pending = createMemo(() =>
     sessionMessages().findLast(
       (item): item is AssistantMessage => item.role === "assistant" && typeof item.time.completed !== "number",
@@ -1110,7 +1127,7 @@ export function MessageTimeline(props: {
                       <SessionTurn
                         sessionID={sessionID() ?? ""}
                         messageID={messageID}
-                        messages={sessionMessages()}
+                        messages={messagesByParent().get(messageID) ?? sessionMessages()}
                         actions={props.actions}
                         active={active()}
                         status={active() ? sessionStatus() : undefined}

@@ -258,9 +258,19 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     if (model.providerID && model.modelID) return `${model.providerID}/${model.modelID}`
     return undefined
   }
-  const activeSubagents = createMemo(() =>
-    collectActiveSubagents(sync.data.message[params.id ?? ""], sync.data.part, resolveAgentModel),
-  )
+  // SQUADCODER perf: running/pending subagents only exist in the CURRENT turn (the messages after
+  // the last user message). Scope the scan to that turn so it stays O(active-turn) instead of
+  // O(whole session). Otherwise a resumed 100+ message Team session re-scanned every message×part
+  // on every streaming `part.updated` (~62/sec with two agents), saturating the renderer's single
+  // JS thread → app "not responding" + lost engine socket. New/small sessions were unaffected.
+  const activeSubagents = createMemo(() => {
+    const all = sync.data.message[params.id ?? ""]
+    if (!all || all.length === 0) return []
+    let start = all.length - 1
+    while (start > 0 && all[start]?.role !== "user") start--
+    const turn = start > 0 ? all.slice(start) : all
+    return collectActiveSubagents(turn, sync.data.part, resolveAgentModel)
+  })
   // SQUADCODER: "Stop all" must visibly clear the roster — including a ghost subagent left stuck at
   // status:"running" by an orphaned actor (engine process restart). Hide on stop; auto-unhide the
   // moment the session works again (a real new run), so genuine background roles still surface.
