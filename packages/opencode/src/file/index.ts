@@ -565,10 +565,21 @@ export const layer = Layer.effect(
         }
         if (diff.trim()) {
           const original = yield* git.show(ctx.directory, "HEAD", file)
-          const patch = structuredPatch(file, file, original, content, "old", "new", {
-            context: Infinity,
-            ignoreWhitespace: true,
-          })
+          // Bound the O(N*D) Myers diff (see snapshot/index.ts) so a large, heavily-rewritten file
+          // can't freeze the engine thread. Skip pathological inputs outright, otherwise cap edit
+          // distance + wall-time; on bail, fall back to an empty patch so the return shape is intact.
+          const tooBig =
+            original.length + content.length > 2_000_000 ||
+            Math.max(original.split("\n").length, content.split("\n").length) > 50_000
+          const bounded = tooBig
+            ? undefined
+            : structuredPatch(file, file, original, content, "old", "new", {
+                context: Infinity,
+                ignoreWhitespace: true,
+                maxEditLength: 3000,
+                timeout: 1500,
+              })
+          const patch = bounded ?? structuredPatch(file, file, "", "", "old", "new", { context: Infinity })
           return { type: "text" as const, content, patch, diff: formatPatch(patch) }
         }
         return { type: "text" as const, content }

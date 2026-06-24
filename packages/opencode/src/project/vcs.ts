@@ -46,8 +46,24 @@ const files = Effect.fnUntraced(function* (
   map: Map<string, { additions: number; deletions: number }>,
 ) {
   const base = ref ? yield* git.prefix(cwd) : ""
-  const patch = (file: string, before: string, after: string) =>
-    formatPatch(structuredPatch(file, file, before, after, "", "", { context: Number.MAX_SAFE_INTEGER }))
+  // Bound the O(N*D) Myers diff so a large, heavily-rewritten file can't freeze the engine thread.
+  // Same root cause and fix as snapshot.diffFull (see snapshot/index.ts for the full rationale): a
+  // hard size/line cap skips pathological inputs outright (the diff lib's `timeout` is only checked
+  // between edit-length iterations, so one giant iteration could still overrun), and `maxEditLength`
+  // + `timeout` cap edit distance and wall-time for everything else — structuredPatch then returns
+  // undefined and we emit an empty patch. Normal diffs are unaffected.
+  const MAX_DIFF_BYTES = 2_000_000
+  const MAX_DIFF_LINES = 50_000
+  const patch = (file: string, before: string, after: string) => {
+    if (before.length + after.length > MAX_DIFF_BYTES) return ""
+    if (Math.max(before.split("\n").length, after.split("\n").length) > MAX_DIFF_LINES) return ""
+    const structured = structuredPatch(file, file, before, after, "", "", {
+      context: Number.MAX_SAFE_INTEGER,
+      maxEditLength: 3000,
+      timeout: 1500,
+    })
+    return structured ? formatPatch(structured) : ""
+  }
   const next = yield* Effect.forEach(
     list,
     (item) =>

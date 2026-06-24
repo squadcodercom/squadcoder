@@ -727,8 +727,31 @@ export const layer: Layer.Layer<
               }
 
               const step = 100
-              const patch = (file: string, before: string, after: string) =>
-                formatPatch(structuredPatch(file, file, before, after, "", "", { context: Number.MAX_SAFE_INTEGER }))
+              // structuredPatch runs an O(N*D) Myers diff (N = lines, D = edit distance). A large,
+              // heavily-rewritten file (e.g. a project-wide rename touching nearly every line) makes D
+              // explode, and the diff blocks the single engine thread for tens of seconds — the root
+              // cause of the "engine can't be reached" freeze when resuming a session with a big
+              // working-tree changeset (confirmed by CPU profile: execEditLength self-time ~60s on one
+              // file; a 15k-line full rewrite measures ~56s unbounded). Bound it two ways:
+              //   1. A hard size/line cap skips pathological inputs outright — the diff lib's `timeout`
+              //      is only checked between edit-length iterations, so a single giant iteration could
+              //      otherwise still overrun.
+              //   2. `maxEditLength` + `timeout` cap edit distance and wall-time for everything else;
+              //      structuredPatch then returns undefined past the cap and we emit an empty patch
+              //      (as for a binary file). Measured: the 56s case above bails in ~0.4s, while a
+              //      900-line file with one change still returns a real patch in ~1ms.
+              const MAX_DIFF_BYTES = 2_000_000
+              const MAX_DIFF_LINES = 50_000
+              const patch = (file: string, before: string, after: string) => {
+                if (before.length + after.length > MAX_DIFF_BYTES) return ""
+                if (Math.max(before.split("\n").length, after.split("\n").length) > MAX_DIFF_LINES) return ""
+                const structured = structuredPatch(file, file, before, after, "", "", {
+                  context: Number.MAX_SAFE_INTEGER,
+                  maxEditLength: 3000,
+                  timeout: 1500,
+                })
+                return structured ? formatPatch(structured) : ""
+              }
 
               for (let i = 0; i < rows.length; i += step) {
                 const run = rows.slice(i, i + step)
