@@ -100,6 +100,8 @@ describe("bootstrapScript", () => {
     expect(s).not.toMatch(/MIMOCODE_SERVER_PASSWORD=[A-Za-z0-9]/)
     // launch inherits owner-only umask → token files hardened at-rest
     expect(s).toContain("umask 077")
+    // engine is pointed at the bundled seed so a remote boots the full stack, not bare opencode
+    expect(s).toContain('SQUADCODER_SEED_DIR="$DIR/seed"')
   })
 })
 
@@ -112,6 +114,8 @@ describe("installAndStartScript", () => {
     expect(s).toContain("--experimental-sqlite")
     // launch inherits owner-only umask → token files hardened at-rest
     expect(s).toContain("umask 077")
+    // engine is pointed at the bundled seed so a remote boots the full stack, not bare opencode
+    expect(s).toContain('SQUADCODER_SEED_DIR="$DIR/seed"')
   })
 })
 

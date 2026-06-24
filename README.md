@@ -22,9 +22,7 @@ Other AI coding tools give you **one assistant**. SquadCoder gives you **a whole
 
 <img src="assets/squadcoder.png" alt="SquadCoder" width="820">
 
-**Created with ❤️ by Raviv** &nbsp;·&nbsp; [raviv@mailbux.com](mailto:raviv@mailbux.com)
-
-[Download](#install) &nbsp;&bull;&nbsp; [Quick Start](#quick-start) &nbsp;&bull;&nbsp; [Features](#what-you-get) &nbsp;&bull;&nbsp; [Team Mode](#how-team-mode-works) &nbsp;&bull;&nbsp; [Docs](docs/)
+[Download](#install) &nbsp;&bull;&nbsp; [Quick Start](#quick-start) &nbsp;&bull;&nbsp; [Features](#what-you-get) &nbsp;&bull;&nbsp; [Team Mode](#how-team-mode-works) &nbsp;&bull;&nbsp; [Showcase](#built-with-squadcoder) &nbsp;&bull;&nbsp; [Docs](docs/)
 
 </div>
 
@@ -150,15 +148,19 @@ Contributions are welcome! Open an issue to discuss a change, or send a pull req
 
 For collaboration, partnerships, or anything else — reach out at **[raviv@mailbux.com](mailto:raviv@mailbux.com)**.
 
-## Built & powered by
+---
 
-SquadCoder is part of a family of products built by Raviv:
+## Built with SquadCoder
 
-- **[mailbux.com](https://mailbux.com)**
-- **[cloudwish.com](https://cloudwish.com)**
-- **[formtix.com](https://formtix.com)**
+Real, shipping products built by the same team behind SquadCoder — proof the squad ships:
 
-…and more. Want to build something together? **[raviv@mailbux.com](mailto:raviv@mailbux.com)**
+| Product | What it is |
+|---------|------------|
+| **[mailbux.com](https://mailbux.com)** | Email infrastructure & inbox tooling. |
+| **[openadmanager.com](https://openadmanager.com)** | Open ad campaign management across Google, Meta & TikTok. |
+| **[formtix.com](https://formtix.com)** | Forms, registrations & ticketing. |
+
+Want to build something together? **[raviv@mailbux.com](mailto:raviv@mailbux.com)**
 
 ## License
 

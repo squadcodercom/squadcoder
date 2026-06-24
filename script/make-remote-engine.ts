@@ -14,7 +14,7 @@
 // an unchanged engine => the remote already has it => instant reuse.
 
 import { $ } from "bun"
-import { existsSync, mkdirSync, rmSync, cpSync, writeFileSync, readFileSync, readdirSync } from "node:fs"
+import { existsSync, mkdirSync, rmSync, cpSync, writeFileSync, readFileSync, readdirSync, statSync } from "node:fs"
 import { createHash } from "node:crypto"
 import { join } from "node:path"
 
@@ -30,6 +30,15 @@ const stageDir = join(outDir, "stage")
 
 function log(msg: string) {
   console.log(`[make-remote-engine] ${msg}`)
+}
+
+function dirSize(dir: string) {
+  let total = 0
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name)
+    total += e.isDirectory() ? dirSize(p) : statSync(p).size
+  }
+  return total
 }
 
 // 1. Ensure the engine node bundle exists (build-node.ts output).
@@ -102,27 +111,56 @@ cpSync(join(cacheDir, "package"), join(stageDir, "node_modules/@lydell/node-pty-
 rmSync(join(cacheDir, "package"), { recursive: true, force: true })
 log(`bundled real node-pty ${ptyVersion} + linux-x64 prebuild (remote terminals enabled)`)
 
-// 3e. launcher.mjs — boots the engine HTTP server on loopback (the tunnel attaches here)
+// 3e. launcher.mjs — point the engine at the bundled seed BEFORE it loads (so a remote/Relay
+// engine first-run-seeds the full stack: skills, agents, instructions, the anthropic-oauth plugin
+// — exactly like a local install), then boot the HTTP server on loopback. The import of node.js MUST
+// be DYNAMIC: seedDefaults runs at node.js module-eval time, and a static import is hoisted so it
+// would run BEFORE the env assignment below.
 writeFileSync(
   join(stageDir, "launcher.mjs"),
   [
-    'import { Log, Server } from "./node.js"',
+    'import { fileURLToPath } from "node:url"',
+    'import { dirname, join as pathJoin } from "node:path"',
+    'const __dir = dirname(fileURLToPath(import.meta.url))',
+    'process.env.SQUADCODER_SEED_DIR ||= pathJoin(__dir, "seed")',
+    'const { Log, Server } = await import("./node.js")',
     'await Log.init({ level: "WARN" })',
-    "const port = Number(process.env.SC_PORT || process.env.MIMOCODE_SERVER_PORT || 4096)",
-    "const l = await Server.listen({",
-    "  port,",
+    'const port = Number(process.env.SC_PORT || process.env.MIMOCODE_SERVER_PORT || 4096)',
+    'const l = await Server.listen({',
+    '  port,',
     '  hostname: "127.0.0.1",',
     '  username: process.env.MIMOCODE_SERVER_USERNAME || "squadcoder",',
     '  password: process.env.MIMOCODE_SERVER_PASSWORD || "",',
-    "  cors: [],",
-    "})",
+    '  cors: [],',
+    '})',
     'console.log("LISTENING " + l.hostname + ":" + l.port)',
     "",
   ].join("\n"),
 )
 
-// 4. Version = hash of the engine bundle (reuse key).
-const version = createHash("sha256").update(readFileSync(join(engineDir, "node.js"))).digest("hex").slice(0, 12)
+// 3f. seed/ — the full SquadCoder default stack (config + skills + agents + instructions + the
+// anthropic-oauth plugin). The launcher points SQUADCODER_SEED_DIR at <extractDir>/seed so the
+// remote engine first-run-seeds exactly like local. Throw if missing so a build can NEVER silently
+// ship a remote engine that degrades to bare opencode.
+const seedSrc = join(ROOT, "seed")
+if (!existsSync(join(seedSrc, ".squadcoder-seed")))
+  throw new Error("seed/.squadcoder-seed missing — run `bun script/make-seed.ts` before make-remote-engine")
+if (!existsSync(join(seedSrc, "plugin", "anthropic-oauth.js")))
+  throw new Error("seed/plugin/anthropic-oauth.js missing — reseed (the OAuth login plugin must ship)")
+cpSync(seedSrc, join(stageDir, "seed"), { recursive: true })
+log(`bundled seed/ (${(dirSize(seedSrc) / 1e6).toFixed(1)}MB)`)
+
+// 4. Version = reuse key. Include the seed sentinel + a bundle-format salt so that bundling the seed
+// (which does NOT change node.js) still produces a NEW version — forcing remotes to re-upload the
+// seeded bundle instead of reusing a previously-extracted BARE engine dir.
+const seedVersion = readFileSync(join(seedSrc, ".squadcoder-seed"), "utf8").trim() || "0"
+const BUNDLE_FORMAT = "2-seeded"
+const version = createHash("sha256")
+  .update(readFileSync(join(engineDir, "node.js")))
+  .update("\u0000seed:" + seedVersion)
+  .update("\u0000fmt:" + BUNDLE_FORMAT)
+  .digest("hex")
+  .slice(0, 12)
 writeFileSync(join(stageDir, "VERSION"), version)
 
 // 5. Tar it. Run inside outDir with relative names (avoid the Windows `C:` host-path trap).

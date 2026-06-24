@@ -88,7 +88,7 @@ export function safeVersion(v: string): string {
 function startEngineSnippet(): string[] {
   return [
     `chmod +x "$DIR/node-bin" 2>/dev/null || true`,
-    `umask 077; MIMOCODE_SERVER_USERNAME=${SERVER_USERNAME} MIMOCODE_SERVER_PASSWORD="$SC_PW" SC_PORT="$P" ` +
+    `umask 077; MIMOCODE_SERVER_USERNAME=${SERVER_USERNAME} MIMOCODE_SERVER_PASSWORD="$SC_PW" SC_PORT="$P" SQUADCODER_SEED_DIR="$DIR/seed" ` +
       `nohup "$DIR/node-bin" --experimental-sqlite "$DIR/launcher.mjs" >"${REMOTE_SERVER_ROOT}/serve.log" 2>&1 &`,
     "PID=$!",
     `i=0; while [ $i -lt 60 ]; do if curl -fsS -u "${SERVER_USERNAME}:$SC_PW" -o /dev/null "http://127.0.0.1:$P/global/health" 2>/dev/null; then echo "STARTED $P $PID"; exit 0; fi; sleep 0.3; i=$((i+1)); done`,
