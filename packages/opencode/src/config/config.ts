@@ -472,10 +472,16 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/Config") {}
 
+// SQUADCODER: prefer squadcoder.json(c) (new brand) for the global config, falling back
+// to legacy mimicode/config files so existing global configs keep working.
+// Exported so test/global/config-candidates.test.ts can lockstep-assert this
+// stays deep-equal to seed.ts GLOBAL_HOST_CANDIDATES — keeps the seed writing to
+// the precedence-winning file the loader actually reads. Single source inside
+// config.ts; NOT shared with seed.ts (no import cycle, per CTO decision).
+export const GLOBAL_CONFIG_FILENAMES = ["squadcoder.jsonc", "squadcoder.json", "mimocode.jsonc", "mimocode.json", "config.json"]
+
 function globalConfigFile() {
-  // SQUADCODER: prefer squadcoder.json(c) (new brand) for the global config, falling back
-  // to legacy mimocode/config files so existing global configs keep working.
-  const candidates = ["squadcoder.jsonc", "squadcoder.json", "mimocode.jsonc", "mimocode.json", "config.json"].map((file) =>
+  const candidates = GLOBAL_CONFIG_FILENAMES.map((file) =>
     path.join(Global.Path.config, file),
   )
   for (const file of candidates) {

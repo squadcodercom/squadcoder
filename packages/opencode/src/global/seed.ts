@@ -1,3 +1,4 @@
+import { type ParseError as JsoncParseError, applyEdits, modify, parse as parseJsonc } from "jsonc-parser"
 import fs from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
@@ -72,26 +73,39 @@ async function copyMissing(src: string, dest: string): Promise<number> {
 }
 
 // SQUADCODER upgrade migration: when the seed version changes, UNION-merge the
-// seed's top-level `plugin` array into an EXISTING host squadcoder.json so
-// already-seeded hosts (local upgrades + remote SSH engines) pick up newly
-// shipped plugins (e.g. @dietrichgebert/ponytail) without clobbering any other
-// user key. Pure-additive on `plugin` only; every other host key is preserved.
+// seed's top-level `plugin` array into the EXISTING, precedence-WINNING host
+// global config so already-seeded hosts (local upgrades + remote SSH engines)
+// pick up newly shipped plugins (e.g. @dietrichgebert/ponytail) without
+// clobbering any other user key or stripping comments.
 //
-// Runs ONLY when the seed version changed (the caller has already early-returned
-// on "up-to-date") AND a host squadcoder.json already exists. If the host has no
-// squadcoder.json yet, copyMissing creates it fresh (with the new plugin) — this
-// branch must NOT create one.
+// The engine merges global config from a fixed precedence chain (config.ts
+// loadGlobal): config.json -> mimocode.json -> mimocode.jsonc -> squadcoder.json
+// -> squadcoder.jsonc (last wins; for an array like `plugin` the later file's
+// value REPLACES the earlier ones). So the merge MUST target the precedence-
+// WINNING host file (the highest-precedence one that already exists), not a
+// hardcoded name — otherwise a host whose active config is squadcoder.jsonc
+// ignores a merge written to squadcoder.json (the live bug: a user's
+// squadcoder.jsonc had [opencode-ignore] and the engine /config showed exactly
+// that, no ponytail, while squadcoder.json had ponytail and was ignored).
+//
+// Runs ONLY when the seed version changed (caller already early-returned on
+// "up-to-date") AND a host global config already exists. If none exists yet,
+// copyMissing creates squadcoder.json fresh (with the new plugin) — this branch
+// must NOT create one.
 //
 // Security hardening (mandatory, from the Security review):
 //   1. ATOMIC WRITE — temp file in the same dir, then rename over the target;
-//      never a partial write to squadcoder.json.
-//   2. POST-MERGE PARSE GUARD — stringify the merged object and re-parse it to
-//      confirm validity before writing; on any failure ABORT (no-op), never write
-//      a corrupt file.
-//   3. NO ENV-EXPAND — read the host file as raw text and JSON.parse it; merge
-//      only `plugin`; write back. Never resolve `${VAR}` / `{env:VAR}` placeholders
-//      (they expand in-memory at config-load only). Uses fs + JSON exclusively,
-//      never a config loader.
+//      never a partial write to the host config.
+//   2. JSONC-TOLERANT PARSE + POST-EDIT PARSE GUARD — parse the host with
+//      jsonc-parser (so comments + trailing commas don't break it) and re-parse
+//      the edited text before writing; on any failure ABORT (no-op), never
+//      write a corrupt file.
+//   3. NO ENV-EXPAND — read the host file as raw text and parse it directly;
+//      merge only `plugin`; write back with jsonc-parser modify/applyEdits so
+//      comments/formatting/other keys are preserved byte-for-byte except the
+//      plugin array. Never resolve `${VAR}` / `{env:VAR}` placeholders (they
+//      expand in-memory at config-load only). Uses fs + jsonc-parser
+//      exclusively, never a config loader.
 //   4. SILENT NO-OP — the whole branch is wrapped in try/catch; any failure
 //      returns 0 and never blocks startup or corrupts the file.
 //
@@ -102,35 +116,54 @@ async function copyMissing(src: string, dest: string): Promise<number> {
 // this branch would add a global-state ordering dependency for no real gain and
 // would be inconsistent with the surrounding seed code. The atomic temp+rename +
 // try/catch is the agreed minimum (ponytail rule: smallest correct change).
+// Same candidate order as config.ts globalConfigFile() (first existing wins).
+// Exported so test/global/config-candidates.test.ts can lockstep-assert this
+// stays deep-equal to config.ts GLOBAL_CONFIG_FILENAMES — if either drifts the
+// seed would write to the wrong (ignored) host file (the bug this guard exists for).
+export const GLOBAL_HOST_CANDIDATES = ["squadcoder.jsonc", "squadcoder.json", "mimocode.jsonc", "mimocode.json", "config.json"]
+
 async function mergePlugins(src: string, configDir: string): Promise<number> {
   try {
-    const seedConfigPath = path.join(src, "squadcoder.json")
-    const hostConfigPath = path.join(configDir, "squadcoder.json")
+    // 1) Target the precedence-WINNING host file. If none exists yet, copyMissing
+    //    handles the fresh case — silent no-op here.
+    const hostConfigPath = GLOBAL_HOST_CANDIDATES.map((f) => path.join(configDir, f)).find((p) => existsSync(p))
+    if (!hostConfigPath) return 0
 
-    // Raw text only — never a config loader (would expand env placeholders).
-    const seedRaw = await fs.readFile(seedConfigPath, "utf8").catch(() => undefined)
-    const hostRaw = await fs.readFile(hostConfigPath, "utf8").catch(() => undefined)
-    if (!seedRaw || !hostRaw) return 0 // nothing to migrate (no seed/host config)
-
+    // 2) Seed source plugin list (always ships as plain .json — no env-expand).
+    const seedRaw = await fs.readFile(path.join(src, "squadcoder.json"), "utf8").catch(() => undefined)
+    if (!seedRaw) return 0
     const seed = JSON.parse(seedRaw)
-    const host = JSON.parse(hostRaw)
     if (!seed || typeof seed !== "object") return 0
-    if (!host || typeof host !== "object") return 0
-
     const seedPlugins = Array.isArray(seed.plugin) ? seed.plugin : []
+
+    // 3) Raw host text only — never a config loader (would expand env placeholders).
+    //    jsonc-parser tolerates comments + trailing commas (matches ConfigParse.jsonc).
+    const hostRaw = await fs.readFile(hostConfigPath, "utf8")
+    const hostErrors: JsoncParseError[] = []
+    const host = parseJsonc(hostRaw, hostErrors, { allowTrailingComma: true })
+    if (hostErrors.length || !host || typeof host !== "object" || Array.isArray(host)) return 0
+
     const hostPlugins = Array.isArray(host.plugin) ? host.plugin : []
     // Union, host order first, append new seed entries; dedup.
     const mergedPlugin = Array.from(new Set([...hostPlugins, ...seedPlugins]))
-    // Nothing new → skip the write entirely (avoid a needless rewrite).
-    if (JSON.stringify(mergedPlugin) === JSON.stringify(hostPlugins)) return 0
+    // Nothing new → skip the write entirely. The Set always contains all
+    // hostPlugins, so length grows iff a seed entry is new.
+    if (mergedPlugin.length === hostPlugins.length) return 0
 
-    const merged = { ...host, plugin: mergedPlugin }
-    const text = JSON.stringify(merged, null, 2) + "\n"
-    // POST-MERGE PARSE GUARD: confirm the serialized form round-trips before write.
-    JSON.parse(text)
+    // 4) Write back via jsonc-parser modify/applyEdits: preserves comments,
+    //    formatting and every other key byte-for-byte except `plugin`.
+    const edits = modify(hostRaw, ["plugin"], mergedPlugin, {
+      formattingOptions: { insertSpaces: true, tabSize: 2 },
+    })
+    const text = applyEdits(hostRaw, edits)
 
-    // ATOMIC WRITE: temp file in the same dir, then rename over the target.
-    const tmp = path.join(configDir, `.squadcoder.json.${process.pid}.${Date.now()}.tmp`)
+    // 5) POST-EDIT PARSE GUARD: confirm the edited text round-trips before write.
+    const guardErrors: JsoncParseError[] = []
+    parseJsonc(text, guardErrors, { allowTrailingComma: true })
+    if (guardErrors.length) return 0
+
+    // 6) ATOMIC WRITE: temp file in the same dir, then rename over the target.
+    const tmp = path.join(configDir, `.${path.basename(hostConfigPath)}.${process.pid}.${Date.now()}.tmp`)
     await fs.writeFile(tmp, text, "utf8")
     try {
       await fs.rename(tmp, hostConfigPath)
