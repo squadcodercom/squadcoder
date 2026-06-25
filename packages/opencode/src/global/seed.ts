@@ -52,7 +52,13 @@ async function readSeedVersion(dir: string): Promise<string> {
 
 // Recursively copy files from src into dest that don't already exist in dest.
 // Skips the sentinel/stamp bookkeeping files.
-async function copyMissing(src: string, dest: string): Promise<number> {
+//
+// isRoot is true only for the top-level configDir, where the global host config
+// candidates live (squadcoder.jsonc > squadcoder.json > ... ). At root, skip
+// copying a seed global-config file when the host already has a HIGHER-precedence
+// candidate — config.ts loadGlobal would ignore the lower one anyway, so copying
+// it is dead weight (e.g. don't drop seed squadcoder.json when host has squadcoder.jsonc).
+async function copyMissing(src: string, dest: string, isRoot = true): Promise<number> {
   let copied = 0
   const entries = await fs.readdir(src, { withFileTypes: true })
   for (const entry of entries) {
@@ -61,15 +67,25 @@ async function copyMissing(src: string, dest: string): Promise<number> {
     const to = path.join(dest, entry.name)
     if (entry.isDirectory()) {
       await fs.mkdir(to, { recursive: true })
-      copied += await copyMissing(from, to)
+      copied += await copyMissing(from, to, false)
     } else if (entry.isFile() || entry.isSymbolicLink()) {
       if (existsSync(to)) continue
+      if (isRoot && hostHasHigherPrecedence(entry.name, dest)) continue
       await fs.mkdir(path.dirname(to), { recursive: true })
       await fs.copyFile(from, to)
       copied++
     }
   }
   return copied
+}
+
+// True when `name` is a global host config candidate and the host already has a
+// strictly higher-precedence one (earlier in GLOBAL_HOST_CANDIDATES, which is
+// highest-first). Non-candidate files always return false.
+function hostHasHigherPrecedence(name: string, configDir: string): boolean {
+  const idx = GLOBAL_HOST_CANDIDATES.indexOf(name)
+  if (idx <= 0) return false
+  return GLOBAL_HOST_CANDIDATES.slice(0, idx).some((f) => existsSync(path.join(configDir, f)))
 }
 
 // SQUADCODER upgrade migration: when the seed version changes, UNION-merge the

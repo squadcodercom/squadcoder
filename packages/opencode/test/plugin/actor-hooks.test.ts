@@ -12,8 +12,19 @@ import { Bus } from "../../src/bus"
 import { AppRuntime } from "../../src/effect/app-runtime"
 import { Actor } from "../../src/actor/spawn"
 import { startScriptedLLMServer, textStopResponse } from "../lib/scripted-llm-server"
+import { ProviderID, ModelID } from "../../src/provider/schema"
 
 void Log.init({ print: false })
+
+// noReply prompts skip the reply LLM call but still resolve the model on the user
+// message, so a provider must be registered. The async title-generation task can
+// still reach for the LLM, so point at a live scripted server (not a dead socket)
+// to avoid a slow connection-refused retry leaking across tests.
+const providerConfig = (origin: string) => ({
+  enabled_providers: ["alibaba"],
+  provider: { alibaba: { options: { apiKey: "test-key", baseURL: `${origin}/v1` } } },
+  agent: { build: { model: "alibaba/qwen-plus" } },
+})
 
 afterEach(async () => {
   await Instance.disposeAll()
@@ -27,71 +38,83 @@ function run<A, E>(fx: Effect.Effect<A, E, SessionPrompt.Service | Session.Servi
 
 describe("provenance plumbing", () => {
   test("source=hook + provenance is persisted onto the User message", async () => {
-    await using tmp = await tmpdir({})
+    const server = startScriptedLLMServer([{ lines: textStopResponse("title") }])
+    try {
+      await using tmp = await tmpdir({ config: providerConfig(server.origin) })
 
-    const result = await Instance.provide({
-      directory: tmp.path,
-      fn: () =>
-        run(
-          Effect.gen(function* () {
-            const sessions = yield* Session.Service
-            const prompt = yield* SessionPrompt.Service
-            const created = yield* sessions.create({ title: "test" })
-            return yield* prompt.prompt({
-              sessionID: created.id,
-              agent: "build",
-              agentID: "main",
-              source: "hook",
-              provenance: {
-                hookPhase: "pre",
-                hookIteration: 1,
-                pluginNames: ["test-plugin"],
-                hookIDs: ["test-plugin#actor.preStop"],
-              },
-              parts: [{ type: "text", text: "synthetic reason" }],
-              noReply: true,
-            })
-          }),
-        ),
-    })
-
-    expect(result.info.role).toBe("user")
-    if (result.info.role === "user") {
-      expect(result.info.provenance).toEqual({
-        hookPhase: "pre",
-        hookIteration: 1,
-        pluginNames: ["test-plugin"],
-        hookIDs: ["test-plugin#actor.preStop"],
+      const result = await Instance.provide({
+        directory: tmp.path,
+        fn: () =>
+          run(
+            Effect.gen(function* () {
+              const sessions = yield* Session.Service
+              const prompt = yield* SessionPrompt.Service
+              const created = yield* sessions.create({ title: "test" })
+              return yield* prompt.prompt({
+                sessionID: created.id,
+                agent: "build",
+                agentID: "main",
+                model: { providerID: ProviderID.make("alibaba"), modelID: ModelID.make("qwen-plus") },
+                source: "hook",
+                provenance: {
+                  hookPhase: "pre",
+                  hookIteration: 1,
+                  pluginNames: ["test-plugin"],
+                  hookIDs: ["test-plugin#actor.preStop"],
+                },
+                parts: [{ type: "text", text: "synthetic reason" }],
+                noReply: true,
+              })
+            }),
+          ),
       })
+
+      expect(result.info.role).toBe("user")
+      if (result.info.role === "user") {
+        expect(result.info.provenance).toEqual({
+          hookPhase: "pre",
+          hookIteration: 1,
+          pluginNames: ["test-plugin"],
+          hookIDs: ["test-plugin#actor.preStop"],
+        })
+      }
+    } finally {
+      await server.stop()
     }
   })
 
   test("source=spawn (default) leaves provenance undefined", async () => {
-    await using tmp = await tmpdir({})
+    const server = startScriptedLLMServer([{ lines: textStopResponse("title") }])
+    try {
+      await using tmp = await tmpdir({ config: providerConfig(server.origin) })
 
-    const result = await Instance.provide({
-      directory: tmp.path,
-      fn: () =>
-        run(
-          Effect.gen(function* () {
-            const sessions = yield* Session.Service
-            const prompt = yield* SessionPrompt.Service
-            const created = yield* sessions.create({ title: "test" })
-            return yield* prompt.prompt({
-              sessionID: created.id,
-              agent: "build",
-              agentID: "main",
-              source: "spawn",
-              parts: [{ type: "text", text: "regular task" }],
-              noReply: true,
-            })
-          }),
-        ),
-    })
+      const result = await Instance.provide({
+        directory: tmp.path,
+        fn: () =>
+          run(
+            Effect.gen(function* () {
+              const sessions = yield* Session.Service
+              const prompt = yield* SessionPrompt.Service
+              const created = yield* sessions.create({ title: "test" })
+              return yield* prompt.prompt({
+                sessionID: created.id,
+                agent: "build",
+                agentID: "main",
+                model: { providerID: ProviderID.make("alibaba"), modelID: ModelID.make("qwen-plus") },
+                source: "spawn",
+                parts: [{ type: "text", text: "regular task" }],
+                noReply: true,
+              })
+            }),
+          ),
+      })
 
-    expect(result.info.role).toBe("user")
-    if (result.info.role === "user") {
-      expect(result.info.provenance).toBeUndefined()
+      expect(result.info.role).toBe("user")
+      if (result.info.role === "user") {
+        expect(result.info.provenance).toBeUndefined()
+      }
+    } finally {
+      await server.stop()
     }
   })
 })

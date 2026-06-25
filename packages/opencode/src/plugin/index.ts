@@ -321,9 +321,14 @@ export const layer = Layer.effect(
           }
         }
 
-        const plugins = Flag.MIMOCODE_PURE ? [] : (cfg.plugin_origins ?? [])
-        if (Flag.MIMOCODE_PURE && cfg.plugin_origins?.length) {
-          log.info("skipping external plugins in pure mode", { count: cfg.plugin_origins.length })
+        let plugins = cfg.plugin_origins ?? []
+        if (Flag.MIMOCODE_PURE) {
+          if (plugins.length) log.info("skipping external plugins in pure mode", { count: plugins.length })
+          plugins = []
+        } else if (Flag.MIMOCODE_DISABLE_DEFAULT_PLUGINS) {
+          const before = plugins.length
+          plugins = plugins.filter((o) => o.scope !== "global")
+          if (before !== plugins.length) log.info("skipping default (global) plugins", { count: before - plugins.length })
         }
         if (plugins.length) yield* config.waitForDependencies()
 
