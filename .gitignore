@@ -70,3 +70,5 @@ code_memory.db
 push.log
 push.err
 tasks/
+packages/desktop/e2e-verify/
+packages/desktop/dev-out.log.err
