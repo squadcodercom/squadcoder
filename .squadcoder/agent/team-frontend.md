@@ -7,7 +7,7 @@ description: >-
   skills + the claude-design MCP, and self-checks rendering with Playwright. Spawned by
   the `team` orchestrator. Spawn when a work unit involves UI, styling, RTL, or a11y.
 mode: subagent
-model: zai-coding-plan/glm-5.2
+model: anthropic/claude-opus-4-8
 color: "#ec4899"
 temperature: 0.3
 permission:

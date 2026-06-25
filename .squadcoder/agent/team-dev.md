@@ -5,7 +5,7 @@ description: >-
   conventions. Universal stack: React/Vue/etc, Node, Electron, PHP/Laravel, mobile. Spawn
   MULTIPLE in parallel for independent units. Spawned by the `team` orchestrator.
 mode: subagent
-model: zai-coding-plan/glm-5.2
+model: anthropic/claude-sonnet-4-6
 color: "#22c55e"
 temperature: 0.2
 permission:
