@@ -155,7 +155,17 @@ function getServerPlugin(value: unknown) {
   return value.server
 }
 
-function getLegacyPlugins(mod: Record<string, unknown>) {
+export function getLegacyPlugins(mod: Record<string, unknown>) {
+  // A bare-function `default` export IS the plugin (classic opencode plugin shape,
+  // e.g. @dietrichgebert/ponytail: `export default async (input) => hooks`).
+  // In that case use ONLY it: the module's other named exports are helpers
+  // (e.g. parseCommandFile), not plugins, and invoking them with the plugin-context
+  // object throws ("The 'path' argument... Received an instance of Object"), aborting
+  // the whole plugin load. Named-export scanning below stays the fallback for modules
+  // that have no usable default.
+  const fromDefault = getServerPlugin(mod.default)
+  if (fromDefault) return [fromDefault]
+
   const seen = new Set<unknown>()
   const result: PluginInstance[] = []
 
