@@ -16,6 +16,10 @@ import { SettingsList } from "./settings-list"
 type ProviderSource = "env" | "api" | "config" | "custom"
 type ProviderItem = ReturnType<ReturnType<typeof useProviders>["connected"]>[number]
 
+// These appear "connected" only because a GITHUB_TOKEN env var exists for the github MCP — the user
+// never actually connected them. Hide them when their only source is that ambient env var.
+const AMBIENT_ENV_PROVIDERS = new Set(["github-copilot", "github-models"])
+
 const PROVIDER_NOTES = [
   { match: (id: string) => id === "opencode", key: "dialog.provider.opencode.note" },
   { match: (id: string) => id === "opencode-go", key: "dialog.provider.opencodeGo.tagline" },
@@ -38,6 +42,7 @@ export const SettingsProviders: Component = () => {
     return providers
       .connected()
       .filter((p) => p.id !== "opencode" || Object.values(p.models).find((m) => m.cost?.input))
+      .filter((p) => !(AMBIENT_ENV_PROVIDERS.has(p.id) && "source" in p && p.source === "env"))
   })
 
   const popular = createMemo(() => {

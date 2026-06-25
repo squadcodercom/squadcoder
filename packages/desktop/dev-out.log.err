@@ -1,0 +1,9 @@
+$ bun ./scripts/predev.ts
+$ electron-vite dev "--remote-debugging-port=9222"
+(node:40800) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `electron --trace-warnings ...` to show where the warning was created)
+
+DevTools listening on ws://127.0.0.1:9222/devtools/browser/3768e5be-98e7-40dd-8414-e921018006a0
+(node:40800) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/raviv/.config/squadcoder/plugin/anthropic-oauth.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to C:\Users\raviv\.config\squadcoder\package.json.

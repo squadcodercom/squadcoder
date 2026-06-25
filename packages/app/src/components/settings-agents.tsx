@@ -9,6 +9,7 @@ import { showToast } from "@squadcoder/ui/toast"
 import { type Component, createEffect, createMemo, createSignal, For, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { DialogAgentModel } from "@/components/dialog-agent-model"
+import { DialogSettings } from "@/components/dialog-settings"
 import { useLanguage } from "@/context/language"
 import { useModels } from "@/context/models"
 import { type ConfigScope, useConfigMutation } from "./settings/use-config-mutation"
@@ -43,7 +44,7 @@ const parseModelRef = (ref: string | undefined): { providerID: string; modelID: 
 // SQUADCODER Settings ▸ Agents (#37/#62): config-layer editor for every agent (built-in + custom).
 // Reuses `sync.data.agent` (runtime) + `config.agent[name]` writes (the #55-fixed loader path) +
 // the modal model picker. No new engine routes — true delete/groups for file agents come in Phase 4.
-export const SettingsAgents: Component = () => {
+export const SettingsAgents: Component<{ agent?: string }> = (props) => {
   const language = useLanguage()
   const ws = useWorkspace()
   const models = useModels()
@@ -51,7 +52,7 @@ export const SettingsAgents: Component = () => {
   const mutation = useConfigMutation()
 
   const [scope, setScope] = createSignal<ConfigScope>("project")
-  const [selected, setSelected] = createSignal<string | undefined>()
+  const [selected, setSelected] = createSignal<string | undefined>(props.agent)
   const [busy, setBusy] = createSignal(false)
 
   const configAgents = createMemo(() => (ws.data.config.agent ?? {}) as Record<string, AgentConfig>)
@@ -314,15 +315,31 @@ export const SettingsAgents: Component = () => {
                     <button
                       type="button"
                       class="flex items-center gap-1.5 max-w-[260px] truncate text-13-regular text-text-base bg-surface-raised-base hover:bg-surface-raised-base-hover rounded-md px-3 h-8"
-                      onClick={() =>
+                      onClick={() => {
+                        // The dialog context is single-slot: dialog.show() disposes this Settings
+                        // dialog (and its unsaved form). Capture name+scope into plain consts so the
+                        // onSelect closure never reads disposed signals, persist directly, then
+                        // re-show Settings back on the Agents pane for this agent.
+                        const capturedName = entry().name
+                        const capturedScope = scope()
+                        const capturedCurrent = form.model
+                          ? { id: form.model.modelID, provider: { id: form.model.providerID } }
+                          : undefined
                         dialog.show(() => (
                           <DialogAgentModel
-                            agent={entry().name}
-                            current={form.model ? { id: form.model.modelID, provider: { id: form.model.providerID } } : undefined}
-                            onSelect={(providerID, modelID) => setForm("model", { providerID, modelID })}
+                            agent={capturedName}
+                            current={capturedCurrent}
+                            closeOnSelect={false}
+                            onSelect={async (providerID, modelID) => {
+                              await mutation.setKey(capturedScope, ["agent", capturedName], {
+                                model: `${providerID}/${modelID}`,
+                              })
+                              await mutation.refreshAgents()
+                              dialog.show(() => <DialogSettings section="agents" agent={capturedName} />)
+                            }}
                           />
                         ))
-                      }
+                      }}
                     >
                       <span class="truncate">{modelLabel() ?? language.t("settings.agents.modelDefault")}</span>
                       <Icon name="chevron-down" size="small" class="text-icon-weak shrink-0" />

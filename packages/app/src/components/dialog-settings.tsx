@@ -19,7 +19,7 @@ import { SettingsUsage } from "./settings-usage"
 
 // `section` lets the top-bar status popover + command palette deep-link straight to a pane
 // (e.g. openSettings("mcp")). The dialog remounts on each open, so defaultValue is enough.
-export const DialogSettings: Component<{ section?: string }> = (props) => {
+export const DialogSettings: Component<{ section?: string; agent?: string }> = (props) => {
   const language = useLanguage()
   const platform = usePlatform()
 
@@ -115,7 +115,7 @@ export const DialogSettings: Component<{ section?: string }> = (props) => {
           <SettingsKeybinds />
         </Tabs.Content>
         <Tabs.Content value="agents" class="no-scrollbar">
-          <SettingsAgents />
+          <SettingsAgents agent={props.agent} />
         </Tabs.Content>
         <Tabs.Content value="skills" class="no-scrollbar">
           <SettingsSkills />

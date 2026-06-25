@@ -175,6 +175,57 @@ test("custom agent config overrides native agent properties", async () => {
   })
 })
 
+test("config agent.model overrides file-based agent frontmatter model", async () => {
+  // File-based agent (`agent/team-dev.md`) sets model: X; config sets agent.team-dev.model = Y.
+  // The config override (e.g. GUI model picker) must WIN — regression guard for inverted merge.
+  await using tmp = await tmpdir({
+    config: {
+      agent: {
+        "zzz-file-override-dev": { model: "anthropic/claude-3" },
+      },
+    },
+    init: async (dir) => {
+      await Bun.write(
+        path.join(dir, ".squadcoder", "agent", "zzz-file-override-dev.md"),
+        ["---", "description: File-defined dev agent", "model: openai/gpt-4", "---", "You are team-dev."].join("\n"),
+      )
+    },
+  })
+  await Instance.provide({
+    directory: tmp.path,
+    fn: async () => {
+      const dev = await load(tmp.path, (svc) => svc.get("zzz-file-override-dev"))
+      expect(dev).toBeDefined()
+      // config override wins over the .md frontmatter model
+      expect(String(dev?.model?.providerID)).toBe("anthropic")
+      expect(String(dev?.model?.modelID)).toBe("claude-3")
+      // file fields the config did NOT override survive the merge
+      expect(dev?.description).toBe("File-defined dev agent")
+      expect(dev?.prompt).toBe("You are team-dev.")
+    },
+  })
+})
+
+test("file-only agent (no config override) keeps its frontmatter model", async () => {
+  await using tmp = await tmpdir({
+    init: async (dir) => {
+      await Bun.write(
+        path.join(dir, ".squadcoder", "agent", "zzz-file-only.md"),
+        ["---", "description: Only defined by file", "model: openai/gpt-4", "---", "prompt body"].join("\n"),
+      )
+    },
+  })
+  await Instance.provide({
+    directory: tmp.path,
+    fn: async () => {
+      const agent = await load(tmp.path, (svc) => svc.get("zzz-file-only"))
+      expect(agent).toBeDefined()
+      expect(String(agent?.model?.providerID)).toBe("openai")
+      expect(String(agent?.model?.modelID)).toBe("gpt-4")
+    },
+  })
+})
+
 test("agent disable removes agent from list", async () => {
   await using tmp = await tmpdir({
     config: {

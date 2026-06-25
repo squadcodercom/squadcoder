@@ -12,6 +12,7 @@ export function DialogAgentModel(props: {
   agent: string
   current?: { id: string; provider: { id: string } }
   onSelect: (providerID: string, modelID: string) => void
+  closeOnSelect?: boolean
 }) {
   const dialog = useDialog()
   const language = useLanguage()
@@ -31,11 +32,12 @@ export function DialogAgentModel(props: {
           items={items}
           key={(m) => `${m.provider.id}/${m.id}`}
           current={current()}
+          filterKeys={["name", "provider.name", "id"]}
           emptyMessage={language.t("dialog.agentModel.empty")}
           onSelect={(m) => {
             if (!m) return
             props.onSelect(m.provider.id, m.id)
-            dialog.close()
+            if (props.closeOnSelect !== false) dialog.close()
           }}
           class="flex-1 min-h-0 px-5 pb-5 [&_[data-slot=list-scroll]]:flex-1 [&_[data-slot=list-scroll]]:overflow-y-auto"
         >

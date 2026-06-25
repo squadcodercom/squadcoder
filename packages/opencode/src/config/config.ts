@@ -832,8 +832,12 @@ export const layer = Layer.effect(
           deps.push(dep)
 
           result.command = mergeDeep(result.command ?? {}, yield* Effect.promise(() => ConfigCommand.load(dir)))
-          result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.load(dir)))
-          result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.loadMode(dir)))
+          // SQUADCODER: file-based agents (`{agent,agents}/**.md` frontmatter) are the BASE; the
+          // config `agent.<name>` overrides (from squadcoder.json/config.json, e.g. the GUI model
+          // picker) must WIN per-field. So merge file agents first, then re-apply result.agent on top.
+          // (Upstream had result.agent on the left, which let the .md `model` clobber GUI overrides.)
+          result.agent = mergeDeep(yield* Effect.promise(() => ConfigAgent.load(dir)), result.agent ?? {})
+          result.agent = mergeDeep(yield* Effect.promise(() => ConfigAgent.loadMode(dir)), result.agent ?? {})
           // Auto-discovered plugins under `.mimocode/plugin(s)` are already local files, so ConfigPlugin.load
           // returns normalized Specs and we only need to attach origin metadata here.
           const list = yield* Effect.promise(() => ConfigPlugin.load(dir))
