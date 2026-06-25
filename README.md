@@ -15,6 +15,10 @@
 
 Other AI coding tools give you **one assistant**. SquadCoder gives you **a whole company** — an Architect, Developers, QA, Security, UI/UX, and a CTO quality gate — that plan, build, review, and ship features **in parallel**, out of the box, with **zero configuration**.
 
+**~54% less code (up to 94%) · ~20% cheaper · ~27% faster · 100% safe**
+
+_On real agentic tasks, via the bundled **[ponytail](https://github.com/DietrichGebert/ponytail)** "lazy senior dev" ruleset — write only what the task needs, reuse over rebuild. These are ponytail's [published benchmark](https://github.com/DietrichGebert/ponytail) numbers, not SquadCoder's own._
+
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](#install)
 [![Release](https://img.shields.io/github/v/release/squadcodercom/squadcoder)](https://github.com/squadcodercom/squadcoder/releases)
@@ -51,7 +55,7 @@ All of this happens **on first install, with zero configuration.** Open a folder
 | **Squad** | **Team Mode** — parallel specialist agents with a quality gate | One request kicks off an entire dev cycle: plan, code, test, review, ship. |
 | **Brain** | **Persistent memory** — never forgets | Project rules, architecture decisions, and past fixes survive across sessions. Your assistant gets smarter about _your_ codebase over time. |
 | **Search** | **Semantic codebase index** — find code by meaning | Fully offline, bundled model. No cloud, no API cost. Ask "where do we handle auth?" and get the right files. |
-| **Skills** | **820+ bundled skills** — ready on first launch | Design systems, code review, document generation, ad platforms (Google/Meta/TikTok), and more. Skills auto-fire when relevant — no manual activation. |
+| **Skills** | **100+ bundled skills** — ready on first launch | Design systems, code review, document generation, ad platforms (Google/Meta/TikTok), Hebrew/RTL & Israeli business tooling, and more. Skills auto-fire when relevant — no manual activation. |
 | **Tools** | **MCP-native** — built-in integrations | GitHub, Playwright (browser testing), web search, docs lookup, and any MCP server you add. |
 | **Remote** | **Remote SSH** — work on any machine | VS Code-style remote: connect to a server, index its code, run agents there. |
 | **Clock** | **Routines & scheduling** | Save multi-step tasks and run them on demand or on a schedule. |
@@ -150,17 +154,27 @@ For collaboration, partnerships, or anything else — reach out at **[raviv@mail
 
 ---
 
-## Built with SquadCoder
+## Showcase
+
+<a id="built-with-squadcoder"></a>
 
 Real, shipping products built by the same team behind SquadCoder — proof the squad ships:
 
 | Product | What it is |
 |---------|------------|
-| **[mailbux.com](https://mailbux.com)** | Email infrastructure & inbox tooling. |
-| **[openadmanager.com](https://openadmanager.com)** | Open ad campaign management across Google, Meta & TikTok. |
-| **[formtix.com](https://formtix.com)** | Forms, registrations & ticketing. |
+| **[mailbux.com](https://mailbux.com)** | Email infrastructure & smart inbox tooling — sending, routing, and managing mail at scale. |
+| **[openadmanager.com](https://openadmanager.com)** | Open ad-campaign management across Google, Meta & TikTok from one dashboard. |
+| **[formtix.com](https://formtix.com)** | Forms, registrations & event ticketing — built and shipped fast. |
 
 Want to build something together? **[raviv@mailbux.com](mailto:raviv@mailbux.com)**
+
+## Credits
+
+SquadCoder stands on the shoulders of three excellent open-source projects:
+
+- **[opencode](https://github.com/sst/opencode)** — the open-source agent/engine foundation SquadCoder is built on.
+- **`code-memory`** (the `code-memory` MCP, run as `uvx code-memory`) — powers SquadCoder's offline semantic codebase index. Ask "where do we handle auth?" and get the right files, fully offline, no cloud, no API cost.
+- **[ponytail](https://github.com/DietrichGebert/ponytail)** — the "laziest senior dev" YAGNI ruleset, bundled by default. It makes the agent write only what's needed (reuse over rebuild): up to **94% less code on real tasks (~54% mean)**, while keeping every safety guard.
 
 ## License
 

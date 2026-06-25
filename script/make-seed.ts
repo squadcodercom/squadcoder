@@ -24,7 +24,7 @@ import fs from "fs"
 import path from "path"
 import { fileURLToPath } from "url"
 
-const SEED_VERSION = "1"
+const SEED_VERSION = "2"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, "..")
