@@ -18,6 +18,12 @@ type Store = {
 
 const RECENT_LIMIT = 5
 
+// SquadCoder: these appear "connected" only because a GITHUB_TOKEN env var exists for the github MCP —
+// the user never connected them for model access. Drop their models from the pickers when the provider's
+// ONLY source is that ambient env var (source === "env"). If explicitly connected (api/oauth/config/custom),
+// keep showing them. Mirrors AMBIENT_ENV_PROVIDERS in settings-providers.tsx.
+const AMBIENT_ENV_PROVIDERS = new Set(["github-copilot", "github-models"])
+
 function modelKey(model: ModelKey) {
   return `${model.providerID}:${model.modelID}`
 }
@@ -37,12 +43,15 @@ export const { use: useModels, provider: ModelsProvider } = createSimpleContext(
     )
 
     const available = createMemo(() =>
-      providers.connected().flatMap((p) =>
-        Object.values(p.models).map((m) => ({
-          ...m,
-          provider: p,
-        })),
-      ),
+      providers
+        .connected()
+        .filter((p) => !(AMBIENT_ENV_PROVIDERS.has(p.id) && "source" in p && p.source === "env"))
+        .flatMap((p) =>
+          Object.values(p.models).map((m) => ({
+            ...m,
+            provider: p,
+          })),
+        ),
     )
 
     const release = createMemo(
