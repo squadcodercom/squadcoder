@@ -482,7 +482,6 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean>; onClose?: (
                 >
                   {language.t("status.popover.action.manageServers")}
                 </Button>
-                <ManageInSettings section="remote" />
               </div>
             </div>
           </div>

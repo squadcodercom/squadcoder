@@ -87,6 +87,10 @@ export function safeVersion(v: string): string {
 // makes EVERY file the engine creates owner-only for its whole lifetime).
 function startEngineSnippet(): string[] {
   return [
+    // Self-heal: evict any STALE squadcoder engine still holding the port from a previous version /
+    // unclean disconnect (bootstrap already ruled out reuse). Scoped to OUR server root via the cmdline
+    // match, so it never touches the user's other services. Then a fresh engine can bind cleanly.
+    `for _p in $(ps -eo pid=,args= 2>/dev/null | grep "[n]ode-bin" | grep "${REMOTE_SERVER_ROOT}" | awk '{print $1}'); do kill "$_p" 2>/dev/null || true; done; sleep 1`,
     `chmod +x "$DIR/node-bin" 2>/dev/null || true`,
     `umask 077; MIMOCODE_SERVER_USERNAME=${SERVER_USERNAME} MIMOCODE_SERVER_PASSWORD="$SC_PW" SC_PORT="$P" SQUADCODER_SEED_DIR="$DIR/seed" ` +
       `nohup "$DIR/node-bin" --experimental-sqlite "$DIR/launcher.mjs" >"${REMOTE_SERVER_ROOT}/serve.log" 2>&1 &`,

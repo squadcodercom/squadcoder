@@ -102,6 +102,8 @@ describe("bootstrapScript", () => {
     expect(s).toContain("umask 077")
     // engine is pointed at the bundled seed so a remote boots the full stack, not bare opencode
     expect(s).toContain('SQUADCODER_SEED_DIR="$DIR/seed"')
+    // self-heal: evict any STALE squadcoder engine before launch (scoped to our server root)
+    expect(s).toMatch(/for _p in .*\[n\]ode-bin.*squadcoder-server/)
   })
 })
 
@@ -116,6 +118,8 @@ describe("installAndStartScript", () => {
     expect(s).toContain("umask 077")
     // engine is pointed at the bundled seed so a remote boots the full stack, not bare opencode
     expect(s).toContain('SQUADCODER_SEED_DIR="$DIR/seed"')
+    // self-heal: evict any STALE squadcoder engine before launch (scoped to our server root)
+    expect(s).toMatch(/for _p in .*\[n\]ode-bin.*squadcoder-server/)
   })
 })
 
