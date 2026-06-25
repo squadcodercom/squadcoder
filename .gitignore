@@ -72,3 +72,4 @@ push.err
 tasks/
 packages/desktop/e2e-verify/
 packages/desktop/dev-out.log.err
+packages/desktop/verify-shots/
