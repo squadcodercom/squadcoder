@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { ProviderTransform, type Provider } from "../../src/provider"
 import { ModelID, ProviderID } from "../../src/provider/schema"
+import { PNG } from "pngjs"
 
 describe("ProviderTransform.options - setCacheKey", () => {
   const sessionID = "test-session-123"
@@ -3375,5 +3376,76 @@ describe("ProviderTransform.schema - openai discriminated-union flatten", () => 
     expect(result.type).toBe("object")
     expect(result.properties.a).toBeDefined()
     expect(result.anyOf).toBeUndefined()
+  })
+})
+
+describe("ProviderTransform.message - image downscaling", () => {
+  const anthropicModel = {
+    id: "anthropic/claude-3-5-sonnet",
+    providerID: "anthropic",
+    api: { id: "claude-3-5-sonnet-20241022", url: "https://api.anthropic.com", npm: "@ai-sdk/anthropic" },
+    name: "Claude 3.5 Sonnet",
+    capabilities: {
+      temperature: true,
+      reasoning: false,
+      attachment: true,
+      toolcall: true,
+      input: { text: true, audio: false, image: true, video: false, pdf: true },
+      output: { text: true, audio: false, image: false, video: false, pdf: false },
+      interleaved: false,
+    },
+    cost: { input: 0.003, output: 0.015, cache: { read: 0.0003, write: 0.00375 } },
+    limit: { context: 200000, output: 8192 },
+    status: "active",
+    options: {},
+    headers: {},
+  } as any
+
+  function pngDataURL(width: number, height: number): string {
+    const png = new PNG({ width, height })
+    for (let i = 0; i < png.data.length; i += 4) {
+      png.data[i] = 100
+      png.data[i + 1] = 150
+      png.data[i + 2] = 200
+      png.data[i + 3] = 255
+    }
+    return `data:image/png;base64,${PNG.sync.write(png).toString("base64")}`
+  }
+
+  test("downscales a >2000px PNG to a 1568px long edge, still a valid PNG", () => {
+    const msgs = [
+      { role: "user", content: [{ type: "image", image: pngDataURL(2560, 1440) }] },
+    ] as any[]
+
+    const result = ProviderTransform.message(msgs, anthropicModel, {}) as any[]
+    const image = result[0].content[0].image as string
+    const buf = Buffer.from(image.split(",")[1], "base64")
+    const decoded = PNG.sync.read(buf)
+    expect(Math.max(decoded.width, decoded.height)).toBeLessThanOrEqual(1568)
+    expect(decoded.width).toBe(1568)
+    expect(decoded.height).toBe(882)
+  })
+
+  test("leaves a <=2000px image byte-identical", () => {
+    const url = pngDataURL(800, 600)
+    const msgs = [{ role: "user", content: [{ type: "image", image: url }] }] as any[]
+    const result = ProviderTransform.message(msgs, anthropicModel, {}) as any[]
+    expect(result[0].content[0].image).toBe(url)
+  })
+
+  test("passes a non-image / garbage part through untouched", () => {
+    const garbage = "data:image/png;base64,not-real-base64-@@@"
+    const msgs = [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "hello" },
+          { type: "image", image: garbage },
+        ],
+      },
+    ] as any[]
+    const result = ProviderTransform.message(msgs, anthropicModel, {}) as any[]
+    expect(result[0].content[0]).toEqual({ type: "text", text: "hello" })
+    expect(result[0].content[1].image).toBe(garbage)
   })
 })

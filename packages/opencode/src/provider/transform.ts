@@ -6,6 +6,8 @@ import type * as Provider from "./provider"
 import type * as ModelsDev from "./models"
 import { iife } from "@/util/iife"
 import { Flag } from "@/flag/flag"
+import { PNG } from "pngjs"
+import jpeg from "jpeg-js"
 
 type Modality = NonNullable<ModelsDev.Model["modalities"]>["input"][number]
 
@@ -377,6 +379,117 @@ function imageByteSize(image: string): number | undefined {
   return Math.floor((base64.length * 3) / 4) - padding
 }
 
+// Anthropic rejects multi-image requests where any image dimension exceeds
+// 2000px. Single-image requests get auto-resized server-side, but multi-image
+// ones are hard-rejected. Downscale anything over the limit to a 1568px long
+// edge (Anthropic's recommended max, safely under 2000) before sending.
+const IMAGE_DIMENSION_LIMIT = 2000
+const IMAGE_DOWNSCALE_TARGET = 1568
+
+// Read width/height cheaply from the header without a full decode, so small
+// screenshots aren't decoded needlessly. Returns undefined if unparseable.
+function imageDimensions(mime: string, buf: Buffer): { width: number; height: number } | undefined {
+  if (mime === "image/png") {
+    // 8-byte signature, then IHDR chunk: width at offset 16, height at 20 (big-endian).
+    if (buf.length < 24) return undefined
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) }
+  }
+  if (mime === "image/jpeg") {
+    // Scan SOF markers for dimensions.
+    let i = 2 // skip SOI
+    while (i + 9 < buf.length) {
+      if (buf[i] !== 0xff) {
+        i++
+        continue
+      }
+      const marker = buf[i + 1]
+      // SOF0..SOF15 carry dimensions, excluding DHT(c4)/DAC(c8)/RST markers.
+      if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+        return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) }
+      }
+      const len = buf.readUInt16BE(i + 2)
+      if (len < 2) return undefined
+      i += 2 + len
+    }
+    return undefined
+  }
+  return undefined
+}
+
+// Nearest-neighbour downscale of an RGBA buffer. Simple and dependency-free;
+// quality is fine for the screenshot use case and keeps the codec set minimal.
+function resizeRGBA(
+  src: Uint8Array | Buffer,
+  sw: number,
+  sh: number,
+  dw: number,
+  dh: number,
+): Buffer {
+  const out = Buffer.alloc(dw * dh * 4)
+  for (let y = 0; y < dh; y++) {
+    const sy = Math.min(sh - 1, Math.floor((y * sh) / dh))
+    for (let x = 0; x < dw; x++) {
+      const sx = Math.min(sw - 1, Math.floor((x * sw) / dw))
+      const si = (sy * sw + sx) * 4
+      const di = (y * dw + x) * 4
+      out[di] = src[si] ?? 0
+      out[di + 1] = src[si + 1] ?? 0
+      out[di + 2] = src[si + 2] ?? 0
+      out[di + 3] = src[si + 3] ?? 255
+    }
+  }
+  return out
+}
+
+function downscaleImageDataURL(image: string): string {
+  const match = image.match(/^data:([^;]+);base64,(.+)$/)
+  if (!match) return image
+  const mime = match[1]
+  if (mime !== "image/png" && mime !== "image/jpeg") return image
+  const buf = Buffer.from(match[2], "base64")
+  const dims = imageDimensions(mime, buf)
+  if (!dims) return image
+  const longest = Math.max(dims.width, dims.height)
+  if (longest <= IMAGE_DIMENSION_LIMIT) return image
+
+  const scale = IMAGE_DOWNSCALE_TARGET / longest
+  const dw = Math.max(1, Math.round(dims.width * scale))
+  const dh = Math.max(1, Math.round(dims.height * scale))
+
+  if (mime === "image/png") {
+    const decoded = PNG.sync.read(buf)
+    const resized = resizeRGBA(decoded.data, decoded.width, decoded.height, dw, dh)
+    const png = new PNG({ width: dw, height: dh })
+    resized.copy(png.data)
+    const encoded = PNG.sync.write(png)
+    return `data:image/png;base64,${encoded.toString("base64")}`
+  }
+  const decoded = jpeg.decode(buf, { useTArray: true })
+  const resized = resizeRGBA(decoded.data, decoded.width, decoded.height, dw, dh)
+  const encoded = jpeg.encode({ data: resized, width: dw, height: dh }, 80)
+  return `data:image/jpeg;base64,${Buffer.from(encoded.data).toString("base64")}`
+}
+
+function downscaleImages(msgs: ModelMessage[]): ModelMessage[] {
+  return msgs.map((msg) => {
+    if (msg.role !== "user" || !Array.isArray(msg.content)) return msg
+    const content = msg.content.map((part) => {
+      if (part.type !== "image") return part
+      const image = String(part.image)
+      if (!image.startsWith("data:")) return part
+      try {
+        const next = downscaleImageDataURL(image)
+        if (next === image) return part
+        return { ...part, image: next }
+      } catch {
+        // Any decode/encode failure must never crash the request — pass through.
+        return part
+      }
+    })
+    return { ...msg, content }
+  })
+}
+
 function limitImages(msgs: ModelMessage[]): ModelMessage[] {
   const maxImages = Flag.MIMOCODE_MAX_PROMPT_IMAGES
   const maxSize = Flag.MIMOCODE_MAX_PROMPT_IMAGE_SIZE
@@ -414,6 +527,7 @@ function limitImages(msgs: ModelMessage[]): ModelMessage[] {
 
 export function message(msgs: ModelMessage[], model: Provider.Model, options: Record<string, unknown>) {
   msgs = unsupportedParts(msgs, model)
+  msgs = downscaleImages(msgs)
   msgs = limitImages(msgs)
   msgs = normalizeMessages(msgs, model, options)
   if (supportsCacheMarkers(model)) {
