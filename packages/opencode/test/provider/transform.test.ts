@@ -1137,6 +1137,70 @@ describe("ProviderTransform.message - empty image handling", () => {
   })
 })
 
+describe("ProviderTransform.message - tool-result image downscaling", () => {
+  const mockModel = {
+    id: "anthropic/claude-3-5-sonnet",
+    providerID: "anthropic",
+    api: { id: "claude-3-5-sonnet-20241022", url: "https://api.anthropic.com", npm: "@ai-sdk/anthropic" },
+    name: "Claude 3.5 Sonnet",
+    capabilities: {
+      temperature: true,
+      reasoning: false,
+      attachment: true,
+      toolcall: true,
+      input: { text: true, audio: false, image: true, video: false, pdf: true },
+      output: { text: true, audio: false, image: false, video: false, pdf: false },
+      interleaved: false,
+    },
+    cost: { input: 0.003, output: 0.015, cache: { read: 0.0003, write: 0.00375 } },
+    limit: { context: 200000, output: 8192 },
+    status: "active",
+    options: {},
+    headers: {},
+  } as any
+
+  const pngBase64 = (w: number, h: number) => {
+    const png = new PNG({ width: w, height: h })
+    return PNG.sync.write(png).toString("base64")
+  }
+
+  const toolMsg = (data: string) =>
+    [
+      {
+        role: "tool",
+        content: [
+          {
+            type: "tool-result",
+            toolCallId: "toolu_1",
+            toolName: "browser_take_screenshot",
+            output: {
+              type: "content",
+              value: [
+                { type: "text", text: "screenshot" },
+                { type: "media", mediaType: "image/png", data },
+              ],
+            },
+          },
+        ],
+      },
+    ] as any[]
+
+  test("downscales a 2560x1440 tool-result screenshot to <=1568 long edge", () => {
+    const result = ProviderTransform.message(toolMsg(pngBase64(2560, 1440)), mockModel, {}) as any[]
+    const media = result[0].content[0].output.value[1]
+    expect(media.type).toBe("media")
+    expect(media.mediaType).toBe("image/png")
+    const decoded = PNG.sync.read(Buffer.from(media.data, "base64"))
+    expect(Math.max(decoded.width, decoded.height)).toBeLessThanOrEqual(1568)
+  })
+
+  test("leaves a <=2000px tool-result image unchanged", () => {
+    const data = pngBase64(800, 600)
+    const result = ProviderTransform.message(toolMsg(data), mockModel, {}) as any[]
+    expect(result[0].content[0].output.value[1].data).toBe(data)
+  })
+})
+
 describe("ProviderTransform.message - anthropic empty content filtering", () => {
   const anthropicModel = {
     id: "anthropic/claude-3-5-sonnet",

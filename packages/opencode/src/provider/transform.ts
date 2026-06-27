@@ -470,23 +470,61 @@ function downscaleImageDataURL(image: string): string {
   return `data:image/jpeg;base64,${Buffer.from(encoded.data).toString("base64")}`
 }
 
+// Downscale a raw-base64 media item ({ mediaType, data }) as found inside
+// tool-result outputs. Wraps it as a data URL for downscaleImageDataURL, then
+// re-splits the result back into raw base64. Returns the same object on no-op.
+function downscaleMediaItem(item: any): any {
+  if (!item || typeof item !== "object") return item
+  const mediaType = item.mediaType
+  if (mediaType !== "image/png" && mediaType !== "image/jpeg") return item
+  if (typeof item.data !== "string" || item.data.startsWith("data:")) return item
+  try {
+    const url = `data:${mediaType};base64,${item.data}`
+    const next = downscaleImageDataURL(url)
+    if (next === url) return item
+    const match = next.match(/^data:([^;]+);base64,(.+)$/)
+    if (!match) return item
+    return { ...item, mediaType: match[1], data: match[2] }
+  } catch {
+    // Any decode/encode failure must never crash the request — pass through.
+    return item
+  }
+}
+
 function downscaleImages(msgs: ModelMessage[]): ModelMessage[] {
   return msgs.map((msg) => {
-    if (msg.role !== "user" || !Array.isArray(msg.content)) return msg
-    const content = msg.content.map((part) => {
-      if (part.type !== "image") return part
-      const image = String(part.image)
-      if (!image.startsWith("data:")) return part
-      try {
-        const next = downscaleImageDataURL(image)
-        if (next === image) return part
-        return { ...part, image: next }
-      } catch {
-        // Any decode/encode failure must never crash the request — pass through.
-        return part
+    if (!Array.isArray(msg.content)) return msg
+    const content = (msg.content as any[]).map((part) => {
+      // User-pasted (and defensively any) image parts: data-URL in `image`.
+      if (part.type === "image") {
+        const image = String(part.image)
+        if (!image.startsWith("data:")) return part
+        try {
+          const next = downscaleImageDataURL(image)
+          if (next === image) return part
+          return { ...part, image: next }
+        } catch {
+          return part
+        }
       }
+      // Tool-result (e.g. browser screenshot) images: raw base64 media items
+      // inside output.value. Shape: { type:"content", value:[{ type:"media",
+      // mediaType, data }, ...] }.
+      if (part.type === "tool-result") {
+        const output = (part as any).output
+        if (output?.type !== "content" || !Array.isArray(output.value)) return part
+        let changed = false
+        const value = output.value.map((item: any) => {
+          const next = downscaleMediaItem(item)
+          if (next !== item) changed = true
+          return next
+        })
+        if (!changed) return part
+        return { ...part, output: { ...output, value } }
+      }
+      return part
     })
-    return { ...msg, content }
+    return { ...msg, content } as ModelMessage
   })
 }
 
