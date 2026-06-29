@@ -170,10 +170,11 @@ Want to build something together? **[raviv@mailbux.com](mailto:raviv@mailbux.com
 
 ## Credits
 
-SquadCoder stands on the shoulders of three excellent open-source projects:
+SquadCoder stands on the shoulders of these excellent open-source projects:
 
 - **[opencode](https://github.com/sst/opencode)** — the open-source agent/engine foundation SquadCoder is built on.
-- **`code-memory`** (the `code-memory` MCP, run as `uvx code-memory`) — powers SquadCoder's offline semantic codebase index. Ask "where do we handle auth?" and get the right files, fully offline, no cloud, no API cost.
+- **[MiMoCode](https://github.com/XiaomiMiMo/MiMo-Code)** (MiMo Code, Xiaomi Corporation) — the opencode fork SquadCoder is a direct fork of, and the upstream we continuously merge bug fixes and updates from.
+- **[code-memory](https://github.com/kapillamba4/code-memory)** by [@kapillamba4](https://github.com/kapillamba4) (the `code-memory` MCP, run as `uvx code-memory`) — powers SquadCoder's offline semantic codebase index. Ask "where do we handle auth?" and get the right files, fully offline, no cloud, no API cost.
 - **[ponytail](https://github.com/DietrichGebert/ponytail)** — the "laziest senior dev" YAGNI ruleset, bundled by default. It makes the agent write only what's needed (reuse over rebuild): up to **94% less code on real tasks (~54% mean)**, while keeping every safety guard.
 
 ## License
